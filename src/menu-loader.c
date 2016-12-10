@@ -21,9 +21,9 @@ SOLUS_END_PEDANTIC
 /**
  * Load the menus and place them into the window regions
  */
-void sol_menu_window_load_menus(SolMenuWindow *self) {
+void sol_menu_window_load_menus(SolMenuWindow *self)
+{
 }
-
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

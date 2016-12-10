@@ -19,7 +19,6 @@ SOLUS_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 SOLUS_END_PEDANTIC
 
-
 G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
 
 /**
