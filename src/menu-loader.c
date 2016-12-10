@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 SOLUS_BEGIN_PEDANTIC
-#include "menu-loader.h"
+#include "menu-private.h"
 #include <gtk/gtk.h>
 SOLUS_END_PEDANTIC
 

@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "menu-window.h"
 #include <gtk/gtk.h>
 
 struct _SolMenuWindowClass {
