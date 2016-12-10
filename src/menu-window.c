@@ -14,26 +14,11 @@
 #include "util.h"
 
 SOLUS_BEGIN_PEDANTIC
+#include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
 SOLUS_END_PEDANTIC
 
-struct _SolMenuWindowClass {
-        GtkWindowClass parent_class;
-};
-
-struct _SolMenuWindow {
-        GtkWindow parent;
-
-        /* Categories */
-        GtkWidget *sidebar;
-
-        /* Top search entry */
-        GtkWidget *search;
-
-        /* Actual applications */
-        GtkWidget *apps;
-};
 
 G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
 

@@ -19,8 +19,10 @@ noinst_PROGRAMS = \
 # Helper to let us develop the window portion first
 solmenu_test_SOURCES = \
 	src/main.c \
+	src/menu-private.h \
+	src/menu-loader.c \
 	src/menu-window.h \
-	src/menu-window.c
+	src/menu-window.c \
 
 solmenu_test_CFLAGS = \
 	$(GTK_CFLAGS) \
