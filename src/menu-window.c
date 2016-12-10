@@ -38,6 +38,12 @@ GtkWidget *sol_menu_window_new()
  */
 static void sol_menu_window_dispose(GObject *obj)
 {
+        SolMenuWindow *self = SOL_MENU_WINDOW(obj);
+
+        g_message("debug: cleaning up");
+
+        g_clear_pointer(&self->root, matemenu_tree_unref);
+
         G_OBJECT_CLASS(sol_menu_window_parent_class)->dispose(obj);
 }
 

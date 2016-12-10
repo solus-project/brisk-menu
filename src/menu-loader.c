@@ -77,6 +77,8 @@ static void sol_menu_window_reloaded(MateMenuTree *tree, gpointer v)
         MateMenuTreeDirectory *dir = NULL;
         SolMenuWindow *self = NULL;
 
+        g_message("debug: menu reload");
+
         self = SOL_MENU_WINDOW(v);
         dir = matemenu_tree_get_root_directory(tree);
 
@@ -93,11 +95,12 @@ static void sol_menu_window_reloaded(MateMenuTree *tree, gpointer v)
  */
 void sol_menu_window_load_menus(SolMenuWindow *self)
 {
-        autofree(MateMenuTree) *tree = NULL;
+        MateMenuTree *tree = NULL;
 
         /* Load menu */
         tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
         matemenu_tree_add_monitor(tree, sol_menu_window_reloaded, self);
+        self->root = tree;
 
         /* TODO: Move to idle load */
         sol_menu_window_reloaded(tree, self);

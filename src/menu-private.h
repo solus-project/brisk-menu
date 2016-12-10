@@ -34,6 +34,9 @@ struct _SolMenuWindow {
 
         /* Actual applications */
         GtkWidget *apps;
+
+        /* Our tree global reference */
+        MateMenuTree *root;
 };
 
 void sol_menu_window_load_menus(SolMenuWindow *self);
