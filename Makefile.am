@@ -21,6 +21,8 @@ solmenu_test_SOURCES = \
 	src/main.c \
 	src/category-button.h \
 	src/category-button.c \
+	src/entry-button.h \
+	src/entry-button.c \
 	src/menu-private.h \
 	src/menu-loader.c \
 	src/menu-window.h \
