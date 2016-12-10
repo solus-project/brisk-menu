@@ -148,7 +148,16 @@ static void sol_menu_category_button_init(SolMenuCategoryButton *self)
         label = gtk_label_new("");
         gtk_container_add(GTK_CONTAINER(self), label);
         self->label = label;
-        g_object_set(self->label, "halign", GTK_ALIGN_START, "valign", GTK_ALIGN_CENTER, "margin-start", 10, "margin-end", 15, NULL);
+        g_object_set(self->label,
+                     "halign",
+                     GTK_ALIGN_START,
+                     "valign",
+                     GTK_ALIGN_CENTER,
+                     "margin-start",
+                     10,
+                     "margin-end",
+                     15,
+                     NULL);
 
         /* Look like a button */
         g_object_set(G_OBJECT(self), "draw-indicator", FALSE, NULL);
