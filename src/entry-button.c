@@ -155,6 +155,7 @@ static void sol_menu_entry_button_init(SolMenuEntryButton *self)
                      NULL);
 
         gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
+        gtk_button_set_relief(GTK_BUTTON(self), GTK_RELIEF_NONE);
 
         /* Flatten the button */
         style = gtk_widget_get_style_context(GTK_WIDGET(self));

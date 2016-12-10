@@ -15,6 +15,7 @@
 
 SOLUS_BEGIN_PEDANTIC
 #include "category-button.h"
+#include "entry-button.h"
 #include "menu-private.h"
 #include <gtk/gtk.h>
 SOLUS_END_PEDANTIC
@@ -55,11 +56,8 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
                 case MATEMENU_TREE_ITEM_ENTRY: {
                         GtkWidget *button = NULL;
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
-                        const gchar *lab = matemenu_tree_entry_get_display_name(entry);
 
-                        button = gtk_button_new_with_label(lab);
-                        gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
-                        gtk_widget_set_can_focus(button, FALSE);
+                        button = sol_menu_entry_button_new(entry);
                         gtk_container_add(GTK_CONTAINER(self->apps), button);
                         gtk_widget_show_all(button);
                 } break;
