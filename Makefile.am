@@ -19,6 +19,8 @@ noinst_PROGRAMS = \
 # Helper to let us develop the window portion first
 solmenu_test_SOURCES = \
 	src/main.c \
+	src/category-button.h \
+	src/category-button.c \
 	src/menu-private.h \
 	src/menu-loader.c \
 	src/menu-window.h \
