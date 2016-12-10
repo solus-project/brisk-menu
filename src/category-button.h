@@ -13,6 +13,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <matemenu-tree.h>
 
 G_BEGIN_DECLS
 
@@ -31,7 +32,10 @@ typedef struct _SolMenuCategoryButtonClass SolMenuCategoryButtonClass;
 #define SOL_MENU_CATEGORY_BUTTON_GET_CLASS(o)                                                      \
         (G_TYPE_INSTANCE_GET_CLASS((o), SOL_TYPE_MENU_CATEGORY_BUTTON, SolMenuCategoryButtonClass))
 
-GtkWidget *sol_menu_category_button_new(void);
+/**
+ * Construct a new SolMenuCategoryButton from the given group
+ */
+GtkWidget *sol_menu_category_button_new(MateMenuTreeDirectory *group);
 
 GType sol_menu_category_button_get_type(void);
 

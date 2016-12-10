@@ -74,9 +74,9 @@ static void sol_menu_category_button_get_property(GObject *object, guint id, GVa
  *
  * Construct a new SolMenuCategoryButton object
  */
-GtkWidget *sol_menu_category_button_new()
+GtkWidget *sol_menu_category_button_new(MateMenuTreeDirectory *group)
 {
-        return g_object_new(SOL_TYPE_MENU_CATEGORY_BUTTON, NULL);
+        return g_object_new(SOL_TYPE_MENU_CATEGORY_BUTTON, "group", group, NULL);
 }
 
 /**
@@ -87,6 +87,31 @@ GtkWidget *sol_menu_category_button_new()
 static void sol_menu_category_button_dispose(GObject *obj)
 {
         G_OBJECT_CLASS(sol_menu_category_button_parent_class)->dispose(obj);
+}
+
+/**
+ * Handle constructor specifics for our button
+ */
+static void sol_menu_category_button_constructed(GObject *obj)
+{
+        const gchar *label = NULL;
+        GtkWidget *lab_widget = NULL;
+        SolMenuCategoryButton *self = NULL;
+
+        self = SOL_MENU_CATEGORY_BUTTON(obj);
+
+        /* Determine our label based on groupness */
+        if (self->group) {
+                label = matemenu_tree_directory_get_name(self->group);
+        } else {
+                // label = _("All");
+                label = "All";
+        }
+
+        lab_widget = gtk_bin_get_child(GTK_BIN(self));
+        gtk_label_set_text(GTK_LABEL(lab_widget), label);
+
+        G_OBJECT_CLASS(sol_menu_category_button_parent_class)->constructed(obj);
 }
 
 /**
@@ -102,11 +127,12 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
         obj_class->dispose = sol_menu_category_button_dispose;
         obj_class->set_property = sol_menu_category_button_set_property;
         obj_class->get_property = sol_menu_category_button_get_property;
+        obj_class->constructed = sol_menu_category_button_constructed;
 
         obj_properties[PROP_GROUP] = g_param_spec_pointer("group",
                                                           "The MateMenuTreeDirectory",
                                                           "Directory that this category represents",
-                                                          G_PARAM_READWRITE);
+                                                          G_PARAM_CONSTRUCT);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
