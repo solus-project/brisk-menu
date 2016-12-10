@@ -43,6 +43,8 @@ void sol_menu_window_load_menus(SolMenuWindow *self);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
+DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
+DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(GList, g_list_free)
 

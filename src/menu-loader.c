@@ -34,7 +34,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
          * TODO: Traverse it _properly_..
          */
         for (elem = kids; elem; elem = elem->next) {
-                MateMenuTreeItem *item = elem->data;
+                autofree(MateMenuTreeItem) *item = elem->data;
 
                 /* DEMO Bits - this whole function needs to move down and become a
                  * recursive function. */
@@ -74,7 +74,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
  */
 static void sol_menu_window_build(SolMenuWindow *self)
 {
-        MateMenuTreeDirectory *dir = NULL;
+        autofree(MateMenuTreeDirectory) *dir = NULL;
 
         g_message("debug: menu reload");
 
