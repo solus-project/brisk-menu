@@ -95,7 +95,6 @@ static void sol_menu_category_button_dispose(GObject *obj)
 static void sol_menu_category_button_constructed(GObject *obj)
 {
         const gchar *label = NULL;
-        GtkWidget *lab_widget = NULL;
         SolMenuCategoryButton *self = NULL;
 
         self = SOL_MENU_CATEGORY_BUTTON(obj);
@@ -108,8 +107,7 @@ static void sol_menu_category_button_constructed(GObject *obj)
                 label = "All";
         }
 
-        lab_widget = gtk_bin_get_child(GTK_BIN(self));
-        gtk_label_set_text(GTK_LABEL(lab_widget), label);
+        g_object_set(obj, "label", label, NULL);
 
         G_OBJECT_CLASS(sol_menu_category_button_parent_class)->constructed(obj);
 }
@@ -132,7 +130,7 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
         obj_properties[PROP_GROUP] = g_param_spec_pointer("group",
                                                           "The MateMenuTreeDirectory",
                                                           "Directory that this category represents",
-                                                          G_PARAM_CONSTRUCT);
+                                                          G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
