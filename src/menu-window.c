@@ -75,6 +75,8 @@ static void sol_menu_window_init(SolMenuWindow *self)
         GtkWidget *content = NULL;
         GtkWidget *scroll = NULL;
 
+        gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
+
         /* Create the main layout (Vertical search/content */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         gtk_container_add(GTK_CONTAINER(self), layout);
