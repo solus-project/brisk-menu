@@ -9,11 +9,13 @@
  * of the License, or (at your option) any later version.
  */
 
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
+int main(int argc, char **argv)
 {
+        gtk_init(&argc, &argv);
         fprintf(stderr, "Not yet implemented\n");
         return EXIT_FAILURE;
 }
