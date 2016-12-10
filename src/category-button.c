@@ -19,14 +19,14 @@ SOLUS_BEGIN_PEDANTIC
 SOLUS_END_PEDANTIC
 
 struct _SolMenuCategoryButtonClass {
-        GtkWindowClass parent_class;
+        GtkRadioButtonClass parent_class;
 };
 
 /**
  * SolMenuCategoryButton is the toplevel window type used within the applet.
  */
 struct _SolMenuCategoryButton {
-        int __reserved1;
+        GtkRadioButton parent;
 };
 
 G_DEFINE_TYPE(SolMenuCategoryButton, sol_menu_category_button, GTK_TYPE_RADIO_BUTTON)
