@@ -90,6 +90,12 @@ static void sol_menu_window_reloaded(MateMenuTree *tree, gpointer v)
         sol_menu_window_recurse_root(self, dir);
 }
 
+static gboolean inline_reload_menu(SolMenuWindow *self)
+{
+        sol_menu_window_reloaded(self->root, self);
+        return FALSE;
+}
+
 /**
  * Load the menus and place them into the window regions
  */
@@ -102,8 +108,8 @@ void sol_menu_window_load_menus(SolMenuWindow *self)
         matemenu_tree_add_monitor(tree, sol_menu_window_reloaded, self);
         self->root = tree;
 
-        /* TODO: Move to idle load */
-        sol_menu_window_reloaded(tree, self);
+        /* Load menus on idle */
+        g_idle_add((GSourceFunc)inline_reload_menu, self);
 }
 
 /*
