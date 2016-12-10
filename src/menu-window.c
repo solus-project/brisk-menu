@@ -93,7 +93,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
 
         /* Stick a vsep in for visual separation */
         widget = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-        gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 2);
+        gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 0);
 
         /* Scrollbar for apps */
         scroll = gtk_scrolled_window_new(NULL, NULL);
