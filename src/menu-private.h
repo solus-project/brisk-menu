@@ -50,6 +50,8 @@ DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
 DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(GList, g_list_free)
+DEF_AUTOFREE(GFile, g_object_unref)
+DEF_AUTOFREE(GIcon, g_object_unref)
 
 /**
  * Convenience function to remove children from a container

@@ -15,6 +15,7 @@
 
 SOLUS_BEGIN_PEDANTIC
 #include "entry-button.h"
+#include "menu-private.h"
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
 SOLUS_END_PEDANTIC
@@ -91,6 +92,17 @@ static void sol_menu_entry_button_dispose(GObject *obj)
         G_OBJECT_CLASS(sol_menu_entry_button_parent_class)->dispose(obj);
 }
 
+static GIcon *sol_menu_entry_button_create_gicon(const char *path)
+{
+        autofree(GFile) *file = NULL;
+
+        file = g_file_new_for_path(path);
+        if (!file) {
+                return NULL;
+        }
+        return g_file_icon_new(file);
+}
+
 /**
  * Handle constructor specifics for our button
  */
@@ -98,12 +110,21 @@ static void sol_menu_entry_button_constructed(GObject *obj)
 {
         const gchar *label = NULL;
         SolMenuEntryButton *self = NULL;
+        const gchar *icon_name = NULL;
 
         self = SOL_MENU_ENTRY_BUTTON(obj);
 
-        gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
-                                     matemenu_tree_entry_get_icon(self->entry),
-                                     GTK_ICON_SIZE_BUTTON);
+        /* matemenu has no gicon support, so do it ourselves. */
+        icon_name = matemenu_tree_entry_get_icon(self->entry);
+        if (icon_name && icon_name[0] == '/') {
+                autofree(GIcon) *ico = sol_menu_entry_button_create_gicon(icon_name);
+                gtk_image_set_from_gicon(GTK_IMAGE(self->image), ico, GTK_ICON_SIZE_INVALID);
+        } else {
+                gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
+                                             icon_name,
+                                             GTK_ICON_SIZE_INVALID);
+        }
+        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 24);
 
         /* Determine our label based on the app */
         label = matemenu_tree_entry_get_name(self->entry);
