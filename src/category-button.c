@@ -141,9 +141,15 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
  */
 static void sol_menu_category_button_init(SolMenuCategoryButton *self)
 {
+        GtkStyleContext *style = NULL;
+
         /* Look like a button */
         g_object_set(G_OBJECT(self), "draw-indicator", FALSE, NULL);
         gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
+
+        /* Flatten the button */
+        style = gtk_widget_get_style_context(GTK_WIDGET(self));
+        gtk_style_context_add_class(style, "flat");
 }
 
 /*
