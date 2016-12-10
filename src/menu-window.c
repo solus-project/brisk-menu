@@ -82,8 +82,12 @@ static void sol_menu_window_init(SolMenuWindow *self)
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         gtk_container_add(GTK_CONTAINER(self), layout);
 
-        /* Create search entry */
-        widget = gtk_search_entry_new();
+        /* Create search entry - but not GtkSearchEntry to avoid rounding in themes */
+        widget = gtk_entry_new();
+        gtk_entry_set_icon_from_icon_name(GTK_ENTRY(widget),
+                                          GTK_ENTRY_ICON_PRIMARY,
+                                          "edit-find-symbolic");
+
         gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
         gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
         self->search = widget;
