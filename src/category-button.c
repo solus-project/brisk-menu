@@ -139,8 +139,11 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
  *
  * Handle construction of the SolMenuCategoryButton
  */
-static void sol_menu_category_button_init(__solus_unused__ SolMenuCategoryButton *self)
+static void sol_menu_category_button_init(SolMenuCategoryButton *self)
 {
+        /* Look like a button */
+        g_object_set(G_OBJECT(self), "draw-indicator", FALSE, NULL);
+        gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
 }
 
 /*
