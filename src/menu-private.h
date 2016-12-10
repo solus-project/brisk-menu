@@ -40,9 +40,13 @@ struct _SolMenuWindow {
 
         /* The All categories button */
         GtkWidget *all_button;
+
+        /* The current group used in filtering */
+        MateMenuTreeDirectory *active_group;
 };
 
 void sol_menu_window_load_menus(SolMenuWindow *self);
+void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)

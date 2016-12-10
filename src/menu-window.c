@@ -14,6 +14,7 @@
 #include "util.h"
 
 SOLUS_BEGIN_PEDANTIC
+#include "category-button.h"
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
@@ -109,6 +110,41 @@ static void sol_menu_window_init(SolMenuWindow *self)
         self->apps = widget;
 
         sol_menu_window_load_menus(self);
+}
+
+/**
+ * Fired by clicking a category button
+ */
+static void sol_menu_window_on_toggled(SolMenuWindow *self, GtkWidget *button)
+{
+        SolMenuCategoryButton *cat = NULL;
+
+        /* Skip a double signal due to using a group */
+        if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
+                return;
+        }
+
+        cat = SOL_MENU_CATEGORY_BUTTON(button);
+        g_object_get(cat, "group", &self->active_group, NULL);
+
+        if (!self->active_group) {
+                g_message("debug: active group is: All");
+                return;
+        }
+
+        g_message("debug: active group is: %s",
+                  matemenu_tree_directory_get_name(self->active_group));
+}
+
+/**
+ * sol_menu_window_associate_category:
+ *
+ * This will hook up the category button for events to enable us to filter the
+ * list based on the active category.
+ */
+void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button)
+{
+        g_signal_connect_swapped(button, "toggled", G_CALLBACK(sol_menu_window_on_toggled), self);
 }
 
 /*
