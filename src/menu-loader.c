@@ -51,6 +51,16 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
 
                         sol_menu_window_recurse_root(self, dir);
                 } break;
+                case MATEMENU_TREE_ITEM_ENTRY: {
+                        GtkWidget *button = NULL;
+                        MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
+                        const gchar *lab = matemenu_tree_entry_get_display_name(entry);
+
+                        button = gtk_button_new_with_label(lab);
+                        gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+                        gtk_widget_set_can_focus(button, FALSE);
+                        gtk_container_add(GTK_CONTAINER(self->apps), button);
+                } break;
                 default:
                         break;
                 }
