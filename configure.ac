@@ -1,4 +1,4 @@
-AC_INIT([MATE SolMenu], 11.0.0, [ikey@solus-project.com], [mate-solmenu], [https://solus-project.com/])
+AC_INIT([MATE SolMenu], 0.0.1, [ikey@solus-project.com], [mate-solmenu], [https://solus-project.com/])
 AM_INIT_AUTOMAKE([-Wno-portability no-dist-gzip dist-xz foreign subdir-objects 1.9 tar-ustar])
 AC_PROG_CC
 AC_PROG_CC_STDC
@@ -13,6 +13,7 @@ GLIB_GSETTINGS
 # Build requirements
 m4_define([gtk_required_version], [3.18.0])
 m4_define([glib_required_version], [2.44.0])
+m4_define([mate_required_version], [1.16.0])
 
 PKG_CHECK_MODULES(GTK,
                  [
@@ -24,6 +25,12 @@ PKG_CHECK_MODULES(GIO,
                  [
                    gobject-2.0 >= glib_required_version
                    gio-unix-2.0 >= glib_required_version
+                 ]
+)
+
+PKG_CHECK_MODULES(MENU,
+                 [
+                   libmate-menu >= mate_required_version
                  ]
 )
 

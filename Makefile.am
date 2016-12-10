@@ -22,7 +22,9 @@ solmenu_test_SOURCES = \
 
 solmenu_test_CFLAGS = \
 	$(GTK_CFLAGS) \
+	$(MENU_CFLAGS) \
 	$(AM_CFLAGS)
 
 solmenu_test_LDADD = \
-	$(GTK_LIBS)
+	$(GTK_LIBS) \
+	$(MENU_LIBS)
