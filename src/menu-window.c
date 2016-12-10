@@ -87,6 +87,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_entry_set_icon_from_icon_name(GTK_ENTRY(widget),
                                           GTK_ENTRY_ICON_PRIMARY,
                                           "edit-find-symbolic");
+        g_object_set(widget, "margin", 2, NULL);
 
         gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
         gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
@@ -94,7 +95,6 @@ static void sol_menu_window_init(SolMenuWindow *self)
 
         /* Content layout */
         content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-        gtk_widget_set_margin_top(content, 3);
         gtk_box_pack_start(GTK_BOX(layout), content, TRUE, TRUE, 0);
 
         /* Sidebar for categories */
@@ -129,8 +129,10 @@ static void sol_menu_window_init(SolMenuWindow *self)
         style = gtk_widget_get_style_context(widget);
         gtk_style_context_add_class(style, "view");
         gtk_style_context_add_class(style, "content-view");
+        gtk_style_context_remove_class(style, "background");
 
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
+        g_object_set(layout, "margin-top", 3, "margin-left", 3, "margin-right", 3, NULL);
 
         sol_menu_window_load_menus(self);
 }
