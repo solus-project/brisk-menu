@@ -23,11 +23,6 @@ int main(int argc, char **argv)
 {
         gtk_init(&argc, &argv);
         autofree(GtkWidget) *menu_window = NULL;
-        GtkSettings *settings = NULL;
-
-        /* Just testing at this point */
-        settings = gtk_settings_get_default();
-        g_object_set(settings, "gtk-application-prefer-dark-theme", TRUE, NULL);
 
         menu_window = sol_menu_window_new();
         gtk_widget_show_all(menu_window);
