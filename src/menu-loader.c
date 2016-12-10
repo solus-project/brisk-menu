@@ -19,21 +19,16 @@ SOLUS_BEGIN_PEDANTIC
 SOLUS_END_PEDANTIC
 
 /**
- * Load the menus and place them into the window regions
+ * Recurse the given directory and any of it's children directories. Add all of
+ * the directories to the sidebar, and then (TODO) stick "normal" types into the
+ * content section.
  */
-void sol_menu_window_load_menus(SolMenuWindow *self)
+static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirectory *directory)
 {
-        autofree(MateMenuTree) *tree = NULL;
         autofree(GSList) *kids = NULL;
         GSList *elem = NULL;
-        MateMenuTreeDirectory *dir = NULL;
 
-        tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
-
-        dir = matemenu_tree_get_root_directory(tree);
-        kids = matemenu_tree_directory_get_contents(dir);
-
-        sol_menu_kill_children(GTK_CONTAINER(self->sidebar));
+        kids = matemenu_tree_directory_get_contents(directory);
 
         /* Iterate the root tree
          * TODO: Traverse it _properly_..
@@ -53,11 +48,32 @@ void sol_menu_window_load_menus(SolMenuWindow *self)
                         gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
                         gtk_widget_set_can_focus(button, FALSE);
                         gtk_container_add(GTK_CONTAINER(self->sidebar), button);
+
+                        sol_menu_window_recurse_root(self, dir);
                 } break;
                 default:
                         break;
                 }
         }
+}
+
+/**
+ * Load the menus and place them into the window regions
+ */
+void sol_menu_window_load_menus(SolMenuWindow *self)
+{
+        autofree(MateMenuTree) *tree = NULL;
+        MateMenuTreeDirectory *dir = NULL;
+
+        /* Load menu */
+        tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
+        dir = matemenu_tree_get_root_directory(tree);
+
+        /* Clear existing */
+        sol_menu_kill_children(GTK_CONTAINER(self->sidebar));
+
+        /* Populate with new */
+        sol_menu_window_recurse_root(self, dir);
 }
 
 /*
