@@ -30,6 +30,7 @@ struct _SolMenuEntryButton {
         GtkButton parent;
         MateMenuTreeEntry *entry;
         GtkWidget *label;
+        GtkWidget *image;
 };
 
 G_DEFINE_TYPE(SolMenuEntryButton, sol_menu_entry_button, GTK_TYPE_BUTTON)
@@ -100,10 +101,14 @@ static void sol_menu_entry_button_constructed(GObject *obj)
 
         self = SOL_MENU_ENTRY_BUTTON(obj);
 
+        gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
+                                     matemenu_tree_entry_get_icon(self->entry),
+                                     GTK_ICON_SIZE_BUTTON);
+
         /* Determine our label based on the app */
         label = matemenu_tree_entry_get_name(self->entry);
-
         gtk_label_set_label(GTK_LABEL(self->label), label);
+        gtk_widget_set_tooltip_text(GTK_WIDGET(self), matemenu_tree_entry_get_comment(self->entry));
 
         G_OBJECT_CLASS(sol_menu_entry_button_parent_class)->constructed(obj);
 }
@@ -139,21 +144,26 @@ static void sol_menu_entry_button_init(SolMenuEntryButton *self)
 {
         GtkStyleContext *style = NULL;
         GtkWidget *label = NULL;
+        GtkWidget *image = NULL;
+        GtkWidget *layout = NULL;
 
+        /* Main layout */
+        layout = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_container_add(GTK_CONTAINER(self), layout);
+
+        /* Image on the left */
+        image = gtk_image_new();
+        self->image = image;
+        gtk_widget_set_margin_end(image, 7);
+        gtk_box_pack_start(GTK_BOX(layout), image, FALSE, FALSE, 0);
+
+        /* Display label */
         label = gtk_label_new("");
-        gtk_container_add(GTK_CONTAINER(self), label);
         self->label = label;
-        g_object_set(self->label,
-                     "halign",
-                     GTK_ALIGN_START,
-                     "valign",
-                     GTK_ALIGN_CENTER,
-                     "margin-start",
-                     10,
-                     "margin-end",
-                     15,
-                     NULL);
+        g_object_set(self->label, "halign", GTK_ALIGN_START, "valign", GTK_ALIGN_CENTER, NULL);
+        gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
 
+        /* Button specific fixes */
         gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
         gtk_button_set_relief(GTK_BUTTON(self), GTK_RELIEF_NONE);
 
