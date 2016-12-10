@@ -91,6 +91,8 @@ static void sol_menu_window_init(SolMenuWindow *self)
         /* Application launcher display */
         widget = gtk_list_box_new();
         gtk_box_pack_start(GTK_BOX(content), widget, TRUE, TRUE, 0);
+
+        sol_menu_window_load_menus(self);
 }
 
 /*

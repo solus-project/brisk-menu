@@ -40,6 +40,19 @@ void sol_menu_window_load_menus(SolMenuWindow *self);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
+DEF_AUTOFREE(GSList, g_slist_free)
+DEF_AUTOFREE(GList, g_list_free)
+
+/**
+ * Convenience function to remove children from a container
+ */
+__attribute__((always_inline)) static inline void sol_menu_kill_children(GtkContainer *container)
+{
+        for (autofree(GList) *elem = gtk_container_get_children(container); elem;
+             elem = elem->next) {
+                gtk_widget_destroy(GTK_WIDGET(elem->data));
+        }
+}
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

@@ -23,6 +23,41 @@ SOLUS_END_PEDANTIC
  */
 void sol_menu_window_load_menus(SolMenuWindow *self)
 {
+        autofree(MateMenuTree) *tree = NULL;
+        autofree(GSList) *kids = NULL;
+        GSList *elem = NULL;
+        MateMenuTreeDirectory *dir = NULL;
+
+        tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
+
+        dir = matemenu_tree_get_root_directory(tree);
+        kids = matemenu_tree_directory_get_contents(dir);
+
+        sol_menu_kill_children(GTK_CONTAINER(self->sidebar));
+
+        /* Iterate the root tree
+         * TODO: Traverse it _properly_..
+         */
+        for (elem = kids; elem; elem = elem->next) {
+                MateMenuTreeItem *item = elem->data;
+
+                /* DEMO Bits - this whole function needs to move down and become a
+                 * recursive function. */
+                switch (matemenu_tree_item_get_type(item)) {
+                case MATEMENU_TREE_ITEM_DIRECTORY: {
+                        GtkWidget *button = NULL;
+                        MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
+                        const gchar *lab = matemenu_tree_directory_get_name(dir);
+
+                        button = gtk_button_new_with_label(lab);
+                        gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
+                        gtk_widget_set_can_focus(button, FALSE);
+                        gtk_container_add(GTK_CONTAINER(self->sidebar), button);
+                } break;
+                default:
+                        break;
+                }
+        }
 }
 
 /*
