@@ -29,6 +29,7 @@ struct _SolMenuCategoryButtonClass {
 struct _SolMenuCategoryButton {
         GtkRadioButton parent;
         MateMenuTreeDirectory *group;
+        GtkWidget *label;
 };
 
 G_DEFINE_TYPE(SolMenuCategoryButton, sol_menu_category_button, GTK_TYPE_RADIO_BUTTON)
@@ -107,7 +108,7 @@ static void sol_menu_category_button_constructed(GObject *obj)
                 label = "All";
         }
 
-        g_object_set(obj, "label", label, NULL);
+        gtk_label_set_label(GTK_LABEL(self->label), label);
 
         G_OBJECT_CLASS(sol_menu_category_button_parent_class)->constructed(obj);
 }
@@ -142,6 +143,12 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
 static void sol_menu_category_button_init(SolMenuCategoryButton *self)
 {
         GtkStyleContext *style = NULL;
+        GtkWidget *label = NULL;
+
+        label = gtk_label_new("");
+        gtk_container_add(GTK_CONTAINER(self), label);
+        self->label = label;
+        g_object_set(self->label, "halign", GTK_ALIGN_START, "valign", GTK_ALIGN_CENTER, "margin-start", 10, "margin-end", 15, NULL);
 
         /* Look like a button */
         g_object_set(G_OBJECT(self), "draw-indicator", FALSE, NULL);
