@@ -119,7 +119,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 
-        gtk_widget_set_size_request(GTK_WIDGET(self), 300, 510);
+        gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
 
         sol_menu_window_load_menus(self);
 }
