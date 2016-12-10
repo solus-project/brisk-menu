@@ -9,9 +9,14 @@
  * of the License, or (at your option) any later version.
  */
 
-#include <gtk/gtk.h>
+#include "util.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+
+SOLUS_BEGIN_PEDANTIC
+#include <gtk/gtk.h>
+SOLUS_END_PEDANTIC
 
 int main(int argc, char **argv)
 {

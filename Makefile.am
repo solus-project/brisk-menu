@@ -11,7 +11,7 @@ AM_CFLAGS = \
 	-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_44
 
 AM_CPPFLAGS = \
-	-I$(top_srcdir)/src
+	-I$(top_srcdir)/src/include
 
 noinst_PROGRAMS = \
 	solmenu-test
