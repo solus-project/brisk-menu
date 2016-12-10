@@ -24,6 +24,15 @@ struct _SolMenuWindowClass {
 
 struct _SolMenuWindow {
         GtkWindow parent;
+
+        /* Categories */
+        GtkWidget *sidebar;
+
+        /* Top search entry */
+        GtkWidget *search;
+
+        /* Actual applications */
+        GtkWidget *apps;
 };
 
 G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
@@ -66,9 +75,38 @@ static void sol_menu_window_class_init(SolMenuWindowClass *klazz)
  *
  * Handle construction of the SolMenuWindow
  */
-static void sol_menu_window_init(__solus_unused__ SolMenuWindow *self)
+static void sol_menu_window_init(SolMenuWindow *self)
 {
-        /* TODO: Anything, really. */
+        GtkWidget *layout = NULL;
+        GtkWidget *widget = NULL;
+        GtkWidget *content = NULL;
+
+        /* Create the main layout (Vertical search/content */
+        layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        gtk_container_add(GTK_CONTAINER(self), layout);
+
+        /* Create search entry */
+        widget = gtk_search_entry_new();
+        gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
+        gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
+        self->search = widget;
+
+        /* Content layout */
+        content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_box_pack_start(GTK_BOX(layout), content, TRUE, TRUE, 0);
+
+        /* Sidebar for categories */
+        widget = gtk_list_box_new();
+        gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 0);
+        self->sidebar = widget;
+
+        /* Stick a vsep in for visual separation */
+        widget = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+        gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 2);
+
+        /* Application launcher display */
+        widget = gtk_list_box_new();
+        gtk_box_pack_start(GTK_BOX(content), widget, TRUE, TRUE, 0);
 }
 
 /*
