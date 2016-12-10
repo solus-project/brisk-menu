@@ -22,6 +22,8 @@ SOLUS_END_PEDANTIC
 
 G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
 
+static gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
+
 /**
  * sol_menu_window_new:
  *
@@ -106,6 +108,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
 
         /* Application launcher display */
         widget = gtk_list_box_new();
+        gtk_list_box_set_filter_func(GTK_LIST_BOX(widget), sol_menu_window_filter_apps, self, NULL);
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 
@@ -129,11 +132,13 @@ static void sol_menu_window_on_toggled(SolMenuWindow *self, GtkWidget *button)
 
         if (!self->active_group) {
                 g_message("debug: active group is: All");
-                return;
+        } else {
+                g_message("debug: active group is: %s",
+                          matemenu_tree_directory_get_name(self->active_group));
         }
 
-        g_message("debug: active group is: %s",
-                  matemenu_tree_directory_get_name(self->active_group));
+        /* Start the filter. */
+        gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
 }
 
 /**
@@ -145,6 +150,44 @@ static void sol_menu_window_on_toggled(SolMenuWindow *self, GtkWidget *button)
 void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button)
 {
         g_signal_connect_swapped(button, "toggled", G_CALLBACK(sol_menu_window_on_toggled), self);
+}
+
+/**
+ * sol_menu_window_filter_apps:
+ *
+ * Responsible for filtering the selection based on active group or search
+ * term.
+ */
+static gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
+{
+        SolMenuWindow *self = NULL;
+
+        self = SOL_MENU_WINDOW(v);
+
+        /* All visible */
+        if (!self->active_group) {
+                return TRUE;
+        }
+
+        MateMenuTreeEntry *entry = NULL;
+        GtkWidget *child = NULL;
+        MateMenuTreeDirectory *parent = NULL;
+
+        /* Grab our Entry widget */
+        child = gtk_bin_get_child(GTK_BIN(row));
+
+        g_object_get(child, "entry", &entry, NULL);
+        if (!entry) {
+                return FALSE;
+        }
+
+        parent = matemenu_tree_item_get_parent(MATEMENU_TREE_ITEM(entry));
+
+        /* Check if it matches the current group */
+        if (self->active_group != parent) {
+                return FALSE;
+        }
+        return TRUE;
 }
 
 /*
