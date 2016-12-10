@@ -12,7 +12,9 @@
 #pragma once
 
 #include "menu-window.h"
+#include "util.h"
 #include <gtk/gtk.h>
+#include <matemenu-tree.h>
 
 struct _SolMenuWindowClass {
         GtkWindowClass parent_class;
@@ -35,6 +37,9 @@ struct _SolMenuWindow {
 };
 
 void sol_menu_window_load_menus(SolMenuWindow *self);
+
+DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
+DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

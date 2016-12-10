@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 SOLUS_BEGIN_PEDANTIC
+#include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
 SOLUS_END_PEDANTIC
@@ -21,7 +22,7 @@ SOLUS_END_PEDANTIC
 int main(int argc, char **argv)
 {
         gtk_init(&argc, &argv);
-        GtkWidget *menu_window = NULL;
+        autofree(GtkWidget) *menu_window = NULL;
         GtkSettings *settings = NULL;
 
         /* Just testing at this point */
@@ -32,8 +33,6 @@ int main(int argc, char **argv)
         gtk_widget_show_all(menu_window);
         g_signal_connect(menu_window, "destroy", gtk_main_quit, NULL);
         gtk_main();
-        gtk_widget_destroy(menu_window);
-        menu_window = NULL;
 
         return EXIT_SUCCESS;
 }
