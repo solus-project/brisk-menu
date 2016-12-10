@@ -71,6 +71,7 @@ void sol_menu_window_load_menus(SolMenuWindow *self)
 
         /* Clear existing */
         sol_menu_kill_children(GTK_CONTAINER(self->sidebar));
+        sol_menu_kill_children(GTK_CONTAINER(self->apps));
 
         /* Populate with new */
         sol_menu_window_recurse_root(self, dir);
