@@ -64,6 +64,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         GtkWidget *layout = NULL;
         GtkWidget *widget = NULL;
         GtkWidget *content = NULL;
+        GtkWidget *scroll = NULL;
 
         /* Create the main layout (Vertical search/content */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -88,9 +89,17 @@ static void sol_menu_window_init(SolMenuWindow *self)
         widget = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
         gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 2);
 
+        /* Scrollbar for apps */
+        scroll = gtk_scrolled_window_new(NULL, NULL);
+        gtk_box_pack_start(GTK_BOX(content), scroll, TRUE, TRUE, 0);
+        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
+                                       GTK_POLICY_NEVER,
+                                       GTK_POLICY_AUTOMATIC);
+        gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(scroll), FALSE);
+
         /* Application launcher display */
         widget = gtk_list_box_new();
-        gtk_box_pack_start(GTK_BOX(content), widget, TRUE, TRUE, 0);
+        gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 
         sol_menu_window_load_menus(self);
