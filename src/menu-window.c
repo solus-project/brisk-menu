@@ -74,6 +74,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         GtkWidget *widget = NULL;
         GtkWidget *content = NULL;
         GtkWidget *scroll = NULL;
+        GtkStyleContext *style = NULL;
 
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
 
@@ -120,6 +121,10 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_list_box_set_filter_func(GTK_LIST_BOX(widget), sol_menu_window_filter_apps, self, NULL);
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
+
+        style = gtk_widget_get_style_context(widget);
+        gtk_style_context_add_class(style, "view");
+        gtk_style_context_add_class(style, "content-view");
 
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
 
