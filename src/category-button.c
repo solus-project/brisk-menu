@@ -16,6 +16,7 @@
 SOLUS_BEGIN_PEDANTIC
 #include "category-button.h"
 #include <gtk/gtk.h>
+#include <matemenu-tree.h>
 SOLUS_END_PEDANTIC
 
 struct _SolMenuCategoryButtonClass {
@@ -27,9 +28,46 @@ struct _SolMenuCategoryButtonClass {
  */
 struct _SolMenuCategoryButton {
         GtkRadioButton parent;
+        MateMenuTreeDirectory *group;
 };
 
 G_DEFINE_TYPE(SolMenuCategoryButton, sol_menu_category_button, GTK_TYPE_RADIO_BUTTON)
+
+enum { PROP_GROUP = 1, N_PROPS };
+
+static GParamSpec *obj_properties[N_PROPS] = {
+        NULL,
+};
+
+static void sol_menu_category_button_set_property(GObject *object, guint id, const GValue *value,
+                                                  GParamSpec *spec)
+{
+        SolMenuCategoryButton *self = SOL_MENU_CATEGORY_BUTTON(object);
+
+        switch (id) {
+        case PROP_GROUP:
+                self->group = g_value_get_pointer(value);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
+static void sol_menu_category_button_get_property(GObject *object, guint id, GValue *value,
+                                                  GParamSpec *spec)
+{
+        SolMenuCategoryButton *self = SOL_MENU_CATEGORY_BUTTON(object);
+
+        switch (id) {
+        case PROP_GROUP:
+                g_value_set_pointer(value, self->group);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
 
 /**
  * sol_menu_category_button_new:
@@ -62,6 +100,14 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
 
         /* gobject vtable hookup */
         obj_class->dispose = sol_menu_category_button_dispose;
+        obj_class->set_property = sol_menu_category_button_set_property;
+        obj_class->get_property = sol_menu_category_button_get_property;
+
+        obj_properties[PROP_GROUP] = g_param_spec_pointer("group",
+                                                          "The MateMenuTreeDirectory",
+                                                          "Directory that this category represents",
+                                                          G_PARAM_READWRITE);
+        g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
 /**
