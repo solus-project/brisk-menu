@@ -48,6 +48,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
                         gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
                         gtk_widget_set_can_focus(button, FALSE);
                         gtk_container_add(GTK_CONTAINER(self->sidebar), button);
+                        gtk_widget_show_all(button);
 
                         sol_menu_window_recurse_root(self, dir);
                 } break;
@@ -60,6 +61,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
                         gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
                         gtk_widget_set_can_focus(button, FALSE);
                         gtk_container_add(GTK_CONTAINER(self->apps), button);
+                        gtk_widget_show_all(button);
                 } break;
                 default:
                         break;
@@ -68,15 +70,14 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
 }
 
 /**
- * Load the menus and place them into the window regions
+ * Handle rebuilding of tree in response to a change.
  */
-void sol_menu_window_load_menus(SolMenuWindow *self)
+static void sol_menu_window_reloaded(MateMenuTree *tree, gpointer v)
 {
-        autofree(MateMenuTree) *tree = NULL;
         MateMenuTreeDirectory *dir = NULL;
+        SolMenuWindow *self = NULL;
 
-        /* Load menu */
-        tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
+        self = SOL_MENU_WINDOW(v);
         dir = matemenu_tree_get_root_directory(tree);
 
         /* Clear existing */
@@ -85,6 +86,21 @@ void sol_menu_window_load_menus(SolMenuWindow *self)
 
         /* Populate with new */
         sol_menu_window_recurse_root(self, dir);
+}
+
+/**
+ * Load the menus and place them into the window regions
+ */
+void sol_menu_window_load_menus(SolMenuWindow *self)
+{
+        autofree(MateMenuTree) *tree = NULL;
+
+        /* Load menu */
+        tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
+        matemenu_tree_add_monitor(tree, sol_menu_window_reloaded, self);
+
+        /* TODO: Move to idle load */
+        sol_menu_window_reloaded(tree, self);
 }
 
 /*
