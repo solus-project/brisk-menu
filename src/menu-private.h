@@ -37,6 +37,9 @@ struct _SolMenuWindow {
 
         /* Our tree global reference */
         MateMenuTree *root;
+
+        /* The All categories button */
+        GtkWidget *all_button;
 };
 
 void sol_menu_window_load_menus(SolMenuWindow *self);
