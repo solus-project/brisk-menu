@@ -12,6 +12,7 @@
 #pragma once
 
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -19,13 +20,12 @@ typedef struct _SolMenuWindow SolMenuWindow;
 typedef struct _SolMenuWindowClass SolMenuWindowClass;
 
 #define SOL_TYPE_MENU_WINDOW sol_menu_window_get_type()
-#define SOL_MENU_WINDOW(o)                                                                    \
-        (G_TYPE_CHECK_INSTANCE_CAST((o), SOL_TYPE_MENU_WINDOW, SolMenuWindow))
+#define SOL_MENU_WINDOW(o) (G_TYPE_CHECK_INSTANCE_CAST((o), SOL_TYPE_MENU_WINDOW, SolMenuWindow))
 #define SOL_IS_MENU_WINDOW(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), SOL_TYPE_MENU_WINDOW))
-#define SOL_MENU_WINDOW_CLASS(o)                                                              \
+#define SOL_MENU_WINDOW_CLASS(o)                                                                   \
         (G_TYPE_CHECK_CLASS_CAST((o), SOL_TYPE_MENU_WINDOW, SolMenuWindowClass))
 #define SOL_IS_MENU_WINDOW_CLASS(o) (G_TYPE_CHECK_CLASS_TYPE((o), SOL_TYPE_MENU_WINDOW))
-#define SOL_MENU_WINDOW_GET_CLASS(o)                                                          \
+#define SOL_MENU_WINDOW_GET_CLASS(o)                                                               \
         (G_TYPE_INSTANCE_GET_CLASS((o), SOL_TYPE_MENU_WINDOW, SolMenuWindowClass))
 
 GtkWidget *sol_menu_window_new(void);

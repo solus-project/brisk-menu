@@ -28,13 +28,12 @@ struct _SolMenuWindow {
 
 G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
 
-
 /**
  * sol_menu_window_new:
  *
  * Construct a new SolMenuWindow object
  */
-SolMenuWindow *sol_menu_window_new()
+GtkWidget *sol_menu_window_new()
 {
         return g_object_new(SOL_TYPE_MENU_WINDOW, NULL);
 }
@@ -67,11 +66,10 @@ static void sol_menu_window_class_init(SolMenuWindowClass *klazz)
  *
  * Handle construction of the SolMenuWindow
  */
-static void sol_menu_window_init(SolMenuWindow *self)
+static void sol_menu_window_init(__solus_unused__ SolMenuWindow *self)
 {
         /* TODO: Anything, really. */
 }
-
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
@@ -85,4 +83,3 @@ static void sol_menu_window_init(SolMenuWindow *self)
  * vi: set shiftwidth=8 tabstop=8 expandtab:
  * :indentSize=8:tabSize=8:noTabs=true:
  */
-
