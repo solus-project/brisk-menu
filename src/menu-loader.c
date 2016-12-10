@@ -70,17 +70,15 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
 }
 
 /**
- * Handle rebuilding of tree in response to a change.
+ * Begin a build of the menu structure
  */
-static void sol_menu_window_reloaded(MateMenuTree *tree, gpointer v)
+static void sol_menu_window_build(SolMenuWindow *self)
 {
         MateMenuTreeDirectory *dir = NULL;
-        SolMenuWindow *self = NULL;
 
         g_message("debug: menu reload");
 
-        self = SOL_MENU_WINDOW(v);
-        dir = matemenu_tree_get_root_directory(tree);
+        dir = matemenu_tree_get_root_directory(self->root);
 
         /* Clear existing */
         sol_menu_kill_children(GTK_CONTAINER(self->sidebar));
@@ -90,10 +88,21 @@ static void sol_menu_window_reloaded(MateMenuTree *tree, gpointer v)
         sol_menu_window_recurse_root(self, dir);
 }
 
-static gboolean inline_reload_menu(SolMenuWindow *self)
+/**
+ * Allow us to load the menu on the idle loop
+ */
+static inline gboolean inline_reload_menu(SolMenuWindow *self)
 {
-        sol_menu_window_reloaded(self->root, self);
+        sol_menu_window_build(self);
         return FALSE;
+}
+
+/**
+ * Handle rebuilding of tree in response to a change.
+ */
+static inline void sol_menu_window_reloaded(__solus_unused__ MateMenuTree *tree, gpointer v)
+{
+        g_idle_add((GSourceFunc)inline_reload_menu, v);
 }
 
 /**
