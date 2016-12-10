@@ -47,7 +47,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
                         button = sol_menu_category_button_new(dir);
                         gtk_radio_button_join_group(GTK_RADIO_BUTTON(button),
                                                     GTK_RADIO_BUTTON(self->all_button));
-                        gtk_container_add(GTK_CONTAINER(self->sidebar), button);
+                        gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 0);
                         gtk_widget_show_all(button);
 
                         sol_menu_window_recurse_root(self, dir);
@@ -86,7 +86,7 @@ static void sol_menu_window_build(SolMenuWindow *self)
 
         /* Special meaning for NULL group */
         self->all_button = sol_menu_category_button_new(NULL);
-        gtk_container_add(GTK_CONTAINER(self->sidebar), self->all_button);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), self->all_button, FALSE, FALSE, 0);
         gtk_widget_show_all(self->all_button);
 
         /* Populate with new */

@@ -87,7 +87,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_box_pack_start(GTK_BOX(layout), content, TRUE, TRUE, 0);
 
         /* Sidebar for categories */
-        widget = gtk_list_box_new();
+        widget = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 0);
         self->sidebar = widget;
 
