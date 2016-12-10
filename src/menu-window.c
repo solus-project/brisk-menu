@@ -161,6 +161,9 @@ void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button)
 static gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 {
         SolMenuWindow *self = NULL;
+        MateMenuTreeEntry *entry = NULL;
+        GtkWidget *child = NULL;
+        MateMenuTreeDirectory *parent = NULL;
 
         self = SOL_MENU_WINDOW(v);
 
@@ -168,10 +171,6 @@ static gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         if (!self->active_group) {
                 return TRUE;
         }
-
-        MateMenuTreeEntry *entry = NULL;
-        GtkWidget *child = NULL;
-        MateMenuTreeDirectory *parent = NULL;
 
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));
