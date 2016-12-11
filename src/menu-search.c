@@ -48,6 +48,43 @@ void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry)
         gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
 }
 
+/**
+ * sol_menu_window_filter_apps:
+ *
+ * Responsible for filtering the selection based on active group or search
+ * term.
+ */
+gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
+{
+        SolMenuWindow *self = NULL;
+        MateMenuTreeEntry *entry = NULL;
+        GtkWidget *child = NULL;
+        MateMenuTreeDirectory *parent = NULL;
+
+        self = SOL_MENU_WINDOW(v);
+
+        /* All visible */
+        if (!self->active_group) {
+                return TRUE;
+        }
+
+        /* Grab our Entry widget */
+        child = gtk_bin_get_child(GTK_BIN(row));
+
+        g_object_get(child, "entry", &entry, NULL);
+        if (!entry) {
+                return FALSE;
+        }
+
+        parent = matemenu_tree_item_get_parent(MATEMENU_TREE_ITEM(entry));
+
+        /* Check if it matches the current group */
+        if (self->active_group != parent) {
+                return FALSE;
+        }
+        return TRUE;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

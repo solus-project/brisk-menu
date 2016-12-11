@@ -52,6 +52,7 @@ struct _SolMenuWindow {
 void sol_menu_window_load_menus(SolMenuWindow *self);
 void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button);
 void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry);
+gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)

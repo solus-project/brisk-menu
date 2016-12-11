@@ -22,8 +22,6 @@ SOLUS_END_PEDANTIC
 
 G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
 
-static gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
-
 /**
  * sol_menu_window_new:
  *
@@ -174,43 +172,6 @@ static void sol_menu_window_on_toggled(SolMenuWindow *self, GtkWidget *button)
 void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button)
 {
         g_signal_connect_swapped(button, "toggled", G_CALLBACK(sol_menu_window_on_toggled), self);
-}
-
-/**
- * sol_menu_window_filter_apps:
- *
- * Responsible for filtering the selection based on active group or search
- * term.
- */
-static gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
-{
-        SolMenuWindow *self = NULL;
-        MateMenuTreeEntry *entry = NULL;
-        GtkWidget *child = NULL;
-        MateMenuTreeDirectory *parent = NULL;
-
-        self = SOL_MENU_WINDOW(v);
-
-        /* All visible */
-        if (!self->active_group) {
-                return TRUE;
-        }
-
-        /* Grab our Entry widget */
-        child = gtk_bin_get_child(GTK_BIN(row));
-
-        g_object_get(child, "entry", &entry, NULL);
-        if (!entry) {
-                return FALSE;
-        }
-
-        parent = matemenu_tree_item_get_parent(MATEMENU_TREE_ITEM(entry));
-
-        /* Check if it matches the current group */
-        if (self->active_group != parent) {
-                return FALSE;
-        }
-        return TRUE;
 }
 
 /*
