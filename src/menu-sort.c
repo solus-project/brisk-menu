@@ -17,19 +17,49 @@ BRISK_BEGIN_PEDANTIC
 #include "entry-button.h"
 #include "menu-private.h"
 #include <matemenu-tree.h>
+#include <string.h>
 BRISK_END_PEDANTIC
 
-gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, __brisk_unused__ gpointer v)
+/**
+ * Compute a score for the given entry based on the input term.
+ */
+static gint brisk_get_entry_score(MateMenuTreeEntry *entry, gchar *term)
+{
+        gint score = 0;
+        autofree(gchar) *name = NULL;
+
+        name = g_ascii_strdown(matemenu_tree_entry_get_name(entry), -1);
+        if (g_str_equal(name, term)) {
+                score += 100;
+        } else if (g_str_has_prefix(name, term)) {
+                score += 50;
+        }
+
+        score += strcmp(name, term);
+
+        return score;
+}
+
+gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v)
 {
         GtkWidget *child1, *child2 = NULL;
         MateMenuTreeEntry *entryA, *entryB = NULL;
         const gchar *nameA, *nameB = NULL;
+        BriskMenuWindow *self = NULL;
+
+        self = BRISK_MENU_WINDOW(v);
 
         child1 = gtk_bin_get_child(GTK_BIN(row1));
         child2 = gtk_bin_get_child(GTK_BIN(row2));
 
         g_object_get(child1, "entry", &entryA, NULL);
         g_object_get(child2, "entry", &entryB, NULL);
+
+        if (self->search_term) {
+                gint sc1 = brisk_get_entry_score(entryA, self->search_term);
+                gint sc2 = brisk_get_entry_score(entryB, self->search_term);
+                return (sc1 > sc2) - (sc1 - sc2);
+        }
 
         nameA = matemenu_tree_entry_get_display_name(entryA);
         nameB = matemenu_tree_entry_get_display_name(entryB);
