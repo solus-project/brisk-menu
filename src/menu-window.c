@@ -107,9 +107,14 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                                        GTK_POLICY_NEVER,
                                        GTK_POLICY_AUTOMATIC);
         gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(scroll), FALSE);
-        gtk_box_pack_start(GTK_BOX(content), scroll, TRUE, TRUE, 0);
         self->sidebar = widget;
         gtk_container_add(GTK_CONTAINER(scroll), widget);
+
+        /* Create a wrapper for the categories */
+        widget = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        gtk_box_pack_start(GTK_BOX(widget), scroll, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(content), widget, TRUE, TRUE, 0);
+        self->sidebar_wrap = widget;
 
         /* Scrollbar for apps */
         scroll = gtk_scrolled_window_new(NULL, NULL);

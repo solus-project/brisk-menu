@@ -29,6 +29,9 @@ struct _BriskMenuWindow {
         /* Categories */
         GtkWidget *sidebar;
 
+        /* VBox for the sidebar container */
+        GtkWidget *sidebar_wrap;
+
         /* Top search entry */
         GtkWidget *search;
 
