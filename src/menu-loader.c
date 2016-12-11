@@ -111,8 +111,8 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         gtk_widget_show_all(sep);
 
         /* Load the shortcuts up */
-        for (size_t i = 0; i < sizeof(brisk_default_shortcuts) / sizeof(brisk_default_shortcuts[0]);
-             i++) {
+        size_t n_shortcuts = sizeof(brisk_default_shortcuts) / sizeof(brisk_default_shortcuts[0]);
+        for (size_t i = 0; i < n_shortcuts; i++) {
                 brisk_menu_window_add_shortcut(self, brisk_default_shortcuts[i]);
         }
 }
