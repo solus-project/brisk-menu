@@ -29,6 +29,7 @@ struct _BriskMenuEntryButtonClass {
 static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context);
 static void brisk_menu_entry_drag_data(GtkWidget *widget, GdkDragContext *context,
                                        GtkSelectionData *data, guint info, guint time);
+static void brisk_menu_entry_clicked(GtkButton *widget);
 
 /**
  * BriskMenuEntryButton is the toplevel window type used within the applet.
@@ -169,6 +170,7 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
         GtkWidgetClass *wid_class = GTK_WIDGET_CLASS(klazz);
+        GtkButtonClass *but_class = GTK_BUTTON_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_menu_entry_button_dispose;
@@ -176,8 +178,12 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
         obj_class->get_property = brisk_menu_entry_button_get_property;
         obj_class->constructed = brisk_menu_entry_button_constructed;
 
+        /* widget vtable hookup */
         wid_class->drag_data_get = brisk_menu_entry_drag_data;
         wid_class->drag_begin = brisk_menu_entry_drag_begin;
+
+        /* button vtable hookup */
+        but_class->clicked = brisk_menu_entry_clicked;
 
         obj_properties[PROP_ENTRY] = g_param_spec_pointer("entry",
                                                           "The MateMenuTreeEntry",
@@ -277,6 +283,26 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
         uris[1] = NULL;
 
         gtk_selection_data_set_uris(data, (gchar **)uris);
+}
+
+static void brisk_menu_entry_clicked(GtkButton *widget)
+{
+        BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
+        autofree(GdkAppLaunchContext) *context = NULL;
+        GdkScreen *screen = NULL;
+        GdkDisplay *display = NULL;
+
+        if (!self->info) {
+                return;
+        }
+
+        display = gtk_widget_get_display(GTK_WIDGET(widget));
+        screen = gtk_widget_get_screen(GTK_WIDGET(widget));
+        context = gdk_display_get_app_launch_context(display);
+        gdk_app_launch_context_set_timestamp(context, GDK_CURRENT_TIME);
+        gdk_app_launch_context_set_screen(context, screen);
+
+        g_app_info_launch_uris(G_APP_INFO(self->info), NULL, G_APP_LAUNCH_CONTEXT(context), NULL);
 }
 
 /*
