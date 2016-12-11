@@ -46,6 +46,7 @@ static void sol_menu_window_dispose(GObject *obj)
         g_message("debug: cleaning up");
 
         g_clear_pointer(&self->root, matemenu_tree_unref);
+        g_clear_pointer(&self->search_term, g_free);
 
         G_OBJECT_CLASS(sol_menu_window_parent_class)->dispose(obj);
 }

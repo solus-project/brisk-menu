@@ -16,10 +16,36 @@
 SOLUS_BEGIN_PEDANTIC
 #include "menu-private.h"
 #include <gtk/gtk.h>
+#include <string.h>
 SOLUS_END_PEDANTIC
 
+/**
+ * sol_menu_window_search:
+ *
+ * Callback for the text entry changing. Set the search term and force
+ * an invalidation of our filters.
+ */
 void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry)
 {
+        const gchar *search_term = NULL;
+
+        /* Remove old search term */
+        search_term = gtk_entry_get_text(entry);
+        g_clear_pointer(&self->search_term, g_free);
+
+        /* New search term, always lower case for simplicity */
+        self->search_term = g_strstrip(g_ascii_strdown(search_term, -1));
+
+        /* Reset our search term if it's not valid anymore, or whitespace */
+        if (strlen(self->search_term) > 0) {
+                gtk_widget_set_sensitive(self->sidebar, FALSE);
+        } else {
+                gtk_widget_set_sensitive(self->sidebar, TRUE);
+                g_clear_pointer(&self->search_term, g_free);
+        }
+
+        /* Now filter again */
+        gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
 }
 
 /*

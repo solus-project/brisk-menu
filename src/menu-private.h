@@ -43,6 +43,9 @@ struct _SolMenuWindow {
 
         /* The current group used in filtering */
         MateMenuTreeDirectory *active_group;
+
+        /* Search term, may be null at any point. Used for filtering */
+        gchar *search_term;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
