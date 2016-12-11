@@ -20,6 +20,20 @@ SOLUS_BEGIN_PEDANTIC
 SOLUS_END_PEDANTIC
 
 /**
+ * sol_menu_window_clear_search:
+ *
+ * Simply put, resets the active search term
+ */
+void sol_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos,
+                                  __solus_unused__ GdkEvent *event, __solus_unused__ gpointer v)
+{
+        if (pos != GTK_ENTRY_ICON_SECONDARY) {
+                return;
+        }
+        gtk_entry_set_text(entry, "");
+}
+
+/**
  * sol_menu_window_search:
  *
  * Callback for the text entry changing. Set the search term and force
