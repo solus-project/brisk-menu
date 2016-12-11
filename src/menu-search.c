@@ -75,6 +75,42 @@ static gboolean sol_menu_window_filter_group(SolMenuWindow *self, MateMenuTreeEn
 }
 
 /**
+ * sol_menu_window_filter_term:
+ *
+ * This function will handle filtering the selection based on the active search
+ * term. It looks for the string within a number of the entry's fields, and will
+ * hide them if they don't turn up.
+ *
+ * Note: This function uses g_str_match_string so that ASCII alternatives are
+ * searched. This allows searching for text containing accents, etc, so that
+ * the menu can be more useful in more locales.
+ *
+ * This could probably be improved in future to generate internal state to allow
+ * the search itself to be sorted based on the results, with the "most similar"
+ * appearing near the top.
+ */
+static gboolean sol_menu_window_filter_term(SolMenuWindow *self, MateMenuTreeEntry *entry)
+{
+        const gchar *fields[] = {
+                matemenu_tree_entry_get_display_name(entry),
+                matemenu_tree_entry_get_comment(entry),
+                matemenu_tree_entry_get_name(entry),
+                matemenu_tree_entry_get_exec(entry),
+        };
+
+        for (size_t i = 0; i < sizeof(fields) / sizeof(fields[0]); i++) {
+                if (!fields[i]) {
+                        continue;
+                }
+                autofree(gchar) *contents = g_strstrip(g_ascii_strdown(fields[i], -1));
+                if (g_str_match_string(self->search_term, contents, TRUE)) {
+                        return TRUE;
+                }
+        }
+        return FALSE;
+}
+
+/**
  * sol_menu_window_filter_apps:
  *
  * Responsible for filtering the selection based on active group or search
@@ -96,7 +132,12 @@ gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
                 return FALSE;
         }
 
-        /* TODO: Call into new filter function here */
+        /* Have search term? Filter on that. */
+        if (self->search_term) {
+                return sol_menu_window_filter_term(self, entry);
+        }
+
+        /* Filter based on group */
         return sol_menu_window_filter_group(self, entry);
 }
 

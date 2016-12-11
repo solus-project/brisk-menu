@@ -62,6 +62,7 @@ DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(GList, g_list_free)
 DEF_AUTOFREE(GFile, g_object_unref)
 DEF_AUTOFREE(GIcon, g_object_unref)
+DEF_AUTOFREE(gchar, g_free)
 
 /**
  * Convenience function to remove children from a container
