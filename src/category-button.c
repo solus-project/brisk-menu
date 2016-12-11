@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
+#include "menu-private.h"
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
 BRISK_END_PEDANTIC
@@ -31,6 +32,7 @@ struct _BriskMenuCategoryButton {
         MateMenuTreeDirectory *group;
         MateMenuTree *tree;
         GtkWidget *label;
+        GtkWidget *image;
 };
 
 G_DEFINE_TYPE(BriskMenuCategoryButton, brisk_menu_category_button, GTK_TYPE_RADIO_BUTTON)
@@ -97,6 +99,17 @@ static void brisk_menu_category_button_dispose(GObject *obj)
         G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->dispose(obj);
 }
 
+static GIcon *brisk_menu_category_button_create_gicon(const char *path)
+{
+        autofree(GFile) *file = NULL;
+
+        file = g_file_new_for_path(path);
+        if (!file) {
+                return NULL;
+        }
+        return g_file_icon_new(file);
+}
+
 /**
  * Handle constructor specifics for our button
  */
@@ -104,16 +117,30 @@ static void brisk_menu_category_button_constructed(GObject *obj)
 {
         const gchar *label = NULL;
         BriskMenuCategoryButton *self = NULL;
+        const gchar *icon_name = NULL;
 
         self = BRISK_MENU_CATEGORY_BUTTON(obj);
 
         /* Determine our label based on groupness */
         if (self->group) {
                 label = matemenu_tree_directory_get_name(self->group);
+                icon_name = matemenu_tree_directory_get_icon(self->group);
         } else {
                 // label = _("All");
                 label = "All";
+                icon_name = "starred";
         }
+
+        /* matemenu has no gicon support, so do it ourselves. */
+        if (icon_name && icon_name[0] == '/') {
+                autofree(GIcon) *ico = brisk_menu_category_button_create_gicon(icon_name);
+                gtk_image_set_from_gicon(GTK_IMAGE(self->image), ico, GTK_ICON_SIZE_INVALID);
+        } else {
+                gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
+                                             icon_name,
+                                             GTK_ICON_SIZE_INVALID);
+        }
+        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 16);
 
         gtk_label_set_label(GTK_LABEL(self->label), label);
 
@@ -155,20 +182,34 @@ static void brisk_menu_category_button_init(BriskMenuCategoryButton *self)
 {
         GtkStyleContext *style = NULL;
         GtkWidget *label = NULL;
+        GtkWidget *image = NULL;
+        GtkWidget *layout = NULL;
 
+        /* Main layout */
+        layout = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_container_add(GTK_CONTAINER(self), layout);
+
+        /* Image on the left */
+        image = gtk_image_new();
+        self->image = image;
+        gtk_widget_set_margin_end(image, 7);
+        gtk_box_pack_start(GTK_BOX(layout), image, FALSE, FALSE, 0);
+
+        /* Display label */
         label = gtk_label_new("");
-        gtk_container_add(GTK_CONTAINER(self), label);
         self->label = label;
         g_object_set(self->label,
                      "halign",
                      GTK_ALIGN_START,
                      "valign",
                      GTK_ALIGN_CENTER,
-                     "margin-start",
-                     10,
                      "margin-end",
                      15,
                      NULL);
+        gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
+
+        /* Button specific fixes */
+        gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
 
         /* Look like a button */
         g_object_set(G_OBJECT(self), "draw-indicator", FALSE, NULL);
