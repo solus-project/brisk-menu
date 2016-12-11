@@ -39,7 +39,7 @@ typedef struct _BriskMenuCategoryButtonClass BriskMenuCategoryButtonClass;
 /**
  * Construct a new BriskMenuCategoryButton from the given group
  */
-GtkWidget *brisk_menu_category_button_new(MateMenuTreeDirectory *group);
+GtkWidget *brisk_menu_category_button_new(MateMenuTree *tree, MateMenuTreeDirectory *group);
 
 GType brisk_menu_category_button_get_type(void);
 

@@ -29,12 +29,13 @@ struct _BriskMenuCategoryButtonClass {
 struct _BriskMenuCategoryButton {
         GtkRadioButton parent;
         MateMenuTreeDirectory *group;
+        MateMenuTree *tree;
         GtkWidget *label;
 };
 
 G_DEFINE_TYPE(BriskMenuCategoryButton, brisk_menu_category_button, GTK_TYPE_RADIO_BUTTON)
 
-enum { PROP_GROUP = 1, N_PROPS };
+enum { PROP_GROUP = 1, PROP_TREE, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -48,6 +49,9 @@ static void brisk_menu_category_button_set_property(GObject *object, guint id, c
         switch (id) {
         case PROP_GROUP:
                 self->group = g_value_get_pointer(value);
+                break;
+        case PROP_TREE:
+                self->tree = g_value_get_pointer(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -64,6 +68,9 @@ static void brisk_menu_category_button_get_property(GObject *object, guint id, G
         case PROP_GROUP:
                 g_value_set_pointer(value, self->group);
                 break;
+        case PROP_TREE:
+                g_value_set_pointer(value, self->tree);
+                break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
                 break;
@@ -75,9 +82,9 @@ static void brisk_menu_category_button_get_property(GObject *object, guint id, G
  *
  * Construct a new BriskMenuCategoryButton object
  */
-GtkWidget *brisk_menu_category_button_new(MateMenuTreeDirectory *group)
+GtkWidget *brisk_menu_category_button_new(MateMenuTree *tree, MateMenuTreeDirectory *group)
 {
-        return g_object_new(BRISK_TYPE_MENU_CATEGORY_BUTTON, "group", group, NULL);
+        return g_object_new(BRISK_TYPE_MENU_CATEGORY_BUTTON, "tree", tree, "group", group, NULL);
 }
 
 /**
@@ -132,6 +139,10 @@ static void brisk_menu_category_button_class_init(BriskMenuCategoryButtonClass *
                                                           "The MateMenuTreeDirectory",
                                                           "Directory that this category represents",
                                                           G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_TREE] = g_param_spec_pointer("tree",
+                                                         "The MateMenuTree",
+                                                         "Tree that this category belongs to",
+                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 

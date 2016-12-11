@@ -44,7 +44,7 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
                         GtkWidget *button = NULL;
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
 
-                        button = brisk_menu_category_button_new(dir);
+                        button = brisk_menu_category_button_new(root_tree, dir);
                         gtk_radio_button_join_group(GTK_RADIO_BUTTON(button),
                                                     GTK_RADIO_BUTTON(self->all_button));
                         gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 0);
@@ -84,7 +84,7 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         brisk_menu_kill_children(GTK_CONTAINER(self->apps));
 
         /* Special meaning for NULL group */
-        self->all_button = brisk_menu_category_button_new(NULL);
+        self->all_button = brisk_menu_category_button_new(NULL, NULL);
         gtk_box_pack_start(GTK_BOX(self->sidebar), self->all_button, FALSE, FALSE, 0);
         gtk_widget_show_all(self->all_button);
         brisk_menu_window_associate_category(self, self->all_button);
