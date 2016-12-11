@@ -49,6 +49,32 @@ void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry)
 }
 
 /**
+ * sol_menu_window_filter_group:
+ *
+ * This function will handle filtering the selection based on the active
+ * group, when no search term is applied.
+ *
+ * Returning TRUE means the app should be displayed
+ */
+static gboolean sol_menu_window_filter_group(SolMenuWindow *self, MateMenuTreeEntry *entry)
+{
+        MateMenuTreeDirectory *parent = NULL;
+
+        /* All visible */
+        if (!self->active_group) {
+                return TRUE;
+        }
+
+        parent = matemenu_tree_item_get_parent(MATEMENU_TREE_ITEM(entry));
+
+        /* Check if it matches the current group */
+        if (self->active_group != parent) {
+                return FALSE;
+        }
+        return TRUE;
+}
+
+/**
  * sol_menu_window_filter_apps:
  *
  * Responsible for filtering the selection based on active group or search
@@ -59,14 +85,8 @@ gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         SolMenuWindow *self = NULL;
         MateMenuTreeEntry *entry = NULL;
         GtkWidget *child = NULL;
-        MateMenuTreeDirectory *parent = NULL;
 
         self = SOL_MENU_WINDOW(v);
-
-        /* All visible */
-        if (!self->active_group) {
-                return TRUE;
-        }
 
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));
@@ -76,13 +96,8 @@ gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
                 return FALSE;
         }
 
-        parent = matemenu_tree_item_get_parent(MATEMENU_TREE_ITEM(entry));
-
-        /* Check if it matches the current group */
-        if (self->active_group != parent) {
-                return FALSE;
-        }
-        return TRUE;
+        /* TODO: Call into new filter function here */
+        return sol_menu_window_filter_group(self, entry);
 }
 
 /*
