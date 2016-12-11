@@ -242,10 +242,17 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 static void brisk_menu_entry_drag_begin(__brisk_unused__ BriskMenuEntryButton *self,
                                         GdkDragContext *context, __brisk_unused__ gpointer v)
 {
-        /* TODO: Pull icon from .desktop file */
-        gtk_drag_set_icon_default(context);
+        GIcon *icon = NULL;
 
-        /* gtk_drag_set_icon_gicon(context, icon, 0, 0); */
+        /* If we have a .desktop & icon, use it */
+        if (self->info) {
+                icon = g_app_info_get_icon(G_APP_INFO(self->info));
+                gtk_drag_set_icon_gicon(context, icon, 0, 0);
+                return;
+        }
+
+        /* Fallback to the default */
+        gtk_drag_set_icon_default(context);
 }
 
 static void brisk_menu_entry_drag_data(__brisk_unused__ BriskMenuEntryButton *self,
