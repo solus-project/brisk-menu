@@ -65,6 +65,7 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry);
 gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
 void brisk_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos, GdkEvent *event,
                                     gpointer v);
+gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)

@@ -135,6 +135,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                                      brisk_menu_window_filter_apps,
                                      self,
                                      NULL);
+        gtk_list_box_set_sort_func(GTK_LIST_BOX(widget), brisk_menu_window_sort, self, NULL);
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 

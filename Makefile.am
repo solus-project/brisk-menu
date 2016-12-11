@@ -29,6 +29,7 @@ brisk_menu_test_SOURCES = \
 	src/launcher.c \
 	src/menu-private.h \
 	src/menu-search.c \
+	src/menu-sort.c \
 	src/menu-loader.c \
 	src/menu-window.h \
 	src/menu-window.c
