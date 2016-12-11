@@ -60,6 +60,7 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
 
         /* Now filter again */
         gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
+        gtk_list_box_invalidate_sort(GTK_LIST_BOX(self->apps));
 }
 
 /**
@@ -118,6 +119,9 @@ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, MateMenuTre
                 }
                 autofree(gchar) *contents = g_strstrip(g_ascii_strdown(fields[i], -1));
                 if (g_str_match_string(self->search_term, contents, TRUE)) {
+                        return TRUE;
+                }
+                if (strstr(contents, self->search_term)) {
                         return TRUE;
                 }
         }
