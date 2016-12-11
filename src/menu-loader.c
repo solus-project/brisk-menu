@@ -32,8 +32,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
 
         kids = matemenu_tree_directory_get_contents(directory);
 
-        /* Iterate the root tree
-         */
+        /* Iterate the root tree */
         for (elem = kids; elem; elem = elem->next) {
                 autofree(MateMenuTreeItem) *item = elem->data;
 
