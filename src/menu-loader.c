@@ -15,10 +15,22 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
+#include "desktop-button.h"
 #include "entry-button.h"
 #include "menu-private.h"
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
+
 BRISK_END_PEDANTIC
+
+static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id);
+
+/**
+ * We can add more here if appropriate.
+ */
+static gchar *brisk_default_shortcuts[] = {
+        "matecc.desktop",
+};
 
 /**
  * Recurse the given directory and any of it's children directories. Add all of
@@ -74,6 +86,7 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
 static void brisk_menu_window_build(BriskMenuWindow *self)
 {
         autofree(MateMenuTreeDirectory) *dir = NULL;
+        GtkWidget *sep = NULL;
 
         g_message("debug: menu reload");
 
@@ -91,6 +104,17 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
 
         /* Populate with new */
         brisk_menu_window_recurse_root(self, dir);
+
+        /* Separate the things */
+        sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), sep, FALSE, FALSE, 1);
+        gtk_widget_show_all(sep);
+
+        /* Load the shortcuts up */
+        for (size_t i = 0; i < sizeof(brisk_default_shortcuts) / sizeof(brisk_default_shortcuts[0]);
+             i++) {
+                brisk_menu_window_add_shortcut(self, brisk_default_shortcuts[i]);
+        }
 }
 
 /**
@@ -124,6 +148,28 @@ void brisk_menu_window_load_menus(BriskMenuWindow *self)
 
         /* Load menus on idle */
         g_idle_add((GSourceFunc)inline_reload_menu, self);
+}
+
+/**
+ * brisk_menu_window_add_shortcut
+ *
+ * If we can create a .desktop launcher for the given name, add a new button to
+ * the sidebar as a quick launch facility.
+ */
+static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id)
+{
+        GDesktopAppInfo *info = NULL;
+        GtkWidget *button = NULL;
+
+        info = g_desktop_app_info_new(id);
+        if (!info) {
+                g_message("Not adding missing %s to BriskMenu", id);
+                return;
+        }
+
+        button = brisk_menu_desktop_button_new(G_APP_INFO(info));
+        gtk_widget_show_all(button);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 1);
 }
 
 /*
