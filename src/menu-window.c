@@ -122,10 +122,27 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 
+        /* Style up the app box */
         style = gtk_widget_get_style_context(widget);
         gtk_style_context_add_class(style, "view");
         gtk_style_context_add_class(style, "content-view");
         gtk_style_context_remove_class(style, "background");
+
+        /* Add a placeholder when there are no apps for current search term */
+        widget = gtk_label_new("<big>Sorry, no items found</big>");
+        gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
+        g_object_set(widget,
+                     "halign",
+                     GTK_ALIGN_CENTER,
+                     "valign",
+                     GTK_ALIGN_START,
+                     "margin",
+                     6,
+                     NULL);
+        style = gtk_widget_get_style_context(widget);
+        gtk_style_context_add_class(style, "dim-label");
+        gtk_list_box_set_placeholder(GTK_LIST_BOX(self->apps), widget);
+        gtk_widget_show_all(widget);
 
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
