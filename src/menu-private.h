@@ -44,6 +44,9 @@ struct _BriskMenuWindow {
         /* The current group used in filtering */
         MateMenuTreeDirectory *active_group;
 
+        /* The current tree parent used in filtering */
+        MateMenuTree *active_tree;
+
         /* Search term, may be null at any point. Used for filtering */
         gchar *search_term;
 };

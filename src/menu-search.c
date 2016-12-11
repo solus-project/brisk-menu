@@ -135,14 +135,20 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         BriskMenuWindow *self = NULL;
         MateMenuTreeEntry *entry = NULL;
         GtkWidget *child = NULL;
+        MateMenuTree *childTree = NULL;
 
         self = BRISK_MENU_WINDOW(v);
 
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));
 
-        g_object_get(child, "entry", &entry, NULL);
+        g_object_get(child, "entry", &entry, "tree", &childTree, NULL);
         if (!entry) {
+                return FALSE;
+        }
+
+        /* Do they belong to the same tree ? */
+        if (self->active_tree && self->active_tree != childTree) {
                 return FALSE;
         }
 

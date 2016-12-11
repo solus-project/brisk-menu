@@ -171,6 +171,7 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
 
         cat = BRISK_MENU_CATEGORY_BUTTON(button);
         g_object_get(cat, "group", &self->active_group, NULL);
+        g_object_get(cat, "tree", &self->active_tree, NULL);
 
         if (!self->active_group) {
                 g_message("debug: active group is: All");
