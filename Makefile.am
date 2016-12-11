@@ -25,6 +25,8 @@ brisk_menu_test_SOURCES = \
 	src/desktop-button.c \
 	src/entry-button.h \
 	src/entry-button.c \
+	src/launcher.h \
+	src/launcher.c \
 	src/menu-private.h \
 	src/menu-search.c \
 	src/menu-loader.c \
