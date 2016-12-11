@@ -95,7 +95,7 @@ static void brisk_menu_launcher_init(BriskMenuLauncher *self)
                                  self);
         g_signal_connect_swapped(self->context,
                                  "launch-failed",
-                                 G_CALLBACK(brisk_menu_launcher_app_launched),
+                                 G_CALLBACK(brisk_menu_launcher_app_failed),
                                  self);
 }
 
@@ -127,13 +127,13 @@ void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppI
  * Handle the launch of an application so that we can remove the startup notification
  * from the desktop environment.
  */
-static void brisk_menu_launcher_app_launched(BriskMenuLauncher *self, GAppInfo *info,
-                                             GVariant *data, GAppLaunchContext *context)
+static void brisk_menu_launcher_app_launched(BriskMenuLauncher *self,
+                                             __brisk_unused__ GAppInfo *info, GVariant *data,
+                                             __brisk_unused__ GAppLaunchContext *context)
 {
         GVariantIter iter = { 0 };
         GVariant *elem = NULL;
         gchar *startup_id = NULL;
-        GdkDisplay *display = NULL;
 
         g_variant_iter_init(&iter, data);
         while ((elem = g_variant_iter_next_value(&iter)) != NULL) {
@@ -160,19 +160,20 @@ static void brisk_menu_launcher_app_launched(BriskMenuLauncher *self, GAppInfo *
                 return;
         }
 
-        g_message("Launched: %s %s", g_app_info_get_name(info), startup_id);
+        /* Remove the notify from the desktop */
         gdk_display_notify_startup_complete(self->display, startup_id);
         g_free(startup_id);
 }
 
 /**
- * Handle the failure of an application to launch, so that we may notify the user
- * about it, and also remove the startup notification from the desktop environment.
+ * Handle the failure of an application to launch, so that we may remove the startup
+ * notification from the desktop environment.
  */
 static void brisk_menu_launcher_app_failed(BriskMenuLauncher *self, gchar *startup_id,
-                                           GAppLaunchContext *context)
+                                           __brisk_unused__ GAppLaunchContext *context)
 {
-        g_message("Failed to launch: %s", startup_id);
+        g_message("Startup failure of %s", startup_id);
+        gdk_display_notify_startup_complete(self->display, startup_id);
 }
 
 /*
