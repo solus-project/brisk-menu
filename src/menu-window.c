@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -13,61 +13,61 @@
 
 #include "util.h"
 
-SOLUS_BEGIN_PEDANTIC
+BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
-SOLUS_END_PEDANTIC
+BRISK_END_PEDANTIC
 
-G_DEFINE_TYPE(SolMenuWindow, sol_menu_window, GTK_TYPE_WINDOW)
+G_DEFINE_TYPE(BriskMenuWindow, brisk_menu_window, GTK_TYPE_WINDOW)
 
 /**
- * sol_menu_window_new:
+ * brisk_menu_window_new:
  *
- * Construct a new SolMenuWindow object
+ * Construct a new BriskMenuWindow object
  */
-GtkWidget *sol_menu_window_new()
+GtkWidget *brisk_menu_window_new()
 {
-        return g_object_new(SOL_TYPE_MENU_WINDOW, NULL);
+        return g_object_new(BRISK_TYPE_MENU_WINDOW, NULL);
 }
 
 /**
- * sol_menu_window_dispose:
+ * brisk_menu_window_dispose:
  *
- * Clean up a SolMenuWindow instance
+ * Clean up a BriskMenuWindow instance
  */
-static void sol_menu_window_dispose(GObject *obj)
+static void brisk_menu_window_dispose(GObject *obj)
 {
-        SolMenuWindow *self = SOL_MENU_WINDOW(obj);
+        BriskMenuWindow *self = BRISK_MENU_WINDOW(obj);
 
         g_message("debug: cleaning up");
 
         g_clear_pointer(&self->root, matemenu_tree_unref);
         g_clear_pointer(&self->search_term, g_free);
 
-        G_OBJECT_CLASS(sol_menu_window_parent_class)->dispose(obj);
+        G_OBJECT_CLASS(brisk_menu_window_parent_class)->dispose(obj);
 }
 
 /**
- * sol_menu_window_class_init:
+ * brisk_menu_window_class_init:
  *
  * Handle class initialisation
  */
-static void sol_menu_window_class_init(SolMenuWindowClass *klazz)
+static void brisk_menu_window_class_init(BriskMenuWindowClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
-        obj_class->dispose = sol_menu_window_dispose;
+        obj_class->dispose = brisk_menu_window_dispose;
 }
 
 /**
- * sol_menu_window_init:
+ * brisk_menu_window_init:
  *
- * Handle construction of the SolMenuWindow
+ * Handle construction of the BriskMenuWindow
  */
-static void sol_menu_window_init(SolMenuWindow *self)
+static void brisk_menu_window_init(BriskMenuWindow *self)
 {
         GtkWidget *layout = NULL;
         GtkWidget *widget = NULL;
@@ -93,8 +93,8 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
         gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
         self->search = widget;
-        g_signal_connect_swapped(widget, "changed", G_CALLBACK(sol_menu_window_search), self);
-        g_signal_connect(widget, "icon-press", G_CALLBACK(sol_menu_window_clear_search), self);
+        g_signal_connect_swapped(widget, "changed", G_CALLBACK(brisk_menu_window_search), self);
+        g_signal_connect(widget, "icon-press", G_CALLBACK(brisk_menu_window_clear_search), self);
 
         /* Content layout */
         content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
@@ -122,7 +122,10 @@ static void sol_menu_window_init(SolMenuWindow *self)
 
         /* Application launcher display */
         widget = gtk_list_box_new();
-        gtk_list_box_set_filter_func(GTK_LIST_BOX(widget), sol_menu_window_filter_apps, self, NULL);
+        gtk_list_box_set_filter_func(GTK_LIST_BOX(widget),
+                                     brisk_menu_window_filter_apps,
+                                     self,
+                                     NULL);
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 
@@ -151,22 +154,22 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
 
-        sol_menu_window_load_menus(self);
+        brisk_menu_window_load_menus(self);
 }
 
 /**
  * Fired by clicking a category button
  */
-static void sol_menu_window_on_toggled(SolMenuWindow *self, GtkWidget *button)
+static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *button)
 {
-        SolMenuCategoryButton *cat = NULL;
+        BriskMenuCategoryButton *cat = NULL;
 
         /* Skip a double signal due to using a group */
         if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
                 return;
         }
 
-        cat = SOL_MENU_CATEGORY_BUTTON(button);
+        cat = BRISK_MENU_CATEGORY_BUTTON(button);
         g_object_get(cat, "group", &self->active_group, NULL);
 
         if (!self->active_group) {
@@ -181,14 +184,14 @@ static void sol_menu_window_on_toggled(SolMenuWindow *self, GtkWidget *button)
 }
 
 /**
- * sol_menu_window_associate_category:
+ * brisk_menu_window_associate_category:
  *
  * This will hook up the category button for events to enable us to filter the
  * list based on the active category.
  */
-void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button)
+void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button)
 {
-        g_signal_connect_swapped(button, "toggled", G_CALLBACK(sol_menu_window_on_toggled), self);
+        g_signal_connect_swapped(button, "toggled", G_CALLBACK(brisk_menu_window_on_toggled), self);
 }
 
 /*

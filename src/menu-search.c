@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -13,19 +13,19 @@
 
 #include <stdlib.h>
 
-SOLUS_BEGIN_PEDANTIC
+BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
 #include <gtk/gtk.h>
 #include <string.h>
-SOLUS_END_PEDANTIC
+BRISK_END_PEDANTIC
 
 /**
- * sol_menu_window_clear_search:
+ * brisk_menu_window_clear_search:
  *
  * Simply put, resets the active search term
  */
-void sol_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos,
-                                  __solus_unused__ GdkEvent *event, __solus_unused__ gpointer v)
+void brisk_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos,
+                                    __brisk_unused__ GdkEvent *event, __brisk_unused__ gpointer v)
 {
         if (pos != GTK_ENTRY_ICON_SECONDARY) {
                 return;
@@ -34,12 +34,12 @@ void sol_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos,
 }
 
 /**
- * sol_menu_window_search:
+ * brisk_menu_window_search:
  *
  * Callback for the text entry changing. Set the search term and force
  * an invalidation of our filters.
  */
-void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry)
+void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
 {
         const gchar *search_term = NULL;
 
@@ -63,14 +63,14 @@ void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry)
 }
 
 /**
- * sol_menu_window_filter_group:
+ * brisk_menu_window_filter_group:
  *
  * This function will handle filtering the selection based on the active
  * group, when no search term is applied.
  *
  * Returning TRUE means the app should be displayed
  */
-static gboolean sol_menu_window_filter_group(SolMenuWindow *self, MateMenuTreeEntry *entry)
+static gboolean brisk_menu_window_filter_group(BriskMenuWindow *self, MateMenuTreeEntry *entry)
 {
         MateMenuTreeDirectory *parent = NULL;
 
@@ -89,7 +89,7 @@ static gboolean sol_menu_window_filter_group(SolMenuWindow *self, MateMenuTreeEn
 }
 
 /**
- * sol_menu_window_filter_term:
+ * brisk_menu_window_filter_term:
  *
  * This function will handle filtering the selection based on the active search
  * term. It looks for the string within a number of the entry's fields, and will
@@ -103,7 +103,7 @@ static gboolean sol_menu_window_filter_group(SolMenuWindow *self, MateMenuTreeEn
  * the search itself to be sorted based on the results, with the "most similar"
  * appearing near the top.
  */
-static gboolean sol_menu_window_filter_term(SolMenuWindow *self, MateMenuTreeEntry *entry)
+static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, MateMenuTreeEntry *entry)
 {
         const gchar *fields[] = {
                 matemenu_tree_entry_get_display_name(entry),
@@ -125,18 +125,18 @@ static gboolean sol_menu_window_filter_term(SolMenuWindow *self, MateMenuTreeEnt
 }
 
 /**
- * sol_menu_window_filter_apps:
+ * brisk_menu_window_filter_apps:
  *
  * Responsible for filtering the selection based on active group or search
  * term.
  */
-gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
+gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 {
-        SolMenuWindow *self = NULL;
+        BriskMenuWindow *self = NULL;
         MateMenuTreeEntry *entry = NULL;
         GtkWidget *child = NULL;
 
-        self = SOL_MENU_WINDOW(v);
+        self = BRISK_MENU_WINDOW(v);
 
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));
@@ -148,11 +148,11 @@ gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 
         /* Have search term? Filter on that. */
         if (self->search_term) {
-                return sol_menu_window_filter_term(self, entry);
+                return brisk_menu_window_filter_term(self, entry);
         }
 
         /* Filter based on group */
-        return sol_menu_window_filter_group(self, entry);
+        return brisk_menu_window_filter_group(self, entry);
 }
 
 /*

@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -16,14 +16,14 @@
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
 
-struct _SolMenuWindowClass {
+struct _BriskMenuWindowClass {
         GtkWindowClass parent_class;
 };
 
 /**
- * SolMenuWindow is the toplevel window type used within the applet.
+ * BriskMenuWindow is the toplevel window type used within the applet.
  */
-struct _SolMenuWindow {
+struct _BriskMenuWindow {
         GtkWindow parent;
 
         /* Categories */
@@ -49,12 +49,12 @@ struct _SolMenuWindow {
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
-void sol_menu_window_load_menus(SolMenuWindow *self);
-void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button);
-void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry);
-gboolean sol_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
-void sol_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos, GdkEvent *event,
-                                  gpointer v);
+void brisk_menu_window_load_menus(BriskMenuWindow *self);
+void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button);
+void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry);
+gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
+void brisk_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos, GdkEvent *event,
+                                    gpointer v);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
@@ -69,7 +69,7 @@ DEF_AUTOFREE(gchar, g_free)
 /**
  * Convenience function to remove children from a container
  */
-__attribute__((always_inline)) static inline void sol_menu_kill_children(GtkContainer *container)
+__attribute__((always_inline)) static inline void brisk_menu_kill_children(GtkContainer *container)
 {
         for (autofree(GList) *elem = gtk_container_get_children(container); elem;
              elem = elem->next) {

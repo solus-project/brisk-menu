@@ -14,10 +14,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/include
 
 noinst_PROGRAMS = \
-	solmenu-test
+	brisk-menu-test
 
 # Helper to let us develop the window portion first
-solmenu_test_SOURCES = \
+brisk_menu_test_SOURCES = \
 	src/main.c \
 	src/category-button.h \
 	src/category-button.c \
@@ -29,11 +29,11 @@ solmenu_test_SOURCES = \
 	src/menu-window.h \
 	src/menu-window.c
 
-solmenu_test_CFLAGS = \
+brisk_menu_test_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(MENU_CFLAGS) \
 	$(AM_CFLAGS)
 
-solmenu_test_LDADD = \
+brisk_menu_test_LDADD = \
 	$(GTK_LIBS) \
 	$(MENU_LIBS)

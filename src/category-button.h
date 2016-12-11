@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -17,27 +17,31 @@
 
 G_BEGIN_DECLS
 
-typedef struct _SolMenuCategoryButton SolMenuCategoryButton;
-typedef struct _SolMenuCategoryButtonClass SolMenuCategoryButtonClass;
+typedef struct _BriskMenuCategoryButton BriskMenuCategoryButton;
+typedef struct _BriskMenuCategoryButtonClass BriskMenuCategoryButtonClass;
 
-#define SOL_TYPE_MENU_CATEGORY_BUTTON sol_menu_category_button_get_type()
-#define SOL_MENU_CATEGORY_BUTTON(o)                                                                \
-        (G_TYPE_CHECK_INSTANCE_CAST((o), SOL_TYPE_MENU_CATEGORY_BUTTON, SolMenuCategoryButton))
-#define SOL_IS_MENU_CATEGORY_BUTTON(o)                                                             \
-        (G_TYPE_CHECK_INSTANCE_TYPE((o), SOL_TYPE_MENU_CATEGORY_BUTTON))
-#define SOL_MENU_CATEGORY_BUTTON_CLASS(o)                                                          \
-        (G_TYPE_CHECK_CLASS_CAST((o), SOL_TYPE_MENU_CATEGORY_BUTTON, SolMenuCategoryButtonClass))
-#define SOL_IS_MENU_CATEGORY_BUTTON_CLASS(o)                                                       \
-        (G_TYPE_CHECK_CLASS_TYPE((o), SOL_TYPE_MENU_CATEGORY_BUTTON))
-#define SOL_MENU_CATEGORY_BUTTON_GET_CLASS(o)                                                      \
-        (G_TYPE_INSTANCE_GET_CLASS((o), SOL_TYPE_MENU_CATEGORY_BUTTON, SolMenuCategoryButtonClass))
+#define BRISK_TYPE_MENU_CATEGORY_BUTTON brisk_menu_category_button_get_type()
+#define BRISK_MENU_CATEGORY_BUTTON(o)                                                              \
+        (G_TYPE_CHECK_INSTANCE_CAST((o), BRISK_TYPE_MENU_CATEGORY_BUTTON, BriskMenuCategoryButton))
+#define BRISK_IS_MENU_CATEGORY_BUTTON(o)                                                           \
+        (G_TYPE_CHECK_INSTANCE_TYPE((o), BRISK_TYPE_MENU_CATEGORY_BUTTON))
+#define BRISK_MENU_CATEGORY_BUTTON_CLASS(o)                                                        \
+        (G_TYPE_CHECK_CLASS_CAST((o),                                                              \
+                                 BRISK_TYPE_MENU_CATEGORY_BUTTON,                                  \
+                                 BriskMenuCategoryButtonClass))
+#define BRISK_IS_MENU_CATEGORY_BUTTON_CLASS(o)                                                     \
+        (G_TYPE_CHECK_CLASS_TYPE((o), BRISK_TYPE_MENU_CATEGORY_BUTTON))
+#define BRISK_MENU_CATEGORY_BUTTON_GET_CLASS(o)                                                    \
+        (G_TYPE_INSTANCE_GET_CLASS((o),                                                            \
+                                   BRISK_TYPE_MENU_CATEGORY_BUTTON,                                \
+                                   BriskMenuCategoryButtonClass))
 
 /**
- * Construct a new SolMenuCategoryButton from the given group
+ * Construct a new BriskMenuCategoryButton from the given group
  */
-GtkWidget *sol_menu_category_button_new(MateMenuTreeDirectory *group);
+GtkWidget *brisk_menu_category_button_new(MateMenuTreeDirectory *group);
 
-GType sol_menu_category_button_get_type(void);
+GType brisk_menu_category_button_get_type(void);
 
 G_END_DECLS
 

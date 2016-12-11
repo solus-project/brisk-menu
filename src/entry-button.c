@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -13,28 +13,28 @@
 
 #include "util.h"
 
-SOLUS_BEGIN_PEDANTIC
+BRISK_BEGIN_PEDANTIC
 #include "entry-button.h"
 #include "menu-private.h"
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
-SOLUS_END_PEDANTIC
+BRISK_END_PEDANTIC
 
-struct _SolMenuEntryButtonClass {
+struct _BriskMenuEntryButtonClass {
         GtkButtonClass parent_class;
 };
 
 /**
- * SolMenuEntryButton is the toplevel window type used within the applet.
+ * BriskMenuEntryButton is the toplevel window type used within the applet.
  */
-struct _SolMenuEntryButton {
+struct _BriskMenuEntryButton {
         GtkButton parent;
         MateMenuTreeEntry *entry;
         GtkWidget *label;
         GtkWidget *image;
 };
 
-G_DEFINE_TYPE(SolMenuEntryButton, sol_menu_entry_button, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
 
 enum { PROP_ENTRY = 1, N_PROPS };
 
@@ -42,10 +42,10 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
-static void sol_menu_entry_button_set_property(GObject *object, guint id, const GValue *value,
-                                               GParamSpec *spec)
+static void brisk_menu_entry_button_set_property(GObject *object, guint id, const GValue *value,
+                                                 GParamSpec *spec)
 {
-        SolMenuEntryButton *self = SOL_MENU_ENTRY_BUTTON(object);
+        BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(object);
 
         switch (id) {
         case PROP_ENTRY:
@@ -57,10 +57,10 @@ static void sol_menu_entry_button_set_property(GObject *object, guint id, const 
         }
 }
 
-static void sol_menu_entry_button_get_property(GObject *object, guint id, GValue *value,
-                                               GParamSpec *spec)
+static void brisk_menu_entry_button_get_property(GObject *object, guint id, GValue *value,
+                                                 GParamSpec *spec)
 {
-        SolMenuEntryButton *self = SOL_MENU_ENTRY_BUTTON(object);
+        BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(object);
 
         switch (id) {
         case PROP_ENTRY:
@@ -73,26 +73,26 @@ static void sol_menu_entry_button_get_property(GObject *object, guint id, GValue
 }
 
 /**
- * sol_menu_entry_button_new:
+ * brisk_menu_entry_button_new:
  *
- * Construct a new SolMenuEntryButton object
+ * Construct a new BriskMenuEntryButton object
  */
-GtkWidget *sol_menu_entry_button_new(MateMenuTreeEntry *entry)
+GtkWidget *brisk_menu_entry_button_new(MateMenuTreeEntry *entry)
 {
-        return g_object_new(SOL_TYPE_MENU_ENTRY_BUTTON, "entry", entry, NULL);
+        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON, "entry", entry, NULL);
 }
 
 /**
- * sol_menu_entry_button_dispose:
+ * brisk_menu_entry_button_dispose:
  *
- * Clean up a SolMenuEntryButton instance
+ * Clean up a BriskMenuEntryButton instance
  */
-static void sol_menu_entry_button_dispose(GObject *obj)
+static void brisk_menu_entry_button_dispose(GObject *obj)
 {
-        G_OBJECT_CLASS(sol_menu_entry_button_parent_class)->dispose(obj);
+        G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->dispose(obj);
 }
 
-static GIcon *sol_menu_entry_button_create_gicon(const char *path)
+static GIcon *brisk_menu_entry_button_create_gicon(const char *path)
 {
         autofree(GFile) *file = NULL;
 
@@ -106,18 +106,18 @@ static GIcon *sol_menu_entry_button_create_gicon(const char *path)
 /**
  * Handle constructor specifics for our button
  */
-static void sol_menu_entry_button_constructed(GObject *obj)
+static void brisk_menu_entry_button_constructed(GObject *obj)
 {
         const gchar *label = NULL;
-        SolMenuEntryButton *self = NULL;
+        BriskMenuEntryButton *self = NULL;
         const gchar *icon_name = NULL;
 
-        self = SOL_MENU_ENTRY_BUTTON(obj);
+        self = BRISK_MENU_ENTRY_BUTTON(obj);
 
         /* matemenu has no gicon support, so do it ourselves. */
         icon_name = matemenu_tree_entry_get_icon(self->entry);
         if (icon_name && icon_name[0] == '/') {
-                autofree(GIcon) *ico = sol_menu_entry_button_create_gicon(icon_name);
+                autofree(GIcon) *ico = brisk_menu_entry_button_create_gicon(icon_name);
                 gtk_image_set_from_gicon(GTK_IMAGE(self->image), ico, GTK_ICON_SIZE_INVALID);
         } else {
                 gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
@@ -131,23 +131,23 @@ static void sol_menu_entry_button_constructed(GObject *obj)
         gtk_label_set_label(GTK_LABEL(self->label), label);
         gtk_widget_set_tooltip_text(GTK_WIDGET(self), matemenu_tree_entry_get_comment(self->entry));
 
-        G_OBJECT_CLASS(sol_menu_entry_button_parent_class)->constructed(obj);
+        G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->constructed(obj);
 }
 
 /**
- * sol_menu_entry_button_class_init:
+ * brisk_menu_entry_button_class_init:
  *
  * Handle class initialisation
  */
-static void sol_menu_entry_button_class_init(SolMenuEntryButtonClass *klazz)
+static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
-        obj_class->dispose = sol_menu_entry_button_dispose;
-        obj_class->set_property = sol_menu_entry_button_set_property;
-        obj_class->get_property = sol_menu_entry_button_get_property;
-        obj_class->constructed = sol_menu_entry_button_constructed;
+        obj_class->dispose = brisk_menu_entry_button_dispose;
+        obj_class->set_property = brisk_menu_entry_button_set_property;
+        obj_class->get_property = brisk_menu_entry_button_get_property;
+        obj_class->constructed = brisk_menu_entry_button_constructed;
 
         obj_properties[PROP_ENTRY] = g_param_spec_pointer("entry",
                                                           "The MateMenuTreeEntry",
@@ -157,11 +157,11 @@ static void sol_menu_entry_button_class_init(SolMenuEntryButtonClass *klazz)
 }
 
 /**
- * sol_menu_entry_button_init:
+ * brisk_menu_entry_button_init:
  *
- * Handle construction of the SolMenuEntryButton
+ * Handle construction of the BriskMenuEntryButton
  */
-static void sol_menu_entry_button_init(SolMenuEntryButton *self)
+static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 {
         GtkStyleContext *style = NULL;
         GtkWidget *label = NULL;

@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -13,19 +13,19 @@
 
 #include <stdlib.h>
 
-SOLUS_BEGIN_PEDANTIC
+BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
 #include "entry-button.h"
 #include "menu-private.h"
 #include <gtk/gtk.h>
-SOLUS_END_PEDANTIC
+BRISK_END_PEDANTIC
 
 /**
  * Recurse the given directory and any of it's children directories. Add all of
  * the directories to the sidebar, and then (TODO) stick "normal" types into the
  * content section.
  */
-static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirectory *directory)
+static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDirectory *directory)
 {
         autofree(GSList) *kids = NULL;
         GSList *elem = NULL;
@@ -38,25 +38,25 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
 
                 switch (matemenu_tree_item_get_type(item)) {
                 case MATEMENU_TREE_ITEM_DIRECTORY: {
-                        /* Tree directory maps to a SolMenuCategoryButton */
+                        /* Tree directory maps to a BriskMenuCategoryButton */
                         GtkWidget *button = NULL;
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
 
-                        button = sol_menu_category_button_new(dir);
+                        button = brisk_menu_category_button_new(dir);
                         gtk_radio_button_join_group(GTK_RADIO_BUTTON(button),
                                                     GTK_RADIO_BUTTON(self->all_button));
                         gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 0);
-                        sol_menu_window_associate_category(self, button);
+                        brisk_menu_window_associate_category(self, button);
                         gtk_widget_show_all(button);
 
-                        sol_menu_window_recurse_root(self, dir);
+                        brisk_menu_window_recurse_root(self, dir);
                 } break;
                 case MATEMENU_TREE_ITEM_ENTRY: {
-                        /* Tree entry maps to a SolMenuEntryButton */
+                        /* Tree entry maps to a BriskMenuEntryButton */
                         GtkWidget *button = NULL;
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
 
-                        button = sol_menu_entry_button_new(entry);
+                        button = brisk_menu_entry_button_new(entry);
                         gtk_container_add(GTK_CONTAINER(self->apps), button);
                         gtk_widget_show_all(button);
                 } break;
@@ -69,7 +69,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
 /**
  * Begin a build of the menu structure
  */
-static void sol_menu_window_build(SolMenuWindow *self)
+static void brisk_menu_window_build(BriskMenuWindow *self)
 {
         autofree(MateMenuTreeDirectory) *dir = NULL;
 
@@ -78,32 +78,32 @@ static void sol_menu_window_build(SolMenuWindow *self)
         dir = matemenu_tree_get_root_directory(self->root);
 
         /* Clear existing */
-        sol_menu_kill_children(GTK_CONTAINER(self->sidebar));
-        sol_menu_kill_children(GTK_CONTAINER(self->apps));
+        brisk_menu_kill_children(GTK_CONTAINER(self->sidebar));
+        brisk_menu_kill_children(GTK_CONTAINER(self->apps));
 
         /* Special meaning for NULL group */
-        self->all_button = sol_menu_category_button_new(NULL);
+        self->all_button = brisk_menu_category_button_new(NULL);
         gtk_box_pack_start(GTK_BOX(self->sidebar), self->all_button, FALSE, FALSE, 0);
         gtk_widget_show_all(self->all_button);
-        sol_menu_window_associate_category(self, self->all_button);
+        brisk_menu_window_associate_category(self, self->all_button);
 
         /* Populate with new */
-        sol_menu_window_recurse_root(self, dir);
+        brisk_menu_window_recurse_root(self, dir);
 }
 
 /**
  * Allow us to load the menu on the idle loop
  */
-static inline gboolean inline_reload_menu(SolMenuWindow *self)
+static inline gboolean inline_reload_menu(BriskMenuWindow *self)
 {
-        sol_menu_window_build(self);
+        brisk_menu_window_build(self);
         return FALSE;
 }
 
 /**
  * Handle rebuilding of tree in response to a change.
  */
-static inline void sol_menu_window_reloaded(__solus_unused__ MateMenuTree *tree, gpointer v)
+static inline void brisk_menu_window_reloaded(__brisk_unused__ MateMenuTree *tree, gpointer v)
 {
         g_idle_add((GSourceFunc)inline_reload_menu, v);
 }
@@ -111,13 +111,13 @@ static inline void sol_menu_window_reloaded(__solus_unused__ MateMenuTree *tree,
 /**
  * Load the menus and place them into the window regions
  */
-void sol_menu_window_load_menus(SolMenuWindow *self)
+void brisk_menu_window_load_menus(BriskMenuWindow *self)
 {
         MateMenuTree *tree = NULL;
 
         /* Load menu */
         tree = matemenu_tree_lookup("mate-applications.menu", MATEMENU_TREE_FLAGS_NONE);
-        matemenu_tree_add_monitor(tree, sol_menu_window_reloaded, self);
+        matemenu_tree_add_monitor(tree, brisk_menu_window_reloaded, self);
         self->root = tree;
 
         /* Load menus on idle */

@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -13,18 +13,18 @@
 
 #include <stdlib.h>
 
-SOLUS_BEGIN_PEDANTIC
+BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
-SOLUS_END_PEDANTIC
+BRISK_END_PEDANTIC
 
 int main(int argc, char **argv)
 {
         gtk_init(&argc, &argv);
         autofree(GtkWidget) *menu_window = NULL;
 
-        menu_window = sol_menu_window_new();
+        menu_window = brisk_menu_window_new();
         gtk_widget_show_all(menu_window);
         g_signal_connect(menu_window, "destroy", gtk_main_quit, NULL);
         gtk_main();

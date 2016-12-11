@@ -1,4 +1,4 @@
-AC_INIT([MATE SolMenu], 0.0.1, [ikey@solus-project.com], [mate-solmenu], [https://solus-project.com/])
+AC_INIT([Brisk Menu], 0.0.1, [ikey@solus-project.com], [brisk-menu], [https://solus-project.com/])
 AM_INIT_AUTOMAKE([-Wno-portability no-dist-gzip dist-xz foreign subdir-objects 1.9 tar-ustar])
 AC_PROG_CC
 AC_PROG_CC_STDC
@@ -39,7 +39,7 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 AC_MSG_RESULT([
-        mate-solmenu $VERSION
+        brisk-menu $VERSION
         =====================
 
         prefix:                 ${prefix}

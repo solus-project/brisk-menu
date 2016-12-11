@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -16,21 +16,22 @@
 
 G_BEGIN_DECLS
 
-typedef struct _SolMenuWindow SolMenuWindow;
-typedef struct _SolMenuWindowClass SolMenuWindowClass;
+typedef struct _BriskMenuWindow BriskMenuWindow;
+typedef struct _BriskMenuWindowClass BriskMenuWindowClass;
 
-#define SOL_TYPE_MENU_WINDOW sol_menu_window_get_type()
-#define SOL_MENU_WINDOW(o) (G_TYPE_CHECK_INSTANCE_CAST((o), SOL_TYPE_MENU_WINDOW, SolMenuWindow))
-#define SOL_IS_MENU_WINDOW(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), SOL_TYPE_MENU_WINDOW))
-#define SOL_MENU_WINDOW_CLASS(o)                                                                   \
-        (G_TYPE_CHECK_CLASS_CAST((o), SOL_TYPE_MENU_WINDOW, SolMenuWindowClass))
-#define SOL_IS_MENU_WINDOW_CLASS(o) (G_TYPE_CHECK_CLASS_TYPE((o), SOL_TYPE_MENU_WINDOW))
-#define SOL_MENU_WINDOW_GET_CLASS(o)                                                               \
-        (G_TYPE_INSTANCE_GET_CLASS((o), SOL_TYPE_MENU_WINDOW, SolMenuWindowClass))
+#define BRISK_TYPE_MENU_WINDOW brisk_menu_window_get_type()
+#define BRISK_MENU_WINDOW(o)                                                                       \
+        (G_TYPE_CHECK_INSTANCE_CAST((o), BRISK_TYPE_MENU_WINDOW, BriskMenuWindow))
+#define BRISK_IS_MENU_WINDOW(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), BRISK_TYPE_MENU_WINDOW))
+#define BRISK_MENU_WINDOW_CLASS(o)                                                                 \
+        (G_TYPE_CHECK_CLASS_CAST((o), BRISK_TYPE_MENU_WINDOW, BriskMenuWindowClass))
+#define BRISK_IS_MENU_WINDOW_CLASS(o) (G_TYPE_CHECK_CLASS_TYPE((o), BRISK_TYPE_MENU_WINDOW))
+#define BRISK_MENU_WINDOW_GET_CLASS(o)                                                             \
+        (G_TYPE_INSTANCE_GET_CLASS((o), BRISK_TYPE_MENU_WINDOW, BriskMenuWindowClass))
 
-GtkWidget *sol_menu_window_new(void);
+GtkWidget *brisk_menu_window_new(void);
 
-GType sol_menu_window_get_type(void);
+GType brisk_menu_window_get_type(void);
 
 G_END_DECLS
 

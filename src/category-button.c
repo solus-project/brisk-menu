@@ -1,5 +1,5 @@
 /*
- * This file is part of mate-solmenu.
+ * This file is part of brisk-menu.
  *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
@@ -13,26 +13,26 @@
 
 #include "util.h"
 
-SOLUS_BEGIN_PEDANTIC
+BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
-SOLUS_END_PEDANTIC
+BRISK_END_PEDANTIC
 
-struct _SolMenuCategoryButtonClass {
+struct _BriskMenuCategoryButtonClass {
         GtkRadioButtonClass parent_class;
 };
 
 /**
- * SolMenuCategoryButton is the toplevel window type used within the applet.
+ * BriskMenuCategoryButton is the toplevel window type used within the applet.
  */
-struct _SolMenuCategoryButton {
+struct _BriskMenuCategoryButton {
         GtkRadioButton parent;
         MateMenuTreeDirectory *group;
         GtkWidget *label;
 };
 
-G_DEFINE_TYPE(SolMenuCategoryButton, sol_menu_category_button, GTK_TYPE_RADIO_BUTTON)
+G_DEFINE_TYPE(BriskMenuCategoryButton, brisk_menu_category_button, GTK_TYPE_RADIO_BUTTON)
 
 enum { PROP_GROUP = 1, N_PROPS };
 
@@ -40,10 +40,10 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
-static void sol_menu_category_button_set_property(GObject *object, guint id, const GValue *value,
-                                                  GParamSpec *spec)
+static void brisk_menu_category_button_set_property(GObject *object, guint id, const GValue *value,
+                                                    GParamSpec *spec)
 {
-        SolMenuCategoryButton *self = SOL_MENU_CATEGORY_BUTTON(object);
+        BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(object);
 
         switch (id) {
         case PROP_GROUP:
@@ -55,10 +55,10 @@ static void sol_menu_category_button_set_property(GObject *object, guint id, con
         }
 }
 
-static void sol_menu_category_button_get_property(GObject *object, guint id, GValue *value,
-                                                  GParamSpec *spec)
+static void brisk_menu_category_button_get_property(GObject *object, guint id, GValue *value,
+                                                    GParamSpec *spec)
 {
-        SolMenuCategoryButton *self = SOL_MENU_CATEGORY_BUTTON(object);
+        BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(object);
 
         switch (id) {
         case PROP_GROUP:
@@ -71,34 +71,34 @@ static void sol_menu_category_button_get_property(GObject *object, guint id, GVa
 }
 
 /**
- * sol_menu_category_button_new:
+ * brisk_menu_category_button_new:
  *
- * Construct a new SolMenuCategoryButton object
+ * Construct a new BriskMenuCategoryButton object
  */
-GtkWidget *sol_menu_category_button_new(MateMenuTreeDirectory *group)
+GtkWidget *brisk_menu_category_button_new(MateMenuTreeDirectory *group)
 {
-        return g_object_new(SOL_TYPE_MENU_CATEGORY_BUTTON, "group", group, NULL);
+        return g_object_new(BRISK_TYPE_MENU_CATEGORY_BUTTON, "group", group, NULL);
 }
 
 /**
- * sol_menu_category_button_dispose:
+ * brisk_menu_category_button_dispose:
  *
- * Clean up a SolMenuCategoryButton instance
+ * Clean up a BriskMenuCategoryButton instance
  */
-static void sol_menu_category_button_dispose(GObject *obj)
+static void brisk_menu_category_button_dispose(GObject *obj)
 {
-        G_OBJECT_CLASS(sol_menu_category_button_parent_class)->dispose(obj);
+        G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->dispose(obj);
 }
 
 /**
  * Handle constructor specifics for our button
  */
-static void sol_menu_category_button_constructed(GObject *obj)
+static void brisk_menu_category_button_constructed(GObject *obj)
 {
         const gchar *label = NULL;
-        SolMenuCategoryButton *self = NULL;
+        BriskMenuCategoryButton *self = NULL;
 
-        self = SOL_MENU_CATEGORY_BUTTON(obj);
+        self = BRISK_MENU_CATEGORY_BUTTON(obj);
 
         /* Determine our label based on groupness */
         if (self->group) {
@@ -110,23 +110,23 @@ static void sol_menu_category_button_constructed(GObject *obj)
 
         gtk_label_set_label(GTK_LABEL(self->label), label);
 
-        G_OBJECT_CLASS(sol_menu_category_button_parent_class)->constructed(obj);
+        G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->constructed(obj);
 }
 
 /**
- * sol_menu_category_button_class_init:
+ * brisk_menu_category_button_class_init:
  *
  * Handle class initialisation
  */
-static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klazz)
+static void brisk_menu_category_button_class_init(BriskMenuCategoryButtonClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
-        obj_class->dispose = sol_menu_category_button_dispose;
-        obj_class->set_property = sol_menu_category_button_set_property;
-        obj_class->get_property = sol_menu_category_button_get_property;
-        obj_class->constructed = sol_menu_category_button_constructed;
+        obj_class->dispose = brisk_menu_category_button_dispose;
+        obj_class->set_property = brisk_menu_category_button_set_property;
+        obj_class->get_property = brisk_menu_category_button_get_property;
+        obj_class->constructed = brisk_menu_category_button_constructed;
 
         obj_properties[PROP_GROUP] = g_param_spec_pointer("group",
                                                           "The MateMenuTreeDirectory",
@@ -136,11 +136,11 @@ static void sol_menu_category_button_class_init(SolMenuCategoryButtonClass *klaz
 }
 
 /**
- * sol_menu_category_button_init:
+ * brisk_menu_category_button_init:
  *
- * Handle construction of the SolMenuCategoryButton
+ * Handle construction of the BriskMenuCategoryButton
  */
-static void sol_menu_category_button_init(SolMenuCategoryButton *self)
+static void brisk_menu_category_button_init(BriskMenuCategoryButton *self)
 {
         GtkStyleContext *style = NULL;
         GtkWidget *label = NULL;

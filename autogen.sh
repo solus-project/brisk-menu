@@ -4,7 +4,7 @@ srcdir=`dirname $0`
 test -n "$srcdir" || srcdir=`dirname "$0"`
 test -n "$srcdir" || srcdir=.
 
-PKG_NAME="mate-solmenu"
+PKG_NAME="brisk-menu"
 prevdir="$PWD"
 cd "$srcdir"
 
