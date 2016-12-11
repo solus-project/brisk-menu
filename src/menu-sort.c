@@ -27,12 +27,18 @@ static gint brisk_get_entry_score(MateMenuTreeEntry *entry, gchar *term)
 {
         gint score = 0;
         autofree(gchar) *name = NULL;
+        char *find = NULL;
 
         name = g_ascii_strdown(matemenu_tree_entry_get_name(entry), -1);
         if (g_str_equal(name, term)) {
                 score += 100;
         } else if (g_str_has_prefix(name, term)) {
                 score += 50;
+        }
+
+        find = strstr(name, term);
+        if (find) {
+                score += 20 + (int)strlen(find);
         }
 
         score += strcmp(name, term);
