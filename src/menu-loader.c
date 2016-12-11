@@ -33,15 +33,13 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
         kids = matemenu_tree_directory_get_contents(directory);
 
         /* Iterate the root tree
-         * TODO: Traverse it _properly_..
          */
         for (elem = kids; elem; elem = elem->next) {
                 autofree(MateMenuTreeItem) *item = elem->data;
 
-                /* DEMO Bits - this whole function needs to move down and become a
-                 * recursive function. */
                 switch (matemenu_tree_item_get_type(item)) {
                 case MATEMENU_TREE_ITEM_DIRECTORY: {
+                        /* Tree directory maps to a SolMenuCategoryButton */
                         GtkWidget *button = NULL;
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
 
@@ -55,6 +53,7 @@ static void sol_menu_window_recurse_root(SolMenuWindow *self, MateMenuTreeDirect
                         sol_menu_window_recurse_root(self, dir);
                 } break;
                 case MATEMENU_TREE_ITEM_ENTRY: {
+                        /* Tree entry maps to a SolMenuEntryButton */
                         GtkWidget *button = NULL;
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
 
