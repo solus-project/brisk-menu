@@ -16,8 +16,10 @@
 BRISK_BEGIN_PEDANTIC
 #include "entry-button.h"
 #include "menu-private.h"
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
+
 BRISK_END_PEDANTIC
 
 struct _BriskMenuEntryButtonClass {
@@ -38,6 +40,7 @@ struct _BriskMenuEntryButton {
         MateMenuTree *tree;
         GtkWidget *label;
         GtkWidget *image;
+        GDesktopAppInfo *info;
 };
 
 G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
@@ -101,6 +104,11 @@ GtkWidget *brisk_menu_entry_button_new(MateMenuTree *tree, MateMenuTreeEntry *en
  */
 static void brisk_menu_entry_button_dispose(GObject *obj)
 {
+        BriskMenuEntryButton *self = NULL;
+
+        self = BRISK_MENU_ENTRY_BUTTON(obj);
+        g_clear_object(&self->info);
+
         G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->dispose(obj);
 }
 
@@ -123,6 +131,7 @@ static void brisk_menu_entry_button_constructed(GObject *obj)
         const gchar *label = NULL;
         BriskMenuEntryButton *self = NULL;
         const gchar *icon_name = NULL;
+        const gchar *desktop_id = NULL;
 
         self = BRISK_MENU_ENTRY_BUTTON(obj);
 
@@ -142,6 +151,12 @@ static void brisk_menu_entry_button_constructed(GObject *obj)
         label = matemenu_tree_entry_get_name(self->entry);
         gtk_label_set_label(GTK_LABEL(self->label), label);
         gtk_widget_set_tooltip_text(GTK_WIDGET(self), matemenu_tree_entry_get_comment(self->entry));
+
+        /* Load our .desktop info */
+        desktop_id = matemenu_tree_entry_get_desktop_file_path(self->entry);
+        if (desktop_id) {
+                self->info = g_desktop_app_info_new_from_filename(desktop_id);
+        }
 
         G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->constructed(obj);
 }
