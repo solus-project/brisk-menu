@@ -15,12 +15,23 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
+#include "desktop-button.h"
 #include "menu-private.h"
 #include "menu-window.h"
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
 G_DEFINE_TYPE(BriskMenuWindow, brisk_menu_window, GTK_TYPE_WINDOW)
+
+static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id);
+
+/**
+ * We can add more here if appropriate.
+ */
+static gchar *brisk_default_shortcuts[] = {
+        "matecc.desktop",
+};
 
 /**
  * brisk_menu_window_new:
@@ -159,6 +170,12 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
 
+        /* Load the shortcuts up */
+        for (size_t i = 0; i < sizeof(brisk_default_shortcuts) / sizeof(brisk_default_shortcuts[0]);
+             i++) {
+                brisk_menu_window_add_shortcut(self, brisk_default_shortcuts[i]);
+        }
+
         brisk_menu_window_load_menus(self);
 }
 
@@ -198,6 +215,27 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button)
 {
         g_signal_connect_swapped(button, "toggled", G_CALLBACK(brisk_menu_window_on_toggled), self);
+}
+
+/**
+ * brisk_menu_window_add_shortcut
+ *
+ * If we can create a .desktop launcher for the given name, add a new button to
+ * the sidebar as a quick launch facility.
+ */
+static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id)
+{
+        GDesktopAppInfo *info = NULL;
+        GtkWidget *button = NULL;
+
+        info = g_desktop_app_info_new(id);
+        if (!info) {
+                g_message("Not adding missing %s to BriskMenu", id);
+                return;
+        }
+
+        button = brisk_menu_desktop_button_new(G_APP_INFO(info));
+        gtk_box_pack_end(GTK_BOX(self->sidebar_wrap), button, FALSE, FALSE, 1);
 }
 
 /*
