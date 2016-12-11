@@ -178,13 +178,6 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
         g_object_get(cat, "group", &self->active_group, NULL);
         g_object_get(cat, "tree", &self->active_tree, NULL);
 
-        if (!self->active_group) {
-                g_message("debug: active group is: All");
-        } else {
-                g_message("debug: active group is: %s",
-                          matemenu_tree_directory_get_name(self->active_group));
-        }
-
         /* Start the filter. */
         gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
 }
