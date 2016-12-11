@@ -26,10 +26,9 @@ struct _BriskMenuEntryButtonClass {
         GtkButtonClass parent_class;
 };
 
-static void brisk_menu_entry_drag_begin(BriskMenuEntryButton *self, GdkDragContext *context,
-                                        gpointer v);
-static void brisk_menu_entry_drag_data(BriskMenuEntryButton *self, GdkDragContext *context,
-                                       GtkSelectionData *data, guint info, guint time, gpointer v);
+static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context);
+static void brisk_menu_entry_drag_data(GtkWidget *widget, GdkDragContext *context,
+                                       GtkSelectionData *data, guint info, guint time);
 
 /**
  * BriskMenuEntryButton is the toplevel window type used within the applet.
@@ -169,12 +168,16 @@ static void brisk_menu_entry_button_constructed(GObject *obj)
 static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+        GtkWidgetClass *wid_class = GTK_WIDGET_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_menu_entry_button_dispose;
         obj_class->set_property = brisk_menu_entry_button_set_property;
         obj_class->get_property = brisk_menu_entry_button_get_property;
         obj_class->constructed = brisk_menu_entry_button_constructed;
+
+        wid_class->drag_data_get = brisk_menu_entry_drag_data;
+        wid_class->drag_begin = brisk_menu_entry_drag_begin;
 
         obj_properties[PROP_ENTRY] = g_param_spec_pointer("entry",
                                                           "The MateMenuTreeEntry",
@@ -198,8 +201,9 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
         GtkWidget *label = NULL;
         GtkWidget *image = NULL;
         GtkWidget *layout = NULL;
+
         static const GtkTargetEntry drag_targets[] = {
-                { "application/x-desktop", 0, 0 },
+                { "text/uri-list", 0, 0 }, { "application/x-desktop", 0, 0 },
         };
 
         /* Main layout */
@@ -219,29 +223,24 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
         gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
 
         /* Button specific fixes */
-        gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
         gtk_button_set_relief(GTK_BUTTON(self), GTK_RELIEF_NONE);
+        gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
 
         /* Flatten the button */
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
         gtk_style_context_add_class(style, "flat");
 
         /* Hook up drag so users can drag .desktop from here elsewhere */
-        gtk_drag_source_set(GTK_WIDGET(self),
-                            GDK_MOD1_MASK,
-                            drag_targets,
-                            1,
-                            GDK_ACTION_COPY | GDK_ACTION_LINK | GDK_ACTION_MOVE);
-        g_signal_connect(self, "drag-begin", G_CALLBACK(brisk_menu_entry_drag_begin), NULL);
-        g_signal_connect(self, "drag-data-get", G_CALLBACK(brisk_menu_entry_drag_data), NULL);
+        gtk_drag_source_set(GTK_WIDGET(self), GDK_BUTTON1_MASK, drag_targets, 2, GDK_ACTION_COPY);
 }
 
 /**
  * Handle setting the icon according to our desktop file
  */
-static void brisk_menu_entry_drag_begin(__brisk_unused__ BriskMenuEntryButton *self,
-                                        GdkDragContext *context, __brisk_unused__ gpointer v)
+static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context)
 {
+        BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
+
         GIcon *icon = NULL;
 
         /* If we have a .desktop & icon, use it */
@@ -255,13 +254,29 @@ static void brisk_menu_entry_drag_begin(__brisk_unused__ BriskMenuEntryButton *s
         gtk_drag_set_icon_default(context);
 }
 
-static void brisk_menu_entry_drag_data(__brisk_unused__ BriskMenuEntryButton *self,
-                                       __brisk_unused__ GdkDragContext *context,
-                                       __brisk_unused__ GtkSelectionData *data,
-                                       __brisk_unused__ guint info, __brisk_unused__ guint time,
-                                       __brisk_unused__ gpointer v)
+static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDragContext *context,
+                                       GtkSelectionData *data, __brisk_unused__ guint info,
+                                       __brisk_unused__ guint time)
 {
-        /* TODO: Set the data up to the URI.. ? */
+        BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
+
+        if (!self->info) {
+                return;
+        }
+        const gchar *uris[2];
+
+        const gchar *desktop_path = NULL;
+        autofree(gchar) *uri = NULL;
+
+        desktop_path = g_desktop_app_info_get_filename(self->info);
+        uri = g_filename_to_uri(desktop_path, NULL, NULL);
+        if (!uri) {
+                return;
+        }
+        uris[0] = uri;
+        uris[1] = NULL;
+
+        gtk_selection_data_set_uris(data, (gchar **)uris);
 }
 
 /*
