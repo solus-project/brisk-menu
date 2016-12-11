@@ -29,8 +29,10 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
 {
         autofree(GSList) *kids = NULL;
         GSList *elem = NULL;
+        MateMenuTree *root_tree = NULL;
 
         kids = matemenu_tree_directory_get_contents(directory);
+        root_tree = matemenu_tree_directory_get_tree(directory);
 
         /* Iterate the root tree */
         for (elem = kids; elem; elem = elem->next) {
@@ -56,7 +58,7 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
                         GtkWidget *button = NULL;
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
 
-                        button = brisk_menu_entry_button_new(entry);
+                        button = brisk_menu_entry_button_new(root_tree, entry);
                         gtk_container_add(GTK_CONTAINER(self->apps), button);
                         gtk_widget_show_all(button);
                 } break;

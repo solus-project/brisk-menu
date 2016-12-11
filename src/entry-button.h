@@ -35,7 +35,7 @@ typedef struct _BriskMenuEntryButtonClass BriskMenuEntryButtonClass;
 /**
  * Construct a new BriskMenuEntryButton from the given entry
  */
-GtkWidget *brisk_menu_entry_button_new(MateMenuTreeEntry *entry);
+GtkWidget *brisk_menu_entry_button_new(MateMenuTree *tree, MateMenuTreeEntry *entry);
 
 GType brisk_menu_entry_button_get_type(void);
 

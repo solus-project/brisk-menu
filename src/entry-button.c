@@ -30,13 +30,14 @@ struct _BriskMenuEntryButtonClass {
 struct _BriskMenuEntryButton {
         GtkButton parent;
         MateMenuTreeEntry *entry;
+        MateMenuTree *tree;
         GtkWidget *label;
         GtkWidget *image;
 };
 
 G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
 
-enum { PROP_ENTRY = 1, N_PROPS };
+enum { PROP_ENTRY = 1, PROP_TREE, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -50,6 +51,9 @@ static void brisk_menu_entry_button_set_property(GObject *object, guint id, cons
         switch (id) {
         case PROP_ENTRY:
                 self->entry = g_value_get_pointer(value);
+                break;
+        case PROP_TREE:
+                self->tree = g_value_get_pointer(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -66,6 +70,9 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
         case PROP_ENTRY:
                 g_value_set_pointer(value, self->entry);
                 break;
+        case PROP_TREE:
+                g_value_set_pointer(value, self->tree);
+                break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
                 break;
@@ -77,9 +84,9 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
  *
  * Construct a new BriskMenuEntryButton object
  */
-GtkWidget *brisk_menu_entry_button_new(MateMenuTreeEntry *entry)
+GtkWidget *brisk_menu_entry_button_new(MateMenuTree *tree, MateMenuTreeEntry *entry)
 {
-        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON, "entry", entry, NULL);
+        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON, "tree", tree, "entry", entry, NULL);
 }
 
 /**
@@ -153,6 +160,10 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
                                                           "The MateMenuTreeEntry",
                                                           "Entry that this launcher represents",
                                                           G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_TREE] = g_param_spec_pointer("tree",
+                                                         "The MateMenuTree",
+                                                         "Tree that this entry belongs to",
+                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
