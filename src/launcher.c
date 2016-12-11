@@ -28,6 +28,7 @@ struct _BriskMenuLauncherClass {
  */
 struct _BriskMenuLauncher {
         GObject parent;
+        GdkAppLaunchContext *context;
 };
 
 G_DEFINE_TYPE(BriskMenuLauncher, brisk_menu_launcher, G_TYPE_OBJECT)
@@ -49,6 +50,11 @@ BriskMenuLauncher *brisk_menu_launcher_new()
  */
 static void brisk_menu_launcher_dispose(GObject *obj)
 {
+        BriskMenuLauncher *self = NULL;
+
+        self = BRISK_MENU_LAUNCHER(obj);
+        g_clear_object(&self->context);
+
         G_OBJECT_CLASS(brisk_menu_launcher_parent_class)->dispose(obj);
 }
 
@@ -72,9 +78,33 @@ static void brisk_menu_launcher_class_init(BriskMenuLauncherClass *klazz)
  */
 static void brisk_menu_launcher_init(BriskMenuLauncher *self)
 {
-        /* TODO: Stuff! */
+        GdkDisplay *display = NULL;
+
+        display = gdk_display_get_default();
+        self->context = gdk_display_get_app_launch_context(display);
 }
 
+void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppInfo *app_info)
+{
+        GdkScreen *screen = NULL;
+        GIcon *icon = NULL;
+
+        if (parent) {
+                screen = gtk_widget_get_screen(parent);
+        } else {
+                screen = gdk_screen_get_default();
+        }
+
+        icon = g_app_info_get_icon(app_info);
+
+        gdk_app_launch_context_set_screen(self->context, screen);
+        if (icon) {
+                gdk_app_launch_context_set_icon(self->context, icon);
+        }
+
+        /* We may support DnD URIs onto the icons at some point, not for now. */
+        g_app_info_launch(app_info, NULL, G_APP_LAUNCH_CONTEXT(self->context), NULL);
+}
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

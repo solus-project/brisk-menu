@@ -12,6 +12,7 @@
 #pragma once
 
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -34,6 +35,12 @@ typedef struct _BriskMenuLauncherClass BriskMenuLauncherClass;
 BriskMenuLauncher *brisk_menu_launcher_new(void);
 
 GType brisk_menu_launcher_get_type(void);
+
+/**
+ * Start up the given app_info with no URIs and handle startup notification
+ * for it.
+ */
+void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppInfo *app_info);
 
 G_END_DECLS
 
