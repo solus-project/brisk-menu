@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "entry-button.h"
+#include "launcher.h"
 #include "menu-private.h"
 #include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
@@ -41,11 +42,12 @@ struct _BriskMenuEntryButton {
         GtkWidget *label;
         GtkWidget *image;
         GDesktopAppInfo *info;
+        BriskMenuLauncher *launcher;
 };
 
 G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
 
-enum { PROP_ENTRY = 1, PROP_TREE, N_PROPS };
+enum { PROP_ENTRY = 1, PROP_TREE, PROP_LAUNCHER, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -62,6 +64,9 @@ static void brisk_menu_entry_button_set_property(GObject *object, guint id, cons
                 break;
         case PROP_TREE:
                 self->tree = g_value_get_pointer(value);
+                break;
+        case PROP_LAUNCHER:
+                self->launcher = g_value_get_pointer(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -81,6 +86,9 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
         case PROP_TREE:
                 g_value_set_pointer(value, self->tree);
                 break;
+        case PROP_LAUNCHER:
+                g_value_set_pointer(value, self->launcher);
+                break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
                 break;
@@ -92,9 +100,17 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
  *
  * Construct a new BriskMenuEntryButton object
  */
-GtkWidget *brisk_menu_entry_button_new(MateMenuTree *tree, MateMenuTreeEntry *entry)
+GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, MateMenuTree *tree,
+                                       MateMenuTreeEntry *entry)
 {
-        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON, "tree", tree, "entry", entry, NULL);
+        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON,
+                            "launcher",
+                            launcher,
+                            "tree",
+                            tree,
+                            "entry",
+                            entry,
+                            NULL);
 }
 
 /**
@@ -193,6 +209,10 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
                                                          "The MateMenuTree",
                                                          "Tree that this entry belongs to",
                                                          G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_LAUNCHER] = g_param_spec_pointer("launcher",
+                                                             "The Brisk Launcher",
+                                                             "Launcher used for starting apps",
+                                                             G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -288,21 +308,11 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
 static void brisk_menu_entry_clicked(GtkButton *widget)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
-        autofree(GdkAppLaunchContext) *context = NULL;
-        GdkScreen *screen = NULL;
-        GdkDisplay *display = NULL;
 
         if (!self->info) {
                 return;
         }
-
-        display = gtk_widget_get_display(GTK_WIDGET(widget));
-        screen = gtk_widget_get_screen(GTK_WIDGET(widget));
-        context = gdk_display_get_app_launch_context(display);
-        gdk_app_launch_context_set_timestamp(context, GDK_CURRENT_TIME);
-        gdk_app_launch_context_set_screen(context, screen);
-
-        g_app_info_launch_uris(G_APP_INFO(self->info), NULL, G_APP_LAUNCH_CONTEXT(context), NULL);
+        brisk_menu_launcher_start(self->launcher, GTK_WIDGET(self), G_APP_INFO(self->info));
 }
 
 /*

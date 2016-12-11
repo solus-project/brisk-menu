@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "launcher.h"
 #include "menu-window.h"
 #include "util.h"
 #include <gtk/gtk.h>
@@ -25,6 +26,9 @@ struct _BriskMenuWindowClass {
  */
 struct _BriskMenuWindow {
         GtkWindow parent;
+
+        /* Control launches */
+        BriskMenuLauncher *launcher;
 
         /* Categories */
         GtkWidget *sidebar;

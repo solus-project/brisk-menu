@@ -70,7 +70,7 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
                         GtkWidget *button = NULL;
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
 
-                        button = brisk_menu_entry_button_new(root_tree, entry);
+                        button = brisk_menu_entry_button_new(self->launcher, root_tree, entry);
                         gtk_container_add(GTK_CONTAINER(self->apps), button);
                         gtk_widget_show_all(button);
                 } break;
