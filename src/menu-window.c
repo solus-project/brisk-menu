@@ -78,7 +78,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
 
         /* Create the main layout (Vertical search/content */
-        layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
         gtk_container_add(GTK_CONTAINER(self), layout);
 
         /* Create search entry - but not GtkSearchEntry to avoid rounding in themes */
@@ -86,7 +86,6 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_entry_set_icon_from_icon_name(GTK_ENTRY(widget),
                                           GTK_ENTRY_ICON_PRIMARY,
                                           "edit-find-symbolic");
-        g_object_set(widget, "margin", 2, NULL);
 
         gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
         gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
@@ -94,7 +93,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         g_signal_connect_swapped(widget, "changed", G_CALLBACK(sol_menu_window_search), self);
 
         /* Content layout */
-        content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
         gtk_box_pack_start(GTK_BOX(layout), content, TRUE, TRUE, 0);
 
         /* Sidebar for categories */
@@ -108,12 +107,9 @@ static void sol_menu_window_init(SolMenuWindow *self)
         self->sidebar = widget;
         gtk_container_add(GTK_CONTAINER(scroll), widget);
 
-        /* Stick a vsep in for visual separation */
-        widget = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-        gtk_box_pack_start(GTK_BOX(content), widget, FALSE, FALSE, 0);
-
         /* Scrollbar for apps */
         scroll = gtk_scrolled_window_new(NULL, NULL);
+        gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll), GTK_SHADOW_IN);
         gtk_box_pack_start(GTK_BOX(content), scroll, TRUE, TRUE, 0);
         gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
                                        GTK_POLICY_NEVER,
@@ -132,7 +128,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_style_context_remove_class(style, "background");
 
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
-        g_object_set(layout, "margin-top", 3, "margin-left", 3, "margin-right", 3, NULL);
+        g_object_set(layout, "margin", 3, NULL);
 
         sol_menu_window_load_menus(self);
 }
