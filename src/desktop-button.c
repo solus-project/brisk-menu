@@ -106,10 +106,10 @@ static void brisk_menu_desktop_button_constructed(GObject *obj)
 
         self = BRISK_MENU_DESKTOP_BUTTON(obj);
 
-        gtk_image_set_from_gicon(GTK_IMAGE(self),
+        gtk_image_set_from_gicon(GTK_IMAGE(self->image),
                                  g_app_info_get_icon(self->desktop),
-                                 GTK_ICON_SIZE_INVALID);
-        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 24);
+                                 GTK_ICON_SIZE_BUTTON);
+        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 16);
 
         /* Determine our label based on the app */
         label = g_app_info_get_display_name(self->desktop);
