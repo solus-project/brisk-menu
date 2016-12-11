@@ -92,6 +92,7 @@ static void sol_menu_window_init(SolMenuWindow *self)
         gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
         gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
         self->search = widget;
+        g_signal_connect_swapped(widget, "changed", G_CALLBACK(sol_menu_window_search), self);
 
         /* Content layout */
         content = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);

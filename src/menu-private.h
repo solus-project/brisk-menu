@@ -45,8 +45,10 @@ struct _SolMenuWindow {
         MateMenuTreeDirectory *active_group;
 };
 
+/* Split the implementation across multiple files for ease of maintenance */
 void sol_menu_window_load_menus(SolMenuWindow *self);
 void sol_menu_window_associate_category(SolMenuWindow *self, GtkWidget *button);
+void sol_menu_window_search(SolMenuWindow *self, GtkEntry *entry);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
