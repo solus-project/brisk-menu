@@ -107,7 +107,7 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
 
         /* Separate the things */
         sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_box_pack_start(GTK_BOX(self->sidebar), sep, FALSE, FALSE, 1);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), sep, FALSE, FALSE, 5);
         gtk_widget_show_all(sep);
 
         /* Load the shortcuts up */
