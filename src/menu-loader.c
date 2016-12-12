@@ -25,6 +25,10 @@ BRISK_END_PEDANTIC
 
 static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id);
 
+static guint source_id = 0;
+
+#define BRISK_RELOAD_TIME 1500
+
 /**
  * We can add more here if appropriate.
  */
@@ -88,7 +92,7 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         autofree(MateMenuTreeDirectory) *dir = NULL;
         GtkWidget *sep = NULL;
 
-        g_message("debug: menu reload");
+        g_message("debug: menu reloaded");
 
         dir = matemenu_tree_get_root_directory(self->root);
 
@@ -122,16 +126,29 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
  */
 static inline gboolean inline_reload_menu(BriskMenuWindow *self)
 {
+        source_id = 0;
         brisk_menu_window_build(self);
         return FALSE;
 }
 
 /**
  * Handle rebuilding of tree in response to a change.
+ * We automatically throttle incoming requests, so if we're sent lots of signals
+ * from the underlying library consecutively (it tries to prevent most of that)
+ * we restart the timeout.
  */
 static inline void brisk_menu_window_reloaded(__brisk_unused__ MateMenuTree *tree, gpointer v)
 {
-        g_idle_add((GSourceFunc)inline_reload_menu, v);
+        if (source_id > 0) {
+                g_source_remove(source_id);
+                source_id = 0;
+        }
+
+        source_id = g_timeout_add_full(G_PRIORITY_LOW,
+                                       BRISK_RELOAD_TIME,
+                                       (GSourceFunc)inline_reload_menu,
+                                       v,
+                                       NULL);
 }
 
 /**
