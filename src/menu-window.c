@@ -80,6 +80,8 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         self->launcher = brisk_menu_launcher_new();
 
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
+        style = gtk_widget_get_style_context(GTK_WIDGET(self));
+        gtk_style_context_add_class(style, "brisk-menu");
 
         /* Create the main layout (Vertical search/content */
         layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
@@ -141,6 +143,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
 
         /* Style up the app box */
         style = gtk_widget_get_style_context(widget);
+        gtk_style_context_add_class(style, "apps-list");
         gtk_style_context_add_class(style, "view");
         gtk_style_context_add_class(style, "content-view");
         gtk_style_context_remove_class(style, "background");
