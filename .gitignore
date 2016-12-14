@@ -15,4 +15,7 @@ missing
 .dirstamp
 *.o
 
+# gresource cruft
+brisk-resources.*
+
 brisk-menu-test

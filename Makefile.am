@@ -16,8 +16,27 @@ AM_CPPFLAGS = \
 noinst_PROGRAMS = \
 	brisk-menu-test
 
+brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/brisk.gresource.xml)
+
+BUILT_SOURCES = \
+	brisk-resources.h \
+	brisk-resources.c
+
+CLEANFILES = \
+	$(BUILT_SOURCES)
+
+# resources
+brisk-resources.h: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
+	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-header --c-name brisk_resources $<
+
+brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
+	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-source --c-name brisk_resources $<
+
+
 # Helper to let us develop the window portion first
 brisk_menu_test_SOURCES = \
+	brisk-resources.h \
+	brisk-resources.c \
 	src/main.c \
 	src/category-button.h \
 	src/category-button.c \
