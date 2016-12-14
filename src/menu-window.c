@@ -23,6 +23,8 @@ BRISK_END_PEDANTIC
 
 G_DEFINE_TYPE(BriskMenuWindow, brisk_menu_window, GTK_TYPE_WINDOW)
 
+static void brisk_menu_window_load_css(BriskMenuWindow *self);
+
 /**
  * brisk_menu_window_new:
  *
@@ -41,8 +43,15 @@ GtkWidget *brisk_menu_window_new()
 static void brisk_menu_window_dispose(GObject *obj)
 {
         BriskMenuWindow *self = BRISK_MENU_WINDOW(obj);
+        GdkScreen *screen = NULL;
 
         g_message("debug: cleaning up");
+
+        if (self->css) {
+                screen = gtk_widget_get_screen(GTK_WIDGET(self));
+                gtk_style_context_remove_provider_for_screen(screen, GTK_STYLE_PROVIDER(self->css));
+                g_clear_object(&self->css);
+        }
 
         g_clear_pointer(&self->root, matemenu_tree_unref);
         g_clear_pointer(&self->search_term, g_free);
@@ -78,6 +87,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         GtkStyleContext *style = NULL;
 
         self->launcher = brisk_menu_launcher_new();
+        brisk_menu_window_load_css(self);
 
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
@@ -199,6 +209,34 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button)
 {
         g_signal_connect_swapped(button, "toggled", G_CALLBACK(brisk_menu_window_on_toggled), self);
+}
+
+/**
+ * Load up the CSS assets
+ */
+static void brisk_menu_window_load_css(BriskMenuWindow *self)
+{
+        GtkCssProvider *css = NULL;
+        autofree(GFile) *file = NULL;
+        autofree(GError) *err = NULL;
+        GdkScreen *screen = NULL;
+
+        file = g_file_new_for_uri("resource://com/solus-project/brisk/menu/styling.css");
+        if (!file) {
+                return;
+        }
+
+        css = gtk_css_provider_new();
+        self->css = css;
+        screen = gtk_widget_get_screen(GTK_WIDGET(self));
+        gtk_style_context_add_provider_for_screen(screen,
+                                                  GTK_STYLE_PROVIDER(css),
+                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+        if (!gtk_css_provider_load_from_file(css, file, &err)) {
+                g_warning("Failed to load CSS: %s\n", err->message);
+                return;
+        }
 }
 
 /*

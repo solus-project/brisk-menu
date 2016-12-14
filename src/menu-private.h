@@ -56,6 +56,9 @@ struct _BriskMenuWindow {
 
         /* Search term, may be null at any point. Used for filtering */
         gchar *search_term;
+
+        /* Our CSS assets */
+        GtkCssProvider *css;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
@@ -77,6 +80,7 @@ DEF_AUTOFREE(GFile, g_object_unref)
 DEF_AUTOFREE(GIcon, g_object_unref)
 DEF_AUTOFREE(gchar, g_free)
 DEF_AUTOFREE(GdkAppLaunchContext, g_object_unref)
+DEF_AUTOFREE(GError, g_error_free)
 
 /**
  * Convenience function to remove children from a container
