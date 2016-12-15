@@ -31,11 +31,14 @@ struct _BriskMenuDesktopButton {
         GAppInfo *desktop;
         GtkWidget *label;
         GtkWidget *image;
+        BriskMenuLauncher *launcher;
 };
 
 G_DEFINE_TYPE(BriskMenuDesktopButton, brisk_menu_desktop_button, GTK_TYPE_BUTTON)
 
-enum { PROP_DESKTOP = 1, N_PROPS };
+static void brisk_menu_desktop_button_clicked(GtkButton *button);
+
+enum { PROP_DESKTOP = 1, PROP_LAUNCHER, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -49,6 +52,9 @@ static void brisk_menu_desktop_button_set_property(GObject *object, guint id, co
         switch (id) {
         case PROP_DESKTOP:
                 self->desktop = g_value_get_pointer(value);
+                break;
+        case PROP_LAUNCHER:
+                self->launcher = g_value_get_pointer(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -65,6 +71,9 @@ static void brisk_menu_desktop_button_get_property(GObject *object, guint id, GV
         case PROP_DESKTOP:
                 g_value_set_pointer(value, self->desktop);
                 break;
+        case PROP_LAUNCHER:
+                g_value_set_pointer(value, self->launcher);
+                break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
                 break;
@@ -76,9 +85,14 @@ static void brisk_menu_desktop_button_get_property(GObject *object, guint id, GV
  *
  * Construct a new BriskMenuDesktopButton object
  */
-GtkWidget *brisk_menu_desktop_button_new(GAppInfo *desktop)
+GtkWidget *brisk_menu_desktop_button_new(BriskMenuLauncher *launcher, GAppInfo *desktop)
 {
-        return g_object_new(BRISK_TYPE_MENU_DESKTOP_BUTTON, "desktop", desktop, NULL);
+        return g_object_new(BRISK_TYPE_MENU_DESKTOP_BUTTON,
+                            "launcher",
+                            launcher,
+                            "desktop",
+                            desktop,
+                            NULL);
 }
 
 /**
@@ -127,6 +141,7 @@ static void brisk_menu_desktop_button_constructed(GObject *obj)
 static void brisk_menu_desktop_button_class_init(BriskMenuDesktopButtonClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+        GtkButtonClass *but_class = GTK_BUTTON_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_menu_desktop_button_dispose;
@@ -134,10 +149,17 @@ static void brisk_menu_desktop_button_class_init(BriskMenuDesktopButtonClass *kl
         obj_class->get_property = brisk_menu_desktop_button_get_property;
         obj_class->constructed = brisk_menu_desktop_button_constructed;
 
+        /* button vtable hookup */
+        but_class->clicked = brisk_menu_desktop_button_clicked;
+
         obj_properties[PROP_DESKTOP] = g_param_spec_pointer("desktop",
                                                             "The GAppInfo",
                                                             "Desktop file",
                                                             G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_LAUNCHER] = g_param_spec_pointer("launcher",
+                                                             "The Brisk Launcher",
+                                                             "Launcher used for starting apps",
+                                                             G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -178,6 +200,13 @@ static void brisk_menu_desktop_button_init(BriskMenuDesktopButton *self)
         gtk_style_context_add_class(style, "flat");
 }
 
+static void brisk_menu_desktop_button_clicked(GtkButton *button)
+{
+        BriskMenuDesktopButton *self = NULL;
+
+        self = BRISK_MENU_DESKTOP_BUTTON(button);
+        brisk_menu_launcher_start(self->launcher, GTK_WIDGET(self), self->desktop);
+}
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

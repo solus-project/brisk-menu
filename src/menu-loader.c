@@ -184,7 +184,7 @@ static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *i
                 return;
         }
 
-        button = brisk_menu_desktop_button_new(G_APP_INFO(info));
+        button = brisk_menu_desktop_button_new(self->launcher, G_APP_INFO(info));
         gtk_widget_show_all(button);
         gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 1);
 }

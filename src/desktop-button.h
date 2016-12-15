@@ -15,6 +15,8 @@
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
 
+#include "launcher.h"
+
 G_BEGIN_DECLS
 
 typedef struct _BriskMenuDesktopButton BriskMenuDesktopButton;
@@ -37,7 +39,7 @@ typedef struct _BriskMenuDesktopButtonClass BriskMenuDesktopButtonClass;
 /**
  * Construct a new BriskMenuDesktopButton from the given desktop entry
  */
-GtkWidget *brisk_menu_desktop_button_new(GAppInfo *desktop);
+GtkWidget *brisk_menu_desktop_button_new(BriskMenuLauncher *launcher, GAppInfo *desktop);
 
 GType brisk_menu_desktop_button_get_type(void);
 
