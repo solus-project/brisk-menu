@@ -25,11 +25,13 @@ BUILT_SOURCES = \
 CLEANFILES = \
 	$(BUILT_SOURCES)
 
+# Borrowed from mate-panel
 %.mate-panel-applet: %.mate-panel-applet.in
 	$(AM_V_GEN)sed \
 	    -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
 	    $< > $@
 
+# Also borrowed from mate-panel
 %.service: %.service.in
 	$(AM_V_GEN)sed \
 	    -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
