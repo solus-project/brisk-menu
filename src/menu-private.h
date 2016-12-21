@@ -80,6 +80,9 @@ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v
 /* Keyboard */
 gboolean brisk_menu_window_key_release(BriskMenuWindow *self, GdkEvent *event, gpointer v);
 
+/* Global grabs */
+void brisk_menu_window_configure_grabs(BriskMenuWindow *self);
+
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
