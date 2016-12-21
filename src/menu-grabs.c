@@ -85,7 +85,7 @@ static gboolean brisk_menu_window_unmap(GtkWidget *widget, __brisk_unused__ gpoi
 /**
  * Grab the input events using the GdkSeat
  */
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION <= 18
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 20
 /* Pre 3.20 grab behaviour */
 static void brisk_menu_window_grab(BriskMenuWindow *self)
 {
@@ -181,7 +181,7 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 /**
  * Ungrab a previous grab by this widget
  */
-#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION <= 18
+#if GTK_MAJOR_VERSION == 3 && GTK_MINOR_VERSION < 20
 /* Pre 3.20 behaviour */
 static void brisk_menu_window_ungrab(BriskMenuWindow *self)
 {
