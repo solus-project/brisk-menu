@@ -177,6 +177,9 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
 
+        /* Start with all content parts "shown" */
+        gtk_widget_show_all(layout);
+
         brisk_menu_window_load_menus(self);
 }
 
