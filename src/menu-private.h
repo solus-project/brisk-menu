@@ -59,6 +59,9 @@ struct _BriskMenuWindow {
 
         /* Our CSS assets */
         GtkCssProvider *css;
+
+        /* Whether we have a grab or not */
+        gboolean grabbed;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
