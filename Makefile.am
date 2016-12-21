@@ -53,7 +53,7 @@ applet_DATA = \
 
 servicedir = $(datadir)/dbus-1/services
 service_DATA = \
-	data/com.solus_project.brisk.BriskMenuFactory.service
+	data/org.mate.panel.applet.BriskMenuFactory.service
 
 # resources
 brisk-resources.h: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
