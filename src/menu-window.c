@@ -180,6 +180,11 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
 
+        /* Hook up keyboard events */
+        g_signal_connect(self,
+                         "key-release-event",
+                         G_CALLBACK(brisk_menu_window_key_release),
+                         NULL);
         /* Start with all content parts "shown" */
         gtk_widget_show_all(layout);
 }

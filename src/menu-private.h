@@ -64,11 +64,18 @@ struct _BriskMenuWindow {
 /* Split the implementation across multiple files for ease of maintenance */
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self);
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button);
+
+/* Search */
 void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry);
 gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
 void brisk_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos, GdkEvent *event,
                                     gpointer v);
+
+/* Sorting */
 gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v);
+
+/* Keyboard */
+gboolean brisk_menu_window_key_release(BriskMenuWindow *self, GdkEvent *event, gpointer v);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
