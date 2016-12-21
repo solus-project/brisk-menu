@@ -32,7 +32,7 @@ static void brisk_menu_window_load_css(BriskMenuWindow *self);
  */
 GtkWidget *brisk_menu_window_new()
 {
-        return g_object_new(BRISK_TYPE_MENU_WINDOW, NULL);
+        return g_object_new(BRISK_TYPE_MENU_WINDOW, "type", GTK_WINDOW_POPUP, NULL);
 }
 
 /**
@@ -90,6 +90,9 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         brisk_menu_window_load_css(self);
 
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
+        gtk_window_set_type_hint(GTK_WINDOW(self), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+        gtk_window_set_skip_pager_hint(GTK_WINDOW(self), TRUE);
+        gtk_window_set_skip_taskbar_hint(GTK_WINDOW(self), TRUE);
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
         gtk_style_context_add_class(style, "brisk-menu");
 
