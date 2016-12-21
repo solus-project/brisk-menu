@@ -4,7 +4,7 @@ Location=@LIBEXECDIR@/brisk-menu
 Name=Brisk Menu Factory
 Description=Brisk Menu Factory
 
-[TrashApplet]
+[BriskMenu]
 Name=Brisk Menu
 Description=An efficient menu for the MATE desktop
 Icon=start-here
