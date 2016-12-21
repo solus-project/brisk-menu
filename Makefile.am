@@ -25,6 +25,24 @@ BUILT_SOURCES = \
 CLEANFILES = \
 	$(BUILT_SOURCES)
 
+%.mate-panel-applet: %.mate-panel-applet.in
+	$(AM_V_GEN)sed \
+	    -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
+	    $< > $@
+
+%.service: %.service.in
+	$(AM_V_GEN)sed \
+	    -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
+	    $< > $@
+
+appletdir = $(datadir)/mate-panel/applets
+applet_DATA = \
+	data/com.solus_project.brisk.BriskMenu.mate-panel-applet
+
+servicedir = $(datadir)/dbus-1/services
+service_DATA = \
+	data/com.solus_project.brisk.BriskMenuFactory.service
+
 # resources
 brisk-resources.h: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-header --c-name brisk_resources $<

@@ -19,3 +19,7 @@ missing
 brisk-resources.*
 
 brisk-menu
+
+# Data files for mate-panel
+*.mate-panel-applet
+*.service

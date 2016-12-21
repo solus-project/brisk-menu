@@ -1,0 +1,10 @@
+[Applet Factory]
+Id=BriskMenuFactory
+Location=@LIBEXECDIR@/brisk-menu
+Name=Brisk Menu Factory
+Description=Brisk Menu Factory
+
+[TrashApplet]
+Name=Brisk Menu
+Description=An efficient menu for the MATE desktop
+Icon=start-here
