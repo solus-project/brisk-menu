@@ -13,8 +13,8 @@ AM_CFLAGS = \
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/include
 
-noinst_PROGRAMS = \
-	brisk-menu-test
+libexec_PROGRAMS = \
+	brisk-menu
 
 brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/brisk.gresource.xml)
 
@@ -34,7 +34,7 @@ brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 
 
 # Helper to let us develop the window portion first
-brisk_menu_test_SOURCES = \
+brisk_menu_SOURCES = \
 	brisk-resources.h \
 	brisk-resources.c \
 	src/applet.h \
@@ -55,13 +55,13 @@ brisk_menu_test_SOURCES = \
 	src/menu-window.h \
 	src/menu-window.c
 
-brisk_menu_test_CFLAGS = \
+brisk_menu_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(MENU_CFLAGS) \
 	$(APPLET_CFLAGS) \
 	$(AM_CFLAGS)
 
-brisk_menu_test_LDADD = \
+brisk_menu_LDADD = \
 	$(GTK_LIBS) \
 	$(MENU_LIBS) \
 	$(APPLET_LIBS)
