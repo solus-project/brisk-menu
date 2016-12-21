@@ -95,7 +95,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 }
 
-static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpointer udata)
+static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpointer v)
 {
         gboolean vis = gtk_widget_get_visible(self->menu);
 
@@ -104,7 +104,8 @@ static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpoint
         return GDK_EVENT_STOP;
 }
 
-static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id, gpointer udata)
+static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id,
+                                          __brisk_unused__ gpointer v)
 {
         if (!g_str_has_prefix(id, "BriskMenu")) {
                 return FALSE;
