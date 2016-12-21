@@ -103,6 +103,7 @@ void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppI
 {
         GdkScreen *screen = NULL;
         GIcon *icon = NULL;
+        GtkWidget *toplevel = NULL;
 
         if (parent) {
                 screen = gtk_widget_get_screen(parent);
@@ -118,6 +119,10 @@ void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppI
         }
 
         self->display = gdk_screen_get_display(screen);
+
+        /* Hide the menu before kicking off the launch */
+        toplevel = gtk_widget_get_toplevel(parent);
+        gtk_widget_hide(toplevel);
 
         /* We may support DnD URIs onto the icons at some point, not for now. */
         g_app_info_launch(app_info, NULL, G_APP_LAUNCH_CONTEXT(self->context), NULL);
