@@ -61,6 +61,19 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
 }
 
+static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id, gpointer udata)
+{
+        if (!g_str_has_prefix(id, "BriskMenu")) {
+                return FALSE;
+        }
+        /* TODO: Fix things up to be more useful. */
+        gtk_widget_show(GTK_WIDGET(applet));
+        return TRUE;
+}
+
+MATE_PANEL_APPLET_OUT_PROCESS_FACTORY("BriskMenuFactory", BRISK_TYPE_MENU_APPLET, "BriskMenu",
+                                      brisk_menu_applet_factory, NULL)
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

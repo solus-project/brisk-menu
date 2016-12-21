@@ -39,7 +39,6 @@ brisk_menu_SOURCES = \
 	brisk-resources.c \
 	src/applet.h \
 	src/applet.c \
-	src/main.c \
 	src/category-button.h \
 	src/category-button.c \
 	src/desktop-button.h \
