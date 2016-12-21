@@ -37,6 +37,8 @@ brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 brisk_menu_test_SOURCES = \
 	brisk-resources.h \
 	brisk-resources.c \
+	src/applet.h \
+	src/applet.c \
 	src/main.c \
 	src/category-button.h \
 	src/category-button.c \
@@ -56,8 +58,10 @@ brisk_menu_test_SOURCES = \
 brisk_menu_test_CFLAGS = \
 	$(GTK_CFLAGS) \
 	$(MENU_CFLAGS) \
+	$(APPLET_CFLAGS) \
 	$(AM_CFLAGS)
 
 brisk_menu_test_LDADD = \
 	$(GTK_LIBS) \
-	$(MENU_LIBS)
+	$(MENU_LIBS) \
+	$(APPLET_LIBS)

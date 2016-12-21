@@ -34,6 +34,12 @@ PKG_CHECK_MODULES(MENU,
                  ]
 )
 
+PKG_CHECK_MODULES(APPLET,
+                 [
+                   libmatepanelapplet-4.0 >= mate_required_version
+                 ]
+)
+
 AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
