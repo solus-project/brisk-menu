@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
+#include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
@@ -89,6 +90,9 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Construct our menu */
         menu = brisk_menu_window_new();
         self->menu = menu;
+
+        /* Load initially in the idle loop, prevent lagging panel on startup */
+        g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 }
 
 static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpointer udata)

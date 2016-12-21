@@ -62,7 +62,7 @@ struct _BriskMenuWindow {
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
-void brisk_menu_window_load_menus(BriskMenuWindow *self);
+gboolean brisk_menu_window_load_menus(BriskMenuWindow *self);
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button);
 void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry);
 gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);

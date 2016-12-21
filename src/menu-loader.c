@@ -154,7 +154,7 @@ static inline void brisk_menu_window_reloaded(__brisk_unused__ MateMenuTree *tre
 /**
  * Load the menus and place them into the window regions
  */
-void brisk_menu_window_load_menus(BriskMenuWindow *self)
+gboolean brisk_menu_window_load_menus(BriskMenuWindow *self)
 {
         MateMenuTree *tree = NULL;
 
@@ -165,6 +165,7 @@ void brisk_menu_window_load_menus(BriskMenuWindow *self)
 
         /* Load menus on idle */
         g_idle_add((GSourceFunc)inline_reload_menu, self);
+        return FALSE;
 }
 
 /**

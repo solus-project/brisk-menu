@@ -179,8 +179,6 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
 
         /* Start with all content parts "shown" */
         gtk_widget_show_all(layout);
-
-        brisk_menu_window_load_menus(self);
 }
 
 /**
