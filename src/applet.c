@@ -39,6 +39,53 @@ G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
 static gboolean button_clicked_cb(BriskMenuApplet *self, gpointer udata);
 
 /**
+ * Update the position for the menu.
+ */
+static void place_menu(BriskMenuApplet *self)
+{
+        GdkScreen *screen = NULL;
+        GtkAllocation alloc = { 0 };
+        GdkWindow *window = NULL;
+        GdkRectangle geom = { 0 };
+        gint rx, ry = 0;
+        gint ww, wh = 0;
+        gint mon = 0;
+        gint tx, ty = 0;
+
+        gtk_widget_get_allocation(GTK_WIDGET(self), &alloc);
+        gtk_window_get_size(GTK_WINDOW(self->menu), &ww, &wh);
+
+        if (!gtk_widget_get_realized(GTK_WIDGET(self))) {
+                gtk_widget_realize(GTK_WIDGET(self));
+        }
+        window = gtk_widget_get_window(GTK_WIDGET(self));
+        gdk_window_get_origin(window, &rx, &ry);
+
+        screen = gtk_widget_get_screen(GTK_WIDGET(self));
+        mon = gdk_screen_get_monitor_at_point(screen, rx, ry);
+        gdk_screen_get_monitor_geometry(screen, mon, &geom);
+
+        /** We must be at the bottom of the screen. One hopes. */
+        if (ry + wh > geom.y + geom.height) {
+                ty = (geom.y + geom.height) - (alloc.height + wh);
+        } else {
+                /* Go to the bottom */
+                ty = ry + alloc.height;
+        }
+
+        tx = rx;
+        /* Bound the right side */
+        if (tx + ww > (geom.x + geom.width)) {
+                tx = (geom.x + geom.width) - (ww);
+        }
+        /* Bound the left side */
+        if (tx < geom.x) {
+                tx = geom.x;
+        }
+        gtk_window_move(GTK_WINDOW(self->menu), tx, ty);
+}
+
+/**
  * brisk_menu_applet_dispose:
  *
  * Clean up a BriskMenuApplet instance
@@ -97,9 +144,12 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
 
 static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpointer v)
 {
-        gboolean vis = gtk_widget_get_visible(self->menu);
+        gboolean vis = !gtk_widget_get_visible(self->menu);
+        if (vis) {
+                place_menu(self);
+        }
 
-        gtk_widget_set_visible(self->menu, !vis);
+        gtk_widget_set_visible(self->menu, vis);
 
         return GDK_EVENT_STOP;
 }
