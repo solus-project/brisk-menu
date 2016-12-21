@@ -266,7 +266,6 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
-
         GIcon *icon = NULL;
 
         /* If we have a .desktop & icon, use it */
@@ -285,6 +284,7 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
                                        __brisk_unused__ guint time)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
+        GtkWidget *toplevel = NULL;
 
         if (!self->info) {
                 return;
@@ -301,6 +301,10 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
         }
         uris[0] = uri;
         uris[1] = NULL;
+
+        /* Hide toplevel to avoid grab problems */
+        toplevel = gtk_widget_get_toplevel(widget);
+        gtk_widget_hide(toplevel);
 
         gtk_selection_data_set_uris(data, (gchar **)uris);
 }
