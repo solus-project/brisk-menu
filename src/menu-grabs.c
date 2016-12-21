@@ -140,6 +140,7 @@ static void brisk_menu_window_grab(BriskMenuWindow *self)
         gtk_grab_add(GTK_WIDGET(self));
 }
 #else
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 static void brisk_menu_window_grab(BriskMenuWindow *self)
 {
         GdkDisplay *display = NULL;
@@ -174,6 +175,7 @@ static void brisk_menu_window_grab(BriskMenuWindow *self)
                 gtk_grab_add(GTK_WIDGET(self));
         }
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 /**
@@ -206,6 +208,7 @@ static void brisk_menu_window_ungrab(BriskMenuWindow *self)
         self->grabbed = FALSE;
 }
 #else
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 static void brisk_menu_window_ungrab(BriskMenuWindow *self)
 {
         GdkDisplay *display = NULL;
@@ -222,6 +225,7 @@ static void brisk_menu_window_ungrab(BriskMenuWindow *self)
         gdk_seat_ungrab(seat);
         self->grabbed = FALSE;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 /**
