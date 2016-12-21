@@ -13,6 +13,12 @@ AM_CFLAGS = \
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/include
 
+EXTRA_DIST = \
+	data/brisk.gresource.xml \
+	data/com.solus_project.brisk.BriskMenuFactory.service.in \
+	data/com.solus_project.brisk.BriskMenu.mate-panel-applet.in \
+	data/styling.css
+
 libexec_PROGRAMS = \
 	brisk-menu
 
@@ -23,18 +29,22 @@ BUILT_SOURCES = \
 	brisk-resources.c
 
 CLEANFILES = \
-	$(BUILT_SOURCES)
+	$(BUILT_SOURCES) \
+	data/com.solus_project.brisk.BriskMenu.mate-panel-applet \
+	data/com.solus_project.brisk.BriskMenuFactory.service
 
-# Borrowed from mate-panel
+# Borrowed/adapted from mate-panel
 %.mate-panel-applet: %.mate-panel-applet.in
-	$(AM_V_GEN)sed \
-	    -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
+	$(AM_V_GEN) \
+	$(MKDIR_P) "$(dir $@)"; \
+	sed -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
 	    $< > $@
 
-# Also borrowed from mate-panel
+# Also borrowed/adapted from mate-panel
 %.service: %.service.in
-	$(AM_V_GEN)sed \
-	    -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
+	$(AM_V_GEN) \
+	$(MKDIR_P) "$(dir $@)"; \
+	sed -e "s|\@LIBEXECDIR\@|$(libexecdir)|" \
 	    $< > $@
 
 appletdir = $(datadir)/mate-panel/applets
@@ -57,6 +67,7 @@ brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 brisk_menu_SOURCES = \
 	brisk-resources.h \
 	brisk-resources.c \
+	src/include/util.h \
 	src/applet.h \
 	src/applet.c \
 	src/category-button.h \
