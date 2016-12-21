@@ -10,9 +10,6 @@ AM_CFLAGS = \
 	-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_44		\
 	-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_44
 
-AM_CPPFLAGS = \
-	-I$(top_srcdir)/src/include
-
 EXTRA_DIST = \
 	data/brisk.gresource.xml \
 	data/org.mate.panel.applet.BriskMenuFactory.service.in \
@@ -67,7 +64,6 @@ brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 brisk_menu_SOURCES = \
 	brisk-resources.h \
 	brisk-resources.c \
-	src/include/util.h \
 	src/applet.h \
 	src/applet.c \
 	src/category-button.h \
@@ -85,7 +81,8 @@ brisk_menu_SOURCES = \
 	src/menu-sort.c \
 	src/menu-loader.c \
 	src/menu-window.h \
-	src/menu-window.c
+	src/menu-window.c \
+	src/util.h
 
 brisk_menu_CFLAGS = \
 	$(GTK_CFLAGS) \
