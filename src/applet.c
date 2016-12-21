@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
+#include "menu-window.h"
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
 BRISK_END_PEDANTIC
@@ -26,9 +27,15 @@ struct _BriskMenuAppletClass {
 struct _BriskMenuApplet {
         MatePanelApplet parent;
         GtkWidget *toggle;
+        GtkWidget *menu;
 };
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
+
+/**
+ * Handle showing of the menu
+ */
+static gboolean button_clicked_cb(BriskMenuApplet *self, gpointer udata);
 
 /**
  * brisk_menu_applet_dispose:
@@ -37,6 +44,16 @@ G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
  */
 static void brisk_menu_applet_dispose(GObject *obj)
 {
+        BriskMenuApplet *self = NULL;
+
+        self = BRISK_MENU_APPLET(obj);
+
+        /* Tear down the menu */
+        if (self->menu) {
+                gtk_widget_hide(self->menu);
+                g_clear_pointer(&self->menu, gtk_widget_destroy);
+        }
+
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }
 
@@ -60,13 +77,27 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
  */
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
-        GtkWidget *toggle = NULL;
+        GtkWidget *toggle, *menu = NULL;
 
         /* DEMO CODE */
         toggle = gtk_button_new_with_label("Menu");
         gtk_container_add(GTK_CONTAINER(self), toggle);
+        g_signal_connect_swapped(toggle, "clicked", G_CALLBACK(button_clicked_cb), self);
         gtk_widget_show_all(toggle);
         self->toggle = toggle;
+
+        /* Construct our menu */
+        menu = brisk_menu_window_new();
+        self->menu = menu;
+}
+
+static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpointer udata)
+{
+        gboolean vis = gtk_widget_get_visible(self->menu);
+
+        gtk_widget_set_visible(self->menu, !vis);
+
+        return GDK_EVENT_STOP;
 }
 
 static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id, gpointer udata)
