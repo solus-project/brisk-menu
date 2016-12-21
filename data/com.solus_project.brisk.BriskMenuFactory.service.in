@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=com.solus_project.brisk.BriskMenuFactory
-Exec=@LIBEXECDIR@/brisk-menu

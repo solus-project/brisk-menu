@@ -15,7 +15,7 @@ AM_CPPFLAGS = \
 
 EXTRA_DIST = \
 	data/brisk.gresource.xml \
-	data/com.solus_project.brisk.BriskMenuFactory.service.in \
+	data/org.mate.panel.applet.BriskMenuFactory.service.in \
 	data/com.solus_project.brisk.BriskMenu.mate-panel-applet.in \
 	data/styling.css
 
@@ -31,7 +31,7 @@ BUILT_SOURCES = \
 CLEANFILES = \
 	$(BUILT_SOURCES) \
 	data/com.solus_project.brisk.BriskMenu.mate-panel-applet \
-	data/com.solus_project.brisk.BriskMenuFactory.service
+	data/org.mate.panel.applet.BriskMenuFactory.service
 
 # Borrowed/adapted from mate-panel
 %.mate-panel-applet: %.mate-panel-applet.in
