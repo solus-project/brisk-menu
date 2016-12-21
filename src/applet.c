@@ -25,6 +25,7 @@ struct _BriskMenuAppletClass {
 
 struct _BriskMenuApplet {
         MatePanelApplet parent;
+        GtkWidget *toggle;
 };
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
@@ -59,6 +60,13 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
  */
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
+        GtkWidget *toggle = NULL;
+
+        /* DEMO CODE */
+        toggle = gtk_button_new_with_label("Click me!");
+        gtk_container_add(GTK_CONTAINER(self), toggle);
+        gtk_widget_show_all(toggle);
+        self->toggle = toggle;
 }
 
 static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id, gpointer udata)
