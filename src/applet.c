@@ -36,7 +36,7 @@ G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
 /**
  * Handle showing of the menu
  */
-static gboolean button_clicked_cb(BriskMenuApplet *self, gpointer udata);
+static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer v);
 
 /**
  * Update the position for the menu.
@@ -128,9 +128,10 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         GtkWidget *toggle, *menu = NULL;
 
         /* DEMO CODE */
-        toggle = gtk_button_new_with_label("Menu");
+        toggle = gtk_toggle_button_new_with_label("Menu");
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle), FALSE);
         gtk_container_add(GTK_CONTAINER(self), toggle);
-        g_signal_connect_swapped(toggle, "clicked", G_CALLBACK(button_clicked_cb), self);
+        g_signal_connect_swapped(toggle, "button-press-event", G_CALLBACK(button_press_cb), self);
         gtk_widget_show_all(toggle);
         self->toggle = toggle;
 
@@ -142,8 +143,15 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 }
 
-static gboolean button_clicked_cb(BriskMenuApplet *self, __brisk_unused__ gpointer v)
+/**
+ * Toggle the menu visibility on a button press
+ */
+static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, __brisk_unused__ gpointer v)
 {
+        if (event->button.button != 1) {
+                return GDK_EVENT_PROPAGATE;
+        }
+
         gboolean vis = !gtk_widget_get_visible(self->menu);
         if (vis) {
                 place_menu(self);
