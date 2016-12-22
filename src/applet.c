@@ -127,12 +127,17 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
         GtkWidget *toggle, *menu = NULL;
 
+        /* Applet hookup */
+        mate_panel_applet_set_flags(MATE_PANEL_APPLET(self), MATE_PANEL_APPLET_EXPAND_MINOR);
+        mate_panel_applet_set_background_widget(MATE_PANEL_APPLET(self), GTK_WIDGET(self));
+
         /* DEMO CODE */
         toggle = gtk_toggle_button_new_with_label("Menu");
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle), FALSE);
         gtk_container_add(GTK_CONTAINER(self), toggle);
         g_signal_connect_swapped(toggle, "button-press-event", G_CALLBACK(button_press_cb), self);
         gtk_widget_show_all(toggle);
+        gtk_button_set_relief(GTK_BUTTON(toggle), GTK_RELIEF_NONE);
         self->toggle = toggle;
 
         /* Construct our menu */
