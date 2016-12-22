@@ -22,6 +22,7 @@ BRISK_END_PEDANTIC
 static gboolean brisk_menu_window_map(GtkWidget *widget, gpointer udata);
 static gboolean brisk_menu_window_unmap(GtkWidget *widget, gpointer udata);
 static void brisk_menu_window_grab_notify(GtkWidget *widget, gboolean was_grabbed, gpointer udata);
+static gboolean brisk_menu_window_button_press(GtkWidget *widget, GdkEvent *event, gpointer udata);
 static gboolean brisk_menu_window_grab_broken(GtkWidget *widget, GdkEvent *event, gpointer udata);
 static void brisk_menu_window_grab(BriskMenuWindow *self);
 static void brisk_menu_window_ungrab(BriskMenuWindow *self);
@@ -43,6 +44,10 @@ void brisk_menu_window_configure_grabs(BriskMenuWindow *self)
         g_signal_connect(self, "map-event", G_CALLBACK(brisk_menu_window_map), NULL);
         g_signal_connect(self, "unmap-event", G_CALLBACK(brisk_menu_window_unmap), NULL);
         g_signal_connect(self, "grab-notify", G_CALLBACK(brisk_menu_window_grab_notify), NULL);
+        g_signal_connect(self,
+                         "button-press-event",
+                         G_CALLBACK(brisk_menu_window_button_press),
+                         NULL);
         g_signal_connect(self,
                          "grab-broken-event",
                          G_CALLBACK(brisk_menu_window_grab_broken),
@@ -258,6 +263,26 @@ static void brisk_menu_window_grab_notify(GtkWidget *widget, gboolean was_grabbe
 
         self = BRISK_MENU_WINDOW(widget);
         brisk_menu_window_grab(self);
+}
+
+/**
+ * Check for clicks outside the window itself
+ */
+static gboolean brisk_menu_window_button_press(GtkWidget *widget, GdkEvent *event,
+                                               __brisk_unused__ gpointer udata)
+{
+        gint wx, wy = 0;
+        gint ww, wh = 0;
+
+        gtk_window_get_size(GTK_WINDOW(widget), &ww, &wh);
+        gtk_window_get_position(GTK_WINDOW(widget), &wx, &wy);
+
+        if ((event->button.x_root < wx || event->button.x_root > (wx + ww)) ||
+            (event->button.y_root < wy || event->button.y_root > (wy + wh))) {
+                gtk_widget_hide(widget);
+                return GDK_EVENT_STOP;
+        }
+        return GDK_EVENT_PROPAGATE;
 }
 
 /*
