@@ -264,6 +264,8 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 
 /**
  * Handle setting the icon according to our desktop file
+ * We ref the icon here so we can immediately hide the toplevel to get it out
+ * of the way.
  */
 static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context)
 {
@@ -295,7 +297,7 @@ hide_toplevel:
 /**
  * Clean up the ref'd icon
  */
-static void brisk_menu_entry_drag_end(GtkWidget *widget, GdkDragContext *context)
+static void brisk_menu_entry_drag_end(__brisk_unused__ GtkWidget *widget, GdkDragContext *context)
 {
         GIcon *icon = NULL;
 
