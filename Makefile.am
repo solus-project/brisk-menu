@@ -19,6 +19,9 @@ EXTRA_DIST = \
 libexec_PROGRAMS = \
 	brisk-menu
 
+noinst_LTLIBRARIES = \
+	libbriskresources.la
+
 brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/brisk.gresource.xml)
 
 BUILT_SOURCES = \
@@ -59,11 +62,19 @@ brisk-resources.h: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-source --c-name brisk_resources $<
 
+# Build this separately due to major spammy compiler warnings
+libbriskresources_la_SOURCES = \
+	brisk-resources.h \
+	brisk-resources.c
+
+libbriskresources_la_CFLAGS = \
+	$(GIO_CFLAGS)
+
+libbriskresources_la_LIBADD = \
+	$(GIO_LIBS)
 
 # Helper to let us develop the window portion first
 brisk_menu_SOURCES = \
-	brisk-resources.h \
-	brisk-resources.c \
 	src/applet.h \
 	src/applet.c \
 	src/category-button.h \
@@ -91,6 +102,7 @@ brisk_menu_CFLAGS = \
 	$(AM_CFLAGS)
 
 brisk_menu_LDADD = \
+	libbriskresources.la \
 	$(GTK_LIBS) \
 	$(MENU_LIBS) \
 	$(APPLET_LIBS)

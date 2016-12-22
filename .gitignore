@@ -18,6 +18,11 @@ missing
 # gresource cruft
 brisk-resources.*
 
+# libtool
+*.la
+*.lo
+.libs/
+
 brisk-menu
 
 # Data files for mate-panel
