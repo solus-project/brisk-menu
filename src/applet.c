@@ -139,6 +139,9 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         menu = brisk_menu_window_new();
         self->menu = menu;
 
+        /* Render "active" toggle only when the window is open, automatically. */
+        g_object_bind_property(menu, "visible", toggle, "active", G_BINDING_DEFAULT);
+
         /* Load initially in the idle loop, prevent lagging panel on startup */
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 }
