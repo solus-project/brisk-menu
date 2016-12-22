@@ -29,6 +29,8 @@ struct _BriskMenuAppletClass {
 struct _BriskMenuApplet {
         MatePanelApplet parent;
         GtkWidget *toggle;
+        GtkWidget *label;
+        GtkWidget *image;
         GtkWidget *menu;
 };
 
@@ -142,20 +144,44 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
  */
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
-        GtkWidget *toggle, *menu = NULL;
+        GtkWidget *toggle, *layout, *image, *label, *menu = NULL;
+
+        /* Create the toggle button */
+        toggle = gtk_toggle_button_new();
+        self->toggle = toggle;
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle), FALSE);
+        gtk_container_add(GTK_CONTAINER(self), toggle);
+        g_signal_connect_swapped(toggle, "button-press-event", G_CALLBACK(button_press_cb), self);
+        gtk_button_set_relief(GTK_BUTTON(toggle), GTK_RELIEF_NONE);
+
+        /* Layout will contain icon + label */
+        layout = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_container_add(GTK_CONTAINER(toggle), layout);
+
+        /* Image appears first always */
+        image = gtk_image_new_from_icon_name("start-here-symbolic", GTK_ICON_SIZE_MENU);
+        self->image = image;
+        gtk_box_pack_start(GTK_BOX(layout), image, FALSE, FALSE, 0);
+        gtk_widget_set_margin_end(image, 4);
+        gtk_widget_set_halign(image, GTK_ALIGN_START);
+
+        /* Now add the label */
+        label = gtk_label_new("Menu");
+        self->label = label;
+        gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
+
+        /* Fix label alignment */
+        gtk_widget_set_halign(label, GTK_ALIGN_START);
+        G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+        gtk_misc_set_alignment(GTK_MISC(label), 0.0f, 0.5f);
+        G_GNUC_END_IGNORE_DEPRECATIONS
 
         /* Applet hookup */
         mate_panel_applet_set_flags(MATE_PANEL_APPLET(self), MATE_PANEL_APPLET_EXPAND_MINOR);
         mate_panel_applet_set_background_widget(MATE_PANEL_APPLET(self), GTK_WIDGET(self));
 
-        /* DEMO CODE */
-        toggle = gtk_toggle_button_new_with_label("Menu");
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(toggle), FALSE);
-        gtk_container_add(GTK_CONTAINER(self), toggle);
-        g_signal_connect_swapped(toggle, "button-press-event", G_CALLBACK(button_press_cb), self);
+        /* Now show all content */
         gtk_widget_show_all(toggle);
-        gtk_button_set_relief(GTK_BUTTON(toggle), GTK_RELIEF_NONE);
-        self->toggle = toggle;
 
         /* Construct our menu */
         menu = brisk_menu_window_new();
