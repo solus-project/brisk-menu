@@ -40,16 +40,10 @@ static void brisk_menu_window_ungrab(BriskMenuWindow *self);
  */
 void brisk_menu_window_configure_grabs(BriskMenuWindow *self)
 {
-        g_signal_connect(GTK_WINDOW(self), "map-event", G_CALLBACK(brisk_menu_window_map), NULL);
-        g_signal_connect(GTK_WINDOW(self),
-                         "unmap-event",
-                         G_CALLBACK(brisk_menu_window_unmap),
-                         NULL);
-        g_signal_connect(GTK_WINDOW(self),
-                         "grab-notify",
-                         G_CALLBACK(brisk_menu_window_grab_notify),
-                         NULL);
-        g_signal_connect(GTK_WINDOW(self),
+        g_signal_connect(self, "map-event", G_CALLBACK(brisk_menu_window_map), NULL);
+        g_signal_connect(self, "unmap-event", G_CALLBACK(brisk_menu_window_unmap), NULL);
+        g_signal_connect(self, "grab-notify", G_CALLBACK(brisk_menu_window_grab_notify), NULL);
+        g_signal_connect(self,
                          "grab-broken-event",
                          G_CALLBACK(brisk_menu_window_grab_broken),
                          NULL);
