@@ -32,6 +32,7 @@ struct _BriskMenuWindow {
 
         /* Categories */
         GtkWidget *sidebar;
+        GtkWidget *sidebar_scroll;
 
         /* VBox for the sidebar container */
         GtkWidget *sidebar_wrap;
@@ -41,6 +42,7 @@ struct _BriskMenuWindow {
 
         /* Actual applications */
         GtkWidget *apps;
+        GtkWidget *apps_scroll;
 
         /* Our tree global reference */
         MateMenuTree *root;

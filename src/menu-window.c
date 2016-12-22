@@ -135,6 +135,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                                        GTK_POLICY_AUTOMATIC);
         gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(scroll), FALSE);
         self->sidebar = widget;
+        self->sidebar_scroll = scroll;
         gtk_container_add(GTK_CONTAINER(scroll), widget);
 
         /* Create a wrapper for the categories */
@@ -151,6 +152,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                                        GTK_POLICY_NEVER,
                                        GTK_POLICY_AUTOMATIC);
         gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(scroll), FALSE);
+        self->apps_scroll = scroll;
 
         /* Application launcher display */
         widget = gtk_list_box_new();
@@ -262,6 +264,7 @@ static void brisk_menu_window_load_css(BriskMenuWindow *self)
 static void brisk_menu_window_hide(GtkWidget *widget)
 {
         BriskMenuWindow *self = NULL;
+        GtkAdjustment *adjustment = NULL;
 
         /* Have parent deal with it first */
         GTK_WIDGET_CLASS(brisk_menu_window_parent_class)->hide(widget);
@@ -271,10 +274,16 @@ static void brisk_menu_window_hide(GtkWidget *widget)
         /* Remove search filter */
         gtk_entry_set_text(GTK_ENTRY(self->search), "");
 
-        /* Force activate the All butto */
+        /* Force activate the All button */
         if (self->all_button) {
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(self->all_button), TRUE);
         }
+
+        /* Reset scrollbars */
+        adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self->apps_scroll));
+        gtk_adjustment_set_value(adjustment, 0);
+        adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self->sidebar_scroll));
+        gtk_adjustment_set_value(adjustment, 0);
 }
 
 /*
