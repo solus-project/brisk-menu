@@ -24,6 +24,7 @@ BRISK_END_PEDANTIC
 G_DEFINE_TYPE(BriskMenuWindow, brisk_menu_window, GTK_TYPE_WINDOW)
 
 static void brisk_menu_window_load_css(BriskMenuWindow *self);
+static void brisk_menu_window_hide(GtkWidget *widget);
 
 /**
  * brisk_menu_window_new:
@@ -68,9 +69,13 @@ static void brisk_menu_window_dispose(GObject *obj)
 static void brisk_menu_window_class_init(BriskMenuWindowClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+        GtkWidgetClass *wid_class = GTK_WIDGET_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_menu_window_dispose;
+
+        /* widget vtable */
+        wid_class->hide = brisk_menu_window_hide;
 }
 
 /**
@@ -248,6 +253,27 @@ static void brisk_menu_window_load_css(BriskMenuWindow *self)
         if (!gtk_css_provider_load_from_file(css, file, &err)) {
                 g_warning("Failed to load CSS: %s\n", err->message);
                 return;
+        }
+}
+
+/**
+ * Override hiding so that we can invalidate all filters
+ */
+static void brisk_menu_window_hide(GtkWidget *widget)
+{
+        BriskMenuWindow *self = NULL;
+
+        /* Have parent deal with it first */
+        GTK_WIDGET_CLASS(brisk_menu_window_parent_class)->hide(widget);
+
+        self = BRISK_MENU_WINDOW(widget);
+
+        /* Remove search filter */
+        gtk_entry_set_text(GTK_ENTRY(self->search), "");
+
+        /* Force activate the All butto */
+        if (self->all_button) {
+                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(self->all_button), TRUE);
         }
 }
 
