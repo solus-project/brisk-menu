@@ -94,6 +94,8 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
 
         g_message("debug: menu reloaded");
 
+        brisk_menu_window_set_filters_enabled(self, FALSE);
+
         dir = matemenu_tree_get_root_directory(self->root);
 
         /* Clear existing */
@@ -119,6 +121,7 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         for (size_t i = 0; i < n_shortcuts; i++) {
                 brisk_menu_window_add_shortcut(self, brisk_default_shortcuts[i]);
         }
+        brisk_menu_window_set_filters_enabled(self, TRUE);
 }
 
 /**

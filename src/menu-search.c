@@ -43,6 +43,10 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
 {
         const gchar *search_term = NULL;
 
+        if (!self->filtering) {
+                return;
+        }
+
         /* Remove old search term */
         search_term = gtk_entry_get_text(entry);
         g_clear_pointer(&self->search_term, g_free);
@@ -142,6 +146,10 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         MateMenuTree *childTree = NULL;
 
         self = BRISK_MENU_WINDOW(v);
+
+        if (!self->filtering) {
+                return FALSE;
+        }
 
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));

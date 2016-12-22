@@ -156,11 +156,6 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
 
         /* Application launcher display */
         widget = gtk_list_box_new();
-        gtk_list_box_set_filter_func(GTK_LIST_BOX(widget),
-                                     brisk_menu_window_filter_apps,
-                                     self,
-                                     NULL);
-        gtk_list_box_set_sort_func(GTK_LIST_BOX(widget), brisk_menu_window_sort, self, NULL);
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
 
@@ -284,6 +279,27 @@ static void brisk_menu_window_hide(GtkWidget *widget)
         gtk_adjustment_set_value(adjustment, 0);
         adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self->sidebar_scroll));
         gtk_adjustment_set_value(adjustment, 0);
+}
+
+/**
+ * Enable or disable the filters between building of the menus
+ */
+void brisk_menu_window_set_filters_enabled(BriskMenuWindow *self, gboolean enabled)
+{
+        self->filtering = enabled;
+        if (enabled) {
+                gtk_list_box_set_filter_func(GTK_LIST_BOX(self->apps),
+                                             brisk_menu_window_filter_apps,
+                                             self,
+                                             NULL);
+                gtk_list_box_set_sort_func(GTK_LIST_BOX(self->apps),
+                                           brisk_menu_window_sort,
+                                           self,
+                                           NULL);
+                return;
+        }
+        gtk_list_box_set_filter_func(GTK_LIST_BOX(self->apps), NULL, NULL, NULL);
+        gtk_list_box_set_sort_func(GTK_LIST_BOX(self->apps), NULL, NULL, NULL);
 }
 
 /*
