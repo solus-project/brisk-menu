@@ -57,10 +57,10 @@ service_DATA = \
 
 # resources
 brisk-resources.h: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
-	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-header --c-name brisk_resources $<
+	glib-compile-resources --manual-register --target=$@ --sourcedir=$(top_srcdir)/data --generate-header --c-name brisk_resources $<
 
 brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
-	glib-compile-resources --target=$@ --sourcedir=$(top_srcdir)/data --generate-source --c-name brisk_resources $<
+	glib-compile-resources --manual-register --target=$@ --sourcedir=$(top_srcdir)/data --generate-source --c-name brisk_resources $<
 
 # Build this separately due to major spammy compiler warnings
 libbriskresources_la_SOURCES = \

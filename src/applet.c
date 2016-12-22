@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
+#include "brisk-resources.h"
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
@@ -32,6 +33,22 @@ struct _BriskMenuApplet {
 };
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
+
+/**
+ * We have no .ctor in the .a file - so it doesn't link
+ */
+__attribute__((constructor)) static void brisk_resource_init(void)
+{
+        brisk_resources_register_resource();
+}
+
+/**
+ * Again, no .dtor due to link issues, so we do it here
+ */
+__attribute__((destructor)) static void brisk_resource_deinit(void)
+{
+        brisk_resources_unregister_resource();
+}
 
 /**
  * Handle showing of the menu
