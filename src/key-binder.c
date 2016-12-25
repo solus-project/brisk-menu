@@ -31,7 +31,18 @@ struct _BriskKeyBinderClass {
 struct _BriskKeyBinder {
         GObject parent;
         GdkWindow *root_window;
+        GHashTable *bindings;
 };
+
+/**
+ * A KeyBinding is used to map the input + function pointer into something
+ * we can store and test.
+ */
+typedef struct KeyBinding {
+        const char *accelerator;
+        int keycode;
+        GdkModifierType mods;
+} KeyBinding;
 
 static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v);
 
@@ -76,6 +87,9 @@ static void brisk_key_binder_dispose(GObject *obj)
                 self->root_window = NULL;
         }
 
+        /* TODO: Iterate and unbind all */
+        g_clear_object(&self->bindings);
+
         G_OBJECT_CLASS(brisk_key_binder_parent_class)->dispose(obj);
 }
 
@@ -100,6 +114,8 @@ static void brisk_key_binder_class_init(BriskKeyBinderClass *klazz)
 static void brisk_key_binder_init(BriskKeyBinder *self)
 {
         GdkWindow *root = NULL;
+
+        self->bindings = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 
         root = gdk_get_default_root_window();
         if (!root) {
