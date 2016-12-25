@@ -58,6 +58,7 @@ __attribute__((destructor)) static void brisk_resource_deinit(void)
  * Handle showing of the menu
  */
 static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer v);
+static void hotkey_cb(GdkEvent *event, gpointer v);
 
 /**
  * Update the position for the menu.
@@ -123,7 +124,12 @@ static void brisk_menu_applet_dispose(GObject *obj)
                 g_clear_pointer(&self->menu, gtk_widget_destroy);
         }
 
-        g_clear_object(&self->binder);
+        if (self->binder) {
+                if (!brisk_key_binder_unbind(self->binder, "<CTRL><Alt>H")) {
+                        g_message("Failed to unbind keyboard shortcut");
+                }
+                g_clear_object(&self->binder);
+        }
 
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }
@@ -199,6 +205,10 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
 
         /* Load initially in the idle loop, prevent lagging panel on startup */
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
+
+        if (!brisk_key_binder_bind(self->binder, "<CTRL><Alt>H", hotkey_cb, self)) {
+                g_message("Failed to bind keyboard shortcut");
+        }
 }
 
 /**
@@ -218,6 +228,28 @@ static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, __brisk_
         gtk_widget_set_visible(self->menu, vis);
 
         return GDK_EVENT_STOP;
+}
+
+/**
+ * Called in idle once back out of the event
+ */
+static gboolean toggle_menu(BriskMenuApplet *self)
+{
+        gboolean vis = !gtk_widget_get_visible(self->menu);
+        if (vis) {
+                place_menu(self);
+        }
+
+        gtk_widget_set_visible(self->menu, vis);
+        return FALSE;
+}
+
+/**
+ * Handle global hotkey press
+ */
+static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
+{
+        g_idle_add((GSourceFunc)toggle_menu, v);
 }
 
 static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id,
