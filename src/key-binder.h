@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <gdk/gdk.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -33,6 +34,14 @@ typedef struct _BriskKeyBinderClass BriskKeyBinderClass;
 BriskKeyBinder *brisk_key_binder_new(void);
 
 GType brisk_key_binder_get_type(void);
+
+/**
+ * A callback for the binder functions
+ */
+typedef void (*BinderFunc)(GdkEvent *event, gpointer v);
+
+gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, BinderFunc func);
+gboolean brisk_key_binder_unbind(BriskKeyBinder *self, const gchar *shortcut);
 
 G_END_DECLS
 

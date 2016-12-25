@@ -19,6 +19,8 @@ BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
 #include <X11/Xlib.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
 struct _BriskKeyBinderClass {
@@ -39,9 +41,10 @@ struct _BriskKeyBinder {
  * we can store and test.
  */
 typedef struct KeyBinding {
-        const char *accelerator;
-        int keycode;
+        const gchar *accelerator;
+        KeyCode keycode;
         GdkModifierType mods;
+        BinderFunc func;
 } KeyBinding;
 
 static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v);
@@ -143,6 +146,50 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
         g_message("Haz keypress");
 
         return GDK_FILTER_CONTINUE;
+}
+
+/**
+ * Bind a shortcut with the appropriate callback
+ */
+gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, BinderFunc func)
+{
+        guint keysym;
+        GdkModifierType mod;
+        Display *display = NULL;
+        Window id;
+        KeyCode key;
+        KeyBinding *bind = NULL;
+
+        if (g_hash_table_contains(self->bindings, shortcut)) {
+                return FALSE;
+        }
+
+        gtk_accelerator_parse(shortcut, &keysym, &mod);
+        display = GDK_WINDOW_XDISPLAY(self->root_window);
+        id = GDK_WINDOW_XID(self->root_window);
+
+        key = XKeysymToKeycode(display, keysym);
+        if (key == 0) {
+                return FALSE;
+        }
+
+        bind = g_new0(KeyBinding, 1);
+        *bind = (KeyBinding){.accelerator = shortcut, .keycode = key, .mods = mod, .func = func };
+
+        g_hash_table_insert(self->bindings, g_strdup(shortcut), bind);
+
+        gdk_error_trap_push();
+        for (size_t i = 0; i < G_N_ELEMENTS(_modifiers); i++) {
+                GdkModifierType m = _modifiers[i];
+                XGrabKey(display, key, mod | m, id, FALSE, GrabModeAsync, GrabModeAsync);
+        }
+        gdk_flush();
+
+        return TRUE;
+}
+
+gboolean brisk_key_binder_unbind(BriskKeyBinder *self, const gchar *shortcut)
+{
 }
 
 /*
