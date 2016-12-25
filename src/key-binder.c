@@ -17,6 +17,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
+#include <X11/Xlib.h>
 #include <gdk/gdk.h>
 BRISK_END_PEDANTIC
 
@@ -115,8 +116,15 @@ static void brisk_key_binder_init(BriskKeyBinder *self)
 static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v)
 {
         BriskKeyBinder *self = NULL;
+        XEvent *xev = xevent;
 
         self = BRISK_KEY_BINDER(v);
+
+        if (xev->type != KeyPress) {
+                return GDK_FILTER_CONTINUE;
+        }
+
+        g_message("Haz keypress");
 
         return GDK_FILTER_CONTINUE;
 }
