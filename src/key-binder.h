@@ -40,7 +40,8 @@ GType brisk_key_binder_get_type(void);
  */
 typedef void (*BinderFunc)(GdkEvent *event, gpointer v);
 
-gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, BinderFunc func);
+gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, BinderFunc func,
+                               gpointer v);
 gboolean brisk_key_binder_unbind(BriskKeyBinder *self, const gchar *shortcut);
 
 G_END_DECLS

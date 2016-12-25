@@ -45,6 +45,7 @@ typedef struct KeyBinding {
         KeyCode keycode;
         GdkModifierType mods;
         BinderFunc func;
+        gpointer udata;
 } KeyBinding;
 
 static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v);
@@ -136,6 +137,10 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
 {
         BriskKeyBinder *self = NULL;
         XEvent *xev = xevent;
+        GHashTableIter iter = { 0 };
+        const gchar *key = NULL;
+        const KeyBinding *binding = NULL;
+        guint mods;
 
         self = BRISK_KEY_BINDER(v);
 
@@ -143,7 +148,18 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                 return GDK_FILTER_CONTINUE;
         }
 
-        g_message("Haz keypress");
+        /* unset mask of the lock keys */
+        mods = xev->xkey.state & ~(_modifiers[7]);
+
+        g_hash_table_iter_init(&iter, self->bindings);
+
+        /* Find a matching binding */
+        while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&binding)) {
+                if (xev->xkey.keycode == binding->keycode && mods == binding->mods) {
+                        binding->func(event, binding->udata);
+                        g_message("Called %s", binding->accelerator);
+                }
+        }
 
         return GDK_FILTER_CONTINUE;
 }
@@ -151,7 +167,8 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
 /**
  * Bind a shortcut with the appropriate callback
  */
-gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, BinderFunc func)
+gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, BinderFunc func,
+                               gpointer v)
 {
         guint keysym;
         GdkModifierType mod;
@@ -174,7 +191,11 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
         }
 
         bind = g_new0(KeyBinding, 1);
-        *bind = (KeyBinding){.accelerator = shortcut, .keycode = key, .mods = mod, .func = func };
+        *bind = (KeyBinding){.accelerator = shortcut,
+                             .keycode = key,
+                             .mods = mod,
+                             .func = func,
+                             .udata = v };
 
         g_hash_table_insert(self->bindings, g_strdup(shortcut), bind);
 
