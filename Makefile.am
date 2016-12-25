@@ -83,6 +83,8 @@ brisk_menu_SOURCES = \
 	src/desktop-button.c \
 	src/entry-button.h \
 	src/entry-button.c \
+	src/key-binder.h \
+	src/key-binder.c \
 	src/launcher.h \
 	src/launcher.c \
 	src/menu-grabs.c \
