@@ -92,7 +92,7 @@ static void brisk_key_binder_dispose(GObject *obj)
         }
 
         /* TODO: Iterate and unbind all */
-        g_clear_object(&self->bindings);
+        g_clear_pointer(&self->bindings, g_hash_table_unref);
 
         G_OBJECT_CLASS(brisk_key_binder_parent_class)->dispose(obj);
 }
