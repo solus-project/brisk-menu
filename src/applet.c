@@ -16,6 +16,7 @@
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
 #include "brisk-resources.h"
+#include "key-binder.h"
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gtk/gtk.h>
@@ -32,6 +33,7 @@ struct _BriskMenuApplet {
         GtkWidget *label;
         GtkWidget *image;
         GtkWidget *menu;
+        BriskKeyBinder *binder;
 };
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
@@ -121,6 +123,8 @@ static void brisk_menu_applet_dispose(GObject *obj)
                 g_clear_pointer(&self->menu, gtk_widget_destroy);
         }
 
+        g_clear_object(&self->binder);
+
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }
 
@@ -145,6 +149,8 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
         GtkWidget *toggle, *layout, *image, *label, *menu = NULL;
+
+        self->binder = brisk_key_binder_new();
 
         /* Create the toggle button */
         toggle = gtk_toggle_button_new();
