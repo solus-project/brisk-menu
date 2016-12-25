@@ -1,6 +1,8 @@
 /*
  * This file is part of brisk-menu.
  *
+ * Largely inspired by: https://esite.ch/2011/02/global-hotkeys-with-vala/
+ *
  * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +17,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
+#include <gdk/gdk.h>
 BRISK_END_PEDANTIC
 
 struct _BriskKeyBinderClass {
@@ -26,7 +29,23 @@ struct _BriskKeyBinderClass {
  */
 struct _BriskKeyBinder {
         GObject parent;
+        GdkWindow *root_window;
 };
+
+static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v);
+
+/**
+ * When binding a shortcut, we bind all possible combinations of lock key modifiers
+ * so that we'll get the event regardless (i.e. capslock/numlock)
+ */
+static GdkModifierType _modifiers[] = { 0,
+                                        GDK_MOD2_MASK,
+                                        GDK_LOCK_MASK,
+                                        GDK_MOD5_MASK,
+                                        GDK_MOD2_MASK | GDK_LOCK_MASK,
+                                        GDK_MOD2_MASK | GDK_MOD5_MASK,
+                                        GDK_LOCK_MASK | GDK_MOD5_MASK,
+                                        GDK_MOD2_MASK | GDK_LOCK_MASK | GDK_MOD5_MASK };
 
 G_DEFINE_TYPE(BriskKeyBinder, brisk_key_binder, G_TYPE_OBJECT)
 
@@ -47,6 +66,15 @@ BriskKeyBinder *brisk_key_binder_new()
  */
 static void brisk_key_binder_dispose(GObject *obj)
 {
+        BriskKeyBinder *self = NULL;
+
+        /* Remove our filter again */
+        self = BRISK_KEY_BINDER(obj);
+        if (self->root_window) {
+                gdk_window_remove_filter(self->root_window, brisk_key_binder_filter, self);
+                self->root_window = NULL;
+        }
+
         G_OBJECT_CLASS(brisk_key_binder_parent_class)->dispose(obj);
 }
 
@@ -70,7 +98,27 @@ static void brisk_key_binder_class_init(BriskKeyBinderClass *klazz)
  */
 static void brisk_key_binder_init(BriskKeyBinder *self)
 {
-        /* NOOP */
+        GdkWindow *root = NULL;
+
+        root = gdk_get_default_root_window();
+        if (!root) {
+                g_warning("No root window found, cannot bind events");
+                return;
+        }
+        self->root_window = root;
+        gdk_window_add_filter(root, brisk_key_binder_filter, self);
+}
+
+/**
+ * Handle global events (eventually)
+ */
+static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v)
+{
+        BriskKeyBinder *self = NULL;
+
+        self = BRISK_KEY_BINDER(v);
+
+        return GDK_FILTER_CONTINUE;
 }
 
 /*
