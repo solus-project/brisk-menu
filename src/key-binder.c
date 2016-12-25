@@ -144,7 +144,7 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
 
         self = BRISK_KEY_BINDER(v);
 
-        if (xev->type != KeyPress) {
+        if (xev->type != KeyRelease) {
                 return GDK_FILTER_CONTINUE;
         }
 
