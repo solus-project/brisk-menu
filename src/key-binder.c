@@ -188,8 +188,27 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
         return TRUE;
 }
 
+/**
+ * Unbind the shortcut once again, if previously registered
+ */
 gboolean brisk_key_binder_unbind(BriskKeyBinder *self, const gchar *shortcut)
 {
+        KeyBinding *binding = NULL;
+        Display *display = NULL;
+        Window id;
+
+        binding = g_hash_table_lookup(self->bindings, shortcut);
+        if (!binding) {
+                return FALSE;
+        }
+
+        display = GDK_WINDOW_XDISPLAY(self->root_window);
+        id = GDK_WINDOW_XID(self->root_window);
+
+        XUngrabKey(display, binding->keycode, binding->mods, id);
+        g_hash_table_remove(self->bindings, shortcut);
+
+        return TRUE;
 }
 
 /*
