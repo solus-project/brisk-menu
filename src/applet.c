@@ -201,7 +201,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Load initially in the idle loop, prevent lagging panel on startup */
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 
-        if (!brisk_key_binder_bind(self->binder, "<CTRL><Alt>H", hotkey_cb, self)) {
+        if (!brisk_key_binder_bind(self->binder, "<Super_R>", hotkey_cb, self)) {
                 g_message("Failed to bind keyboard shortcut");
         }
 }
