@@ -157,7 +157,6 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
         while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&binding)) {
                 if (xev->xkey.keycode == binding->keycode && mods == binding->mods) {
                         binding->func(event, binding->udata);
-                        g_message("Called %s", binding->accelerator);
                 }
         }
 
