@@ -124,12 +124,7 @@ static void brisk_menu_applet_dispose(GObject *obj)
                 g_clear_pointer(&self->menu, gtk_widget_destroy);
         }
 
-        if (self->binder) {
-                if (!brisk_key_binder_unbind(self->binder, "<CTRL><Alt>H")) {
-                        g_message("Failed to unbind keyboard shortcut");
-                }
-                g_clear_object(&self->binder);
-        }
+        g_clear_object(&self->binder);
 
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }

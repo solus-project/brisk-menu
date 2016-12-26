@@ -49,6 +49,7 @@ typedef struct KeyBinding {
 } KeyBinding;
 
 static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *event, gpointer v);
+static void free_keybinding(KeyBinding *binding);
 
 /**
  * When binding a shortcut, we bind all possible combinations of lock key modifiers
@@ -91,7 +92,7 @@ static void brisk_key_binder_dispose(GObject *obj)
                 self->root_window = NULL;
         }
 
-        /* TODO: Iterate and unbind all */
+        /* Will automatically clean up all bindings too */
         g_clear_pointer(&self->bindings, g_hash_table_unref);
 
         G_OBJECT_CLASS(brisk_key_binder_parent_class)->dispose(obj);
@@ -119,7 +120,8 @@ static void brisk_key_binder_init(BriskKeyBinder *self)
 {
         GdkWindow *root = NULL;
 
-        self->bindings = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+        self->bindings =
+            g_hash_table_new_full(g_str_hash, g_str_equal, g_free, (GDestroyNotify)free_keybinding);
 
         root = gdk_get_default_root_window();
         if (!root) {
@@ -213,22 +215,28 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
  */
 gboolean brisk_key_binder_unbind(BriskKeyBinder *self, const gchar *shortcut)
 {
-        KeyBinding *binding = NULL;
+        return g_hash_table_remove(self->bindings, shortcut);
+}
+
+/**
+ * Handle cleaning up of the keybinding
+ */
+static void free_keybinding(KeyBinding *binding)
+{
         Display *display = NULL;
         Window id;
+        GdkWindow *window = NULL;
 
-        binding = g_hash_table_lookup(self->bindings, shortcut);
-        if (!binding) {
-                return FALSE;
+        window = gdk_get_default_root_window();
+        if (window) {
+                display = GDK_WINDOW_XDISPLAY(window);
+                id = GDK_WINDOW_XID(window);
+                XUngrabKey(display, binding->keycode, binding->mods, id);
+        } else {
+                g_warning("Could not find root window to XUngrabKey");
         }
 
-        display = GDK_WINDOW_XDISPLAY(self->root_window);
-        id = GDK_WINDOW_XID(self->root_window);
-
-        XUngrabKey(display, binding->keycode, binding->mods, id);
-        g_hash_table_remove(self->bindings, shortcut);
-
-        return TRUE;
+        g_free(binding);
 }
 
 /*
