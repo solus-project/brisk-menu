@@ -99,6 +99,7 @@ brisk_menu_SOURCES = \
 
 brisk_menu_CFLAGS = \
 	$(GTK_CFLAGS) \
+	$(X11_CFLAGS) \
 	$(MENU_CFLAGS) \
 	$(APPLET_CFLAGS) \
 	$(AM_CFLAGS)
@@ -106,5 +107,6 @@ brisk_menu_CFLAGS = \
 brisk_menu_LDADD = \
 	libbriskresources.la \
 	$(GTK_LIBS) \
+	$(X11_LIBS) \
 	$(MENU_LIBS) \
 	$(APPLET_LIBS)

@@ -21,6 +21,13 @@ PKG_CHECK_MODULES(GTK,
                  ]
 )
 
+PKG_CHECK_MODULES(X11,
+                 [
+                   gdk-x11-3.0 >= gtk_required_version
+                   x11
+                 ]
+)
+
 PKG_CHECK_MODULES(GIO,
                  [
                    gobject-2.0 >= glib_required_version
