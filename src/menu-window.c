@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
+#include "entry-button.h"
 #include "launcher.h"
 #include "menu-private.h"
 #include "menu-window.h"
@@ -162,6 +163,12 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         widget = gtk_list_box_new();
         gtk_container_add(GTK_CONTAINER(scroll), widget);
         self->apps = widget;
+        gtk_list_box_set_activate_on_single_click(GTK_LIST_BOX(self->apps), TRUE);
+        gtk_list_box_set_selection_mode(GTK_LIST_BOX(self->apps), GTK_SELECTION_SINGLE);
+        g_signal_connect_swapped(self->apps,
+                                 "row-activated",
+                                 G_CALLBACK(brisk_menu_window_activated),
+                                 self);
 
         /* Style up the app box */
         style = gtk_widget_get_style_context(widget);
@@ -304,6 +311,23 @@ void brisk_menu_window_set_filters_enabled(BriskMenuWindow *self, gboolean enabl
         }
         gtk_list_box_set_filter_func(GTK_LIST_BOX(self->apps), NULL, NULL, NULL);
         gtk_list_box_set_sort_func(GTK_LIST_BOX(self->apps), NULL, NULL, NULL);
+}
+
+void brisk_menu_window_activated(__brisk_unused__ BriskMenuWindow *self, GtkListBoxRow *row,
+                                 __brisk_unused__ gpointer v)
+{
+        BriskMenuEntryButton *button = NULL;
+        GtkWidget *child = NULL;
+
+        child = gtk_bin_get_child(GTK_BIN(row));
+        if (!child) {
+                return;
+        }
+        if (!BRISK_IS_MENU_ENTRY_BUTTON(child)) {
+                return;
+        }
+        button = BRISK_MENU_ENTRY_BUTTON(child);
+        brisk_menu_entry_button_launch(button);
 }
 
 /*

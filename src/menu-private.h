@@ -75,6 +75,7 @@ void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *butt
 /* Search */
 void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry);
 gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v);
+void brisk_menu_window_activated(BriskMenuWindow *self, GtkListBoxRow *row, gpointer v);
 void brisk_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos, GdkEvent *event,
                                     gpointer v);
 
