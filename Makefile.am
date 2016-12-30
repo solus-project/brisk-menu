@@ -15,7 +15,9 @@ EXTRA_DIST = \
 	data/org.mate.panel.applet.BriskMenuFactory.service.in \
 	data/com.solus_project.brisk.BriskMenu.mate-panel-applet.in \
 	data/styling.css \
-	data/brisk_system-log-out-symbolic.svg
+	data/brisk_system-log-out-symbolic.svg \
+	src/org.gnome.ScreenSaver.xml \
+	src/org.gnome.SessionManager.xml
 
 iconsdir = \
 	$(datadir)/icons/hicolor/scalable/actions

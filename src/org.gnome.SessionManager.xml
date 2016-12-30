@@ -1,0 +1,15 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+                      "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<!-- GDBus 2.48.1 -->
+<node>
+  <interface name="org.gnome.SessionManager">
+    <method name="Shutdown"/>
+    <method name="Reboot"/>
+    <method name="CanShutdown">
+      <arg type="b" name="is_available" direction="out"/>
+    </method>
+    <method name="Logout">
+      <arg type="u" name="mode" direction="in"/>
+    </method>
+  </interface>
+</node>
