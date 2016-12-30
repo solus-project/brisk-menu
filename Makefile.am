@@ -33,9 +33,45 @@ noinst_LTLIBRARIES = \
 
 brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/brisk.gresource.xml)
 
+# Generate the glue
+libsession-glue.h: $(top_srcdir)/src/org.gnome.SessionManager.xml
+	gdbus-codegen --interface-prefix org.gnome. \
+	--c-namespace Gnome --c-generate-object-manager \
+	--generate-c-code libsession-glue $<
+
+libsession-glue.c: libsession-glue.h
+
+# Generate the screensaver glue
+libsaver-glue.h: $(top_srcdir)/src/org.gnome.ScreenSaver.xml
+	gdbus-codegen --interface-prefix org.gnome. \
+	--c-namespace Gnome --c-generate-object-manager \
+	--generate-c-code libsaver-glue $<
+
+libsaver-glue.c: libsaver-glue.h
+
+# Build the stub first to compile into the main session library
+noinst_LTLIBRARIES += \
+	libsession-stub.la
+
+libsession_stub_la_SOURCES = \
+	libsession-glue.c \
+	libsession-glue.h \
+	libsaver-glue.h \
+	libsaver-glue.c
+
+libsession_stub_la_CFLAGS = \
+	$(GIO_CFLAGS)
+
+libsession_stub_la_LIBS = \
+	$(GIO_LIBS)
+
 BUILT_SOURCES = \
 	brisk-resources.h \
-	brisk-resources.c
+	brisk-resources.c \
+	libsession-glue.h \
+	libsession-glue.c \
+	libsaver-glue.h \
+	libsaver-glue.c
 
 CLEANFILES = \
 	$(BUILT_SOURCES) \

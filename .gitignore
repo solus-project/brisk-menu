@@ -28,3 +28,6 @@ brisk-menu
 # Data files for mate-panel
 *.mate-panel-applet
 *.service
+
+libsaver-glue.*
+libsession-glue.*
