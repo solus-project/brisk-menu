@@ -15,3 +15,9 @@ License
 Copyright © 2016 Ikey Doherty, Solus Project.
 
 `brisk-menu` is available under the terms of the `GPL-2.0` license.
+
+The `brisk_system-log-out-symbolic.svg` icon is a copy of `application-exit-symbolic.svg`
+to use within Brisk.
+
+This icon is copyright © Sam Hewitt, from the [Paper Icons](https://github.com/snwh/paper-icon-theme) theme, available
+under the terms of the [CC-BY-SA-4.0 license](https://creativecommons.org/licenses/by-sa/4.0/).

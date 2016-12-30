@@ -14,7 +14,14 @@ EXTRA_DIST = \
 	data/brisk.gresource.xml \
 	data/org.mate.panel.applet.BriskMenuFactory.service.in \
 	data/com.solus_project.brisk.BriskMenu.mate-panel-applet.in \
-	data/styling.css
+	data/styling.css \
+	data/brisk_system-log-out-symbolic.svg
+
+iconsdir = \
+	$(datadir)/icons/hicolor/scalable/actions
+
+icons_DATA = \
+	data/brisk_system-log-out-symbolic.svg
 
 libexec_PROGRAMS = \
 	brisk-menu
