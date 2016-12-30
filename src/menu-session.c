@@ -78,7 +78,7 @@ static void brisk_menu_window_lock(BriskMenuWindow *self, __brisk_unused__ gpoin
 /**
  * Create the graphical buttons for session control
  */
-static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
+void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
 {
         GtkWidget *widget = NULL;
         GtkWidget *box = NULL;
@@ -119,10 +119,9 @@ static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
         gtk_container_add(GTK_CONTAINER(box), widget);
 }
 
-void brisk_menu_window_setup_session(BriskMenuWindow *self)
+gboolean brisk_menu_window_setup_session(BriskMenuWindow *self)
 {
         autofree(GError) *error = NULL;
-        brisk_menu_window_setup_session_controls(self);
         gboolean can_shutdown = FALSE;
         __brisk_unused__ gboolean is_active = FALSE;
 
@@ -158,7 +157,7 @@ saver_init:
         if (error) {
                 g_warning("Failed to contact org.mate.ScreenSaver: %s\n", error->message);
                 gtk_widget_set_sensitive(self->button_lock, FALSE);
-                return;
+                return FALSE;
         }
 
         /* Check the screensaver is *really* running */
@@ -167,6 +166,7 @@ saver_init:
                 gtk_widget_set_sensitive(self->button_lock, FALSE);
                 g_warning("org.mate.ScreenSaver not running: %s\n", error->message);
         }
+        return FALSE;
 }
 
 /*

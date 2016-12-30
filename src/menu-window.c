@@ -196,7 +196,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_widget_show_all(widget);
 
         /* Add session controls */
-        brisk_menu_window_setup_session(self);
+        brisk_menu_window_setup_session_controls(self);
 
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
@@ -206,6 +206,9 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                          "key-release-event",
                          G_CALLBACK(brisk_menu_window_key_release),
                          NULL);
+
+        /* Hook up dbus later on */
+        g_idle_add((GSourceFunc)brisk_menu_window_setup_session, self);
         /* Start with all content parts "shown" */
         gtk_widget_show_all(layout);
 }
