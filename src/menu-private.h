@@ -91,6 +91,9 @@ void brisk_menu_window_set_filters_enabled(BriskMenuWindow *self, gboolean enabl
 /* Global grabs */
 void brisk_menu_window_configure_grabs(BriskMenuWindow *self);
 
+/* Session controls */
+void brisk_menu_window_setup_session(BriskMenuWindow *self);
+
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)

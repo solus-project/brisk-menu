@@ -91,6 +91,7 @@ brisk_menu_SOURCES = \
 	src/menu-keyboard.c \
 	src/menu-private.h \
 	src/menu-search.c \
+	src/menu-session.c \
 	src/menu-sort.c \
 	src/menu-loader.c \
 	src/menu-window.h \

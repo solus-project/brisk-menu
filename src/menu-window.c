@@ -193,6 +193,9 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_list_box_set_placeholder(GTK_LIST_BOX(self->apps), widget);
         gtk_widget_show_all(widget);
 
+        /* Add session controls */
+        brisk_menu_window_setup_session(self);
+
         gtk_window_set_default_size(GTK_WINDOW(self), 300, 510);
         g_object_set(layout, "margin", 3, NULL);
 
