@@ -18,13 +18,29 @@ BRISK_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
+static void brisk_menu_window_logout_cb(__brisk_unused__ GObject *obj, GAsyncResult *res,
+                                        gpointer v)
+{
+        autofree(GError) *error = NULL;
+        BriskMenuWindow *self = v;
+
+        gnome_session_manager_call_logout_finish(self->session, res, &error);
+        if (error) {
+                g_warning("Error logging out: %s", error->message);
+        }
+}
+
 static gboolean brisk_menu_window_logout_real(BriskMenuWindow *self)
 {
         if (!self->session) {
                 return FALSE;
         }
 
-        gnome_session_manager_call_logout_sync(self->session, 0, NULL, NULL);
+        gnome_session_manager_call_logout(self->session,
+                                          0,
+                                          NULL,
+                                          brisk_menu_window_logout_cb,
+                                          self);
         return FALSE;
 }
 
@@ -38,13 +54,28 @@ static void brisk_menu_window_logout(BriskMenuWindow *self, __brisk_unused__ gpo
         g_idle_add((GSourceFunc)brisk_menu_window_logout_real, self);
 }
 
+static void brisk_menu_window_shutdown_cb(__brisk_unused__ GObject *obj, GAsyncResult *res,
+                                          gpointer v)
+{
+        autofree(GError) *error = NULL;
+        BriskMenuWindow *self = v;
+
+        gnome_session_manager_call_shutdown_finish(self->session, res, &error);
+        if (error) {
+                g_warning("Error shutting down: %s", error->message);
+        }
+}
+
 static inline gboolean brisk_menu_window_shutdown_real(BriskMenuWindow *self)
 {
         if (!self->session) {
                 return FALSE;
         }
 
-        gnome_session_manager_call_shutdown_sync(self->session, NULL, NULL);
+        gnome_session_manager_call_shutdown(self->session,
+                                            NULL,
+                                            brisk_menu_window_shutdown_cb,
+                                            self);
         return FALSE;
 }
 
