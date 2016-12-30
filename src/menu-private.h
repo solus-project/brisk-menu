@@ -71,7 +71,7 @@ struct _BriskMenuWindow {
 
         /* Session management */
         GnomeSessionManager *session;
-        GnomeScreenSaver *saver;
+        MateScreenSaver *saver;
         GtkWidget *button_lock;
         GtkWidget *button_logout;
         GtkWidget *button_shutdown;

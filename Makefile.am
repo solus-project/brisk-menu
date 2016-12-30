@@ -16,7 +16,7 @@ EXTRA_DIST = \
 	data/com.solus_project.brisk.BriskMenu.mate-panel-applet.in \
 	data/styling.css \
 	data/brisk_system-log-out-symbolic.svg \
-	src/org.gnome.ScreenSaver.xml \
+	src/org.mate.ScreenSaver.xml \
 	src/org.gnome.SessionManager.xml
 
 iconsdir = \
@@ -42,9 +42,9 @@ libsession-glue.h: $(top_srcdir)/src/org.gnome.SessionManager.xml
 libsession-glue.c: libsession-glue.h
 
 # Generate the screensaver glue
-libsaver-glue.h: $(top_srcdir)/src/org.gnome.ScreenSaver.xml
-	gdbus-codegen --interface-prefix org.gnome. \
-	--c-namespace Gnome \
+libsaver-glue.h: $(top_srcdir)/src/org.mate.ScreenSaver.xml
+	gdbus-codegen --interface-prefix org.mate. \
+	--c-namespace Mate \
 	--generate-c-code libsaver-glue $<
 
 libsaver-glue.c: libsaver-glue.h

@@ -62,7 +62,7 @@ static inline gboolean brisk_menu_window_lock_real(BriskMenuWindow *self)
         if (!self->saver) {
                 return FALSE;
         }
-        gnome_screen_saver_call_lock_sync(self->saver, NULL, NULL);
+        mate_screen_saver_call_lock_sync(self->saver, NULL, NULL);
         return FALSE;
 }
 
@@ -149,24 +149,24 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
 
 saver_init:
         self->saver =
-            gnome_screen_saver_proxy_new_for_bus_sync(G_BUS_TYPE_SESSION,
-                                                      G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
-                                                          G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
-                                                      "org.gnome.ScreenSaver",
-                                                      "/org/gnome/ScreenSaver",
-                                                      NULL,
-                                                      &error);
+            mate_screen_saver_proxy_new_for_bus_sync(G_BUS_TYPE_SESSION,
+                                                     G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+                                                         G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+                                                     "org.mate.ScreenSaver",
+                                                     "/org/mate/ScreenSaver",
+                                                     NULL,
+                                                     &error);
         if (error) {
-                g_warning("Failed to contact org.gnome.ScreenSaver: %s\n", error->message);
+                g_warning("Failed to contact org.mate.ScreenSaver: %s\n", error->message);
                 gtk_widget_set_sensitive(self->button_lock, FALSE);
                 return;
         }
 
         /* Check the screensaver is *really* running */
-        gnome_screen_saver_call_get_active_sync(self->saver, &is_active, NULL, &error);
+        mate_screen_saver_call_get_active_sync(self->saver, &is_active, NULL, &error);
         if (error) {
                 gtk_widget_set_sensitive(self->button_lock, FALSE);
-                g_warning("org.gnome.ScreenSaver not running: %s\n", error->message);
+                g_warning("org.mate.ScreenSaver not running: %s\n", error->message);
         }
 }
 
