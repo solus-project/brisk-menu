@@ -36,7 +36,7 @@ brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data 
 # Generate the glue
 libsession-glue.h: $(top_srcdir)/src/org.gnome.SessionManager.xml
 	gdbus-codegen --interface-prefix org.gnome. \
-	--c-namespace Gnome --c-generate-object-manager \
+	--c-namespace Gnome  \
 	--generate-c-code libsession-glue $<
 
 libsession-glue.c: libsession-glue.h
@@ -44,7 +44,7 @@ libsession-glue.c: libsession-glue.h
 # Generate the screensaver glue
 libsaver-glue.h: $(top_srcdir)/src/org.gnome.ScreenSaver.xml
 	gdbus-codegen --interface-prefix org.gnome. \
-	--c-namespace Gnome --c-generate-object-manager \
+	--c-namespace Gnome \
 	--generate-c-code libsaver-glue $<
 
 libsaver-glue.c: libsaver-glue.h
