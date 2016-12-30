@@ -150,8 +150,7 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
 saver_init:
         self->saver =
             mate_screen_saver_proxy_new_for_bus_sync(G_BUS_TYPE_SESSION,
-                                                     G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
-                                                         G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+                                                     G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
                                                      "org.mate.ScreenSaver",
                                                      "/org/mate/ScreenSaver",
                                                      NULL,
