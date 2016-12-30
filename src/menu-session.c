@@ -57,12 +57,23 @@ static void brisk_menu_window_shutdown(BriskMenuWindow *self, __brisk_unused__ g
         g_idle_add((GSourceFunc)brisk_menu_window_shutdown_real, self);
 }
 
+static void brisk_menu_window_lock_cb(__brisk_unused__ GObject *obj, GAsyncResult *res, gpointer v)
+{
+        autofree(GError) *error = NULL;
+        BriskMenuWindow *self = v;
+
+        mate_screen_saver_call_lock_finish(self->saver, res, &error);
+        if (error) {
+                g_warning("Error locking screen: %s", error->message);
+        }
+}
+
 static inline gboolean brisk_menu_window_lock_real(BriskMenuWindow *self)
 {
         if (!self->saver) {
                 return FALSE;
         }
-        mate_screen_saver_call_lock_sync(self->saver, NULL, NULL);
+        mate_screen_saver_call_lock(self->saver, NULL, brisk_menu_window_lock_cb, self);
         return FALSE;
 }
 
