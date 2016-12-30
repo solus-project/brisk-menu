@@ -121,6 +121,10 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
         self->search = widget;
         g_signal_connect_swapped(widget, "changed", G_CALLBACK(brisk_menu_window_search), self);
+        g_signal_connect_swapped(widget,
+                                 "activate",
+                                 G_CALLBACK(brisk_menu_window_key_activate),
+                                 self);
         g_signal_connect(widget, "icon-press", G_CALLBACK(brisk_menu_window_clear_search), self);
 
         /* Content layout */

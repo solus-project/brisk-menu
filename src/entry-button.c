@@ -336,7 +336,11 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
 static void brisk_menu_entry_clicked(GtkButton *widget)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
+        brisk_menu_entry_button_launch(self);
+}
 
+void brisk_menu_entry_button_launch(BriskMenuEntryButton *self)
+{
         if (!self->info) {
                 return;
         }

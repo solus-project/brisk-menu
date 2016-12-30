@@ -83,6 +83,7 @@ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v
 
 /* Keyboard */
 gboolean brisk_menu_window_key_release(BriskMenuWindow *self, GdkEvent *event, gpointer v);
+void brisk_menu_window_key_activate(BriskMenuWindow *self, gpointer v);
 
 void brisk_menu_window_set_filters_enabled(BriskMenuWindow *self, gboolean enabled);
 

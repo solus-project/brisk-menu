@@ -40,6 +40,8 @@ typedef struct _BriskMenuEntryButtonClass BriskMenuEntryButtonClass;
 GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, MateMenuTree *tree,
                                        MateMenuTreeEntry *entry);
 
+void brisk_menu_entry_button_launch(BriskMenuEntryButton *button);
+
 GType brisk_menu_entry_button_get_type(void);
 
 G_END_DECLS
