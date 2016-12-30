@@ -20,15 +20,33 @@ BRISK_END_PEDANTIC
 
 void brisk_menu_window_setup_session(BriskMenuWindow *self)
 {
-        GtkWidget *button = NULL;
+        GtkWidget *widget = NULL;
         GtkWidget *box = NULL;
+        GtkStyleContext *style = NULL;
 
-        box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_button_box_set_layout(GTK_BUTTON_BOX(box), GTK_BUTTONBOX_CENTER);
+        box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_widget_set_margin_bottom(box, 4);
+        style = gtk_widget_get_style_context(box);
+        gtk_style_context_add_class(style, GTK_STYLE_CLASS_LINKED);
 
-        gtk_box_pack_end(GTK_BOX(self->sidebar_wrap), box);
+        gtk_box_pack_end(GTK_BOX(self->sidebar_wrap), box, FALSE, FALSE, 0);
+        gtk_widget_set_halign(box, GTK_ALIGN_CENTER);
 
-        widget = gtk_button_new_from_icon_name("system-log-out", GTK_ICON_SIZE_BUTTON);
+        /* Logout.. TODO: Find a better icon! */
+        widget = gtk_button_new_from_icon_name("application-exit-symbolic", GTK_ICON_SIZE_MENU);
+        gtk_widget_set_tooltip_text(widget, "End the current session");
+        gtk_container_add(GTK_CONTAINER(box), widget);
+
+        /* Lock */
+        widget = gtk_button_new_from_icon_name("system-lock-screen-symbolic",
+                                               GTK_ICON_SIZE_SMALL_TOOLBAR);
+        gtk_widget_set_tooltip_text(widget, "Lock the screen");
+        gtk_container_add(GTK_CONTAINER(box), widget);
+
+        /* Shutdown */
+        widget =
+            gtk_button_new_from_icon_name("system-shutdown-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
+        gtk_widget_set_tooltip_text(widget, "Turn off the device");
         gtk_container_add(GTK_CONTAINER(box), widget);
 }
 
