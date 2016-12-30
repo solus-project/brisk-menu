@@ -12,6 +12,7 @@
 #pragma once
 
 #include "launcher.h"
+#include "libsaver-glue.h"
 #include "libsession-glue.h"
 #include "menu-window.h"
 #include "util.h"
@@ -70,6 +71,7 @@ struct _BriskMenuWindow {
 
         /* Session management */
         GnomeSessionManager *session;
+        GnomeScreenSaver *saver;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */

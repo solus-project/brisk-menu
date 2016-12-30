@@ -57,6 +57,24 @@ static void brisk_menu_window_shutdown(BriskMenuWindow *self, __brisk_unused__ g
         g_idle_add((GSourceFunc)brisk_menu_window_shutdown_real, self);
 }
 
+static inline gboolean brisk_menu_window_lock_real(BriskMenuWindow *self)
+{
+        if (!self->saver) {
+                return FALSE;
+        }
+        gnome_screen_saver_call_lock_sync(self->saver, NULL, NULL);
+        return FALSE;
+}
+
+/**
+ * Handle lock
+ */
+static void brisk_menu_window_lock(BriskMenuWindow *self, __brisk_unused__ gpointer v)
+{
+        gtk_widget_hide(GTK_WIDGET(self));
+        g_idle_add((GSourceFunc)brisk_menu_window_lock_real, self);
+}
+
 /**
  * Create the graphical buttons for session control
  */
@@ -84,6 +102,7 @@ static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
         /* Lock */
         widget = gtk_button_new_from_icon_name("system-lock-screen-symbolic",
                                                GTK_ICON_SIZE_SMALL_TOOLBAR);
+        g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_lock), self);
         gtk_widget_set_tooltip_text(widget, "Lock the screen");
         gtk_widget_set_can_focus(widget, FALSE);
         gtk_container_add(GTK_CONTAINER(box), widget);
@@ -112,7 +131,19 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
             &error);
         if (error) {
                 g_warning("Failed to contact org.gnome.SessionManager: %s\n", error->message);
-                return;
+                g_error_free(error);
+        }
+
+        self->saver =
+            gnome_screen_saver_proxy_new_for_bus_sync(G_BUS_TYPE_SESSION,
+                                                      G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
+                                                          G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+                                                      "org.gnome.ScreenSaver",
+                                                      "/org/gnome/ScreenSaver",
+                                                      NULL,
+                                                      &error);
+        if (error) {
+                g_warning("Failed to contact org.gnome.ScreenSaver: %s\n", error->message);
         }
 }
 

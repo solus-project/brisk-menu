@@ -59,6 +59,7 @@ static void brisk_menu_window_dispose(GObject *obj)
         g_clear_pointer(&self->search_term, g_free);
         g_clear_object(&self->launcher);
         g_clear_object(&self->session);
+        g_clear_object(&self->saver);
 
         G_OBJECT_CLASS(brisk_menu_window_parent_class)->dispose(obj);
 }
