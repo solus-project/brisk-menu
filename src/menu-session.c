@@ -33,7 +33,7 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
         gtk_widget_set_halign(box, GTK_ALIGN_CENTER);
 
         /* Logout.. TODO: Find a better icon! */
-        widget = gtk_button_new_from_icon_name("application-exit-symbolic", GTK_ICON_SIZE_MENU);
+        widget = gtk_button_new_from_icon_name("brisk_system-log-out-symbolic", GTK_ICON_SIZE_MENU);
         gtk_widget_set_tooltip_text(widget, "End the current session");
         gtk_container_add(GTK_CONTAINER(box), widget);
 
