@@ -12,6 +12,7 @@
 #pragma once
 
 #include "launcher.h"
+#include "libsession-glue.h"
 #include "menu-window.h"
 #include "util.h"
 #include <gtk/gtk.h>
@@ -66,6 +67,9 @@ struct _BriskMenuWindow {
 
         /* Whether we have a grab or not */
         gboolean grabbed;
+
+        /* Session management */
+        GnomeSessionManager *session;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */

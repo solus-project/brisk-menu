@@ -152,6 +152,7 @@ brisk_menu_CFLAGS = \
 
 brisk_menu_LDADD = \
 	libbriskresources.la \
+	libsession-stub.la \
 	$(GTK_LIBS) \
 	$(X11_LIBS) \
 	$(MENU_LIBS) \

@@ -18,7 +18,49 @@ BRISK_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
-void brisk_menu_window_setup_session(BriskMenuWindow *self)
+static gboolean brisk_menu_window_logout_real(BriskMenuWindow *self)
+{
+        if (!self->session) {
+                return FALSE;
+        }
+
+        gnome_session_manager_call_logout_sync(self->session, 0, NULL, NULL);
+        return FALSE;
+}
+
+/**
+ * Handle log out
+ */
+static void brisk_menu_window_logout(BriskMenuWindow *self, __brisk_unused__ gpointer v)
+{
+        gtk_widget_hide(GTK_WIDGET(self));
+
+        g_idle_add((GSourceFunc)brisk_menu_window_logout_real, self);
+}
+
+static inline gboolean brisk_menu_window_shutdown_real(BriskMenuWindow *self)
+{
+        if (!self->session) {
+                return FALSE;
+        }
+
+        gnome_session_manager_call_shutdown_sync(self->session, NULL, NULL);
+        return FALSE;
+}
+
+/**
+ * Handle shut down
+ */
+static void brisk_menu_window_shutdown(BriskMenuWindow *self, __brisk_unused__ gpointer v)
+{
+        gtk_widget_hide(GTK_WIDGET(self));
+        g_idle_add((GSourceFunc)brisk_menu_window_shutdown_real, self);
+}
+
+/**
+ * Create the graphical buttons for session control
+ */
+static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
 {
         GtkWidget *widget = NULL;
         GtkWidget *box = NULL;
@@ -34,6 +76,7 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
 
         /* Logout */
         widget = gtk_button_new_from_icon_name("brisk_system-log-out-symbolic", GTK_ICON_SIZE_MENU);
+        g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_logout), self);
         gtk_widget_set_tooltip_text(widget, "End the current session");
         gtk_widget_set_can_focus(widget, FALSE);
         gtk_container_add(GTK_CONTAINER(box), widget);
@@ -48,9 +91,29 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
         /* Shutdown */
         widget =
             gtk_button_new_from_icon_name("system-shutdown-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
+        g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_shutdown), self);
         gtk_widget_set_tooltip_text(widget, "Turn off the device");
         gtk_widget_set_can_focus(widget, FALSE);
         gtk_container_add(GTK_CONTAINER(box), widget);
+}
+
+void brisk_menu_window_setup_session(BriskMenuWindow *self)
+{
+        autofree(GError) *error = NULL;
+        brisk_menu_window_setup_session_controls(self);
+
+        /* Sort out gnome-session dbus */
+        self->session = gnome_session_manager_proxy_new_for_bus_sync(
+            G_BUS_TYPE_SESSION,
+            G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START | G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES,
+            "org.gnome.SessionManager",
+            "/org/gnome/SessionManager",
+            NULL,
+            &error);
+        if (error) {
+                g_warning("Failed to contact org.gnome.SessionManager: %s\n", error->message);
+                return;
+        }
 }
 
 /*
