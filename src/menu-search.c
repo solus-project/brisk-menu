@@ -20,6 +20,24 @@ BRISK_BEGIN_PEDANTIC
 BRISK_END_PEDANTIC
 
 /**
+ * Update sensitivity - ignoring non checkboxes
+ */
+static void brisk_menu_set_categories_sensitive(BriskMenuWindow *self, gboolean sensitive)
+{
+        autofree(GList) *kids = NULL;
+        GList *elem = NULL;
+
+        kids = gtk_container_get_children(GTK_CONTAINER(self->sidebar));
+        for (elem = kids; elem; elem = elem->next) {
+                GtkWidget *kid = elem->data;
+                if (!GTK_IS_CHECK_BUTTON(kid)) {
+                        continue;
+                }
+                gtk_widget_set_sensitive(kid, sensitive);
+        }
+}
+
+/**
  * brisk_menu_window_clear_search:
  *
  * Simply put, resets the active search term
@@ -56,9 +74,9 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
 
         /* Reset our search term if it's not valid anymore, or whitespace */
         if (strlen(self->search_term) > 0) {
-                gtk_widget_set_sensitive(self->sidebar, FALSE);
+                brisk_menu_set_categories_sensitive(self, FALSE);
         } else {
-                gtk_widget_set_sensitive(self->sidebar, TRUE);
+                brisk_menu_set_categories_sensitive(self, TRUE);
                 g_clear_pointer(&self->search_term, g_free);
         }
 
