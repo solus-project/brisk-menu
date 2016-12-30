@@ -94,6 +94,7 @@ static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
 
         /* Logout */
         widget = gtk_button_new_from_icon_name("brisk_system-log-out-symbolic", GTK_ICON_SIZE_MENU);
+        self->button_logout = widget;
         g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_logout), self);
         gtk_widget_set_tooltip_text(widget, "End the current session");
         gtk_widget_set_can_focus(widget, FALSE);
@@ -102,6 +103,7 @@ static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
         /* Lock */
         widget = gtk_button_new_from_icon_name("system-lock-screen-symbolic",
                                                GTK_ICON_SIZE_SMALL_TOOLBAR);
+        self->button_lock = widget;
         g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_lock), self);
         gtk_widget_set_tooltip_text(widget, "Lock the screen");
         gtk_widget_set_can_focus(widget, FALSE);
@@ -110,6 +112,7 @@ static void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
         /* Shutdown */
         widget =
             gtk_button_new_from_icon_name("system-shutdown-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
+        self->button_shutdown = widget;
         g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_shutdown), self);
         gtk_widget_set_tooltip_text(widget, "Turn off the device");
         gtk_widget_set_can_focus(widget, FALSE);
@@ -120,6 +123,8 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
 {
         autofree(GError) *error = NULL;
         brisk_menu_window_setup_session_controls(self);
+        gboolean can_shutdown = FALSE;
+        __brisk_unused__ gboolean is_active = FALSE;
 
         /* Sort out gnome-session dbus */
         self->session = gnome_session_manager_proxy_new_for_bus_sync(
@@ -132,8 +137,17 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
         if (error) {
                 g_warning("Failed to contact org.gnome.SessionManager: %s\n", error->message);
                 g_error_free(error);
+
+                gtk_widget_set_sensitive(self->button_shutdown, FALSE);
+                gtk_widget_set_sensitive(self->button_logout, FALSE);
+                goto saver_init;
         }
 
+        /* Set sensitive according to policy */
+        gnome_session_manager_call_can_shutdown_sync(self->session, &can_shutdown, NULL, NULL);
+        gtk_widget_set_sensitive(self->button_shutdown, can_shutdown);
+
+saver_init:
         self->saver =
             gnome_screen_saver_proxy_new_for_bus_sync(G_BUS_TYPE_SESSION,
                                                       G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
@@ -144,6 +158,15 @@ void brisk_menu_window_setup_session(BriskMenuWindow *self)
                                                       &error);
         if (error) {
                 g_warning("Failed to contact org.gnome.ScreenSaver: %s\n", error->message);
+                gtk_widget_set_sensitive(self->button_lock, FALSE);
+                return;
+        }
+
+        /* Check the screensaver is *really* running */
+        gnome_screen_saver_call_get_active_sync(self->saver, &is_active, NULL, &error);
+        if (error) {
+                gtk_widget_set_sensitive(self->button_lock, FALSE);
+                g_warning("org.gnome.ScreenSaver not running: %s\n", error->message);
         }
 }
 

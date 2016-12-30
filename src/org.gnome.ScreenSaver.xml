@@ -4,5 +4,8 @@
   <interface name="org.gnome.ScreenSaver">
     <method name="Lock">
     </method>
+    <method name="GetActive">
+      <arg name="value" direction="out" type="b"/>
+    </method>
   </interface>
 </node>
