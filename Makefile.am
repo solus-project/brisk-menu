@@ -11,6 +11,7 @@ AM_CFLAGS = \
 	-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_44
 
 EXTRA_DIST = \
+	autogen.sh \
 	LICENSE \
 	LICENSE.CC-BY-SA-4.0 \
 	data/brisk.gresource.xml \
