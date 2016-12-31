@@ -271,7 +271,6 @@ static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *conte
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
         GIcon *icon = NULL;
-        GtkWidget *toplevel = NULL;
 
         /* If we have a .desktop & icon, use it */
         if (self->info) {
@@ -281,17 +280,23 @@ static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *conte
         /* Fallback to the default */
         if (!icon) {
                 gtk_drag_set_icon_default(context);
-                goto hide_toplevel;
+                return;
         }
 
         icon = g_object_ref(icon);
         g_object_set_data_full(G_OBJECT(context), "_drag_icon_brisk", icon, g_object_unref);
         gtk_drag_set_icon_gicon(context, icon, 0, 0);
+}
 
-hide_toplevel:
+static gboolean hide_toplevel(GtkWidget *widget)
+{
+        GtkWidget *toplevel = NULL;
+
         /* Hide toplevel to avoid grab problems */
         toplevel = gtk_widget_get_toplevel(widget);
         gtk_widget_hide(toplevel);
+
+        return FALSE;
 }
 
 /**
@@ -300,6 +305,8 @@ hide_toplevel:
 static void brisk_menu_entry_drag_end(__brisk_unused__ GtkWidget *widget, GdkDragContext *context)
 {
         GIcon *icon = NULL;
+
+        g_idle_add((GSourceFunc)hide_toplevel, widget);
 
         icon = g_object_get_data(G_OBJECT(context), "_drag_icon_brisk");
         if (!icon) {
