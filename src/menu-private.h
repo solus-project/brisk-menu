@@ -75,6 +75,9 @@ struct _BriskMenuWindow {
         GtkWidget *button_lock;
         GtkWidget *button_logout;
         GtkWidget *button_shutdown;
+
+        /* Global settings for all BriskMenu instances */
+        GSettings *settings;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
@@ -104,6 +107,9 @@ void brisk_menu_window_configure_grabs(BriskMenuWindow *self);
 void brisk_menu_window_setup_session_controls(BriskMenuWindow *self);
 gboolean brisk_menu_window_setup_session(BriskMenuWindow *self);
 
+/* Settings */
+void brisk_menu_window_init_settings(BriskMenuWindow *self);
+
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
@@ -115,6 +121,10 @@ DEF_AUTOFREE(GIcon, g_object_unref)
 DEF_AUTOFREE(gchar, g_free)
 DEF_AUTOFREE(GdkAppLaunchContext, g_object_unref)
 DEF_AUTOFREE(GError, g_error_free)
+
+/* Helper for gsettings */
+typedef gchar *gstrv;
+DEF_AUTOFREE(gstrv, g_strfreev)
 
 /**
  * Convenience function to remove children from a container

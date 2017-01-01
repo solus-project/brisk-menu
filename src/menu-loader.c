@@ -30,13 +30,6 @@ static guint source_id = 0;
 #define BRISK_RELOAD_TIME 1500
 
 /**
- * We can add more here if appropriate.
- */
-static gchar *brisk_default_shortcuts[] = {
-        "matecc.desktop",
-};
-
-/**
  * Recurse the given directory and any of it's children directories. Add all of
  * the directories to the sidebar, and then (TODO) stick "normal" types into the
  * content section.
@@ -91,6 +84,7 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
 {
         autofree(MateMenuTreeDirectory) *dir = NULL;
         GtkWidget *sep = NULL;
+        autofree(gstrv) *shortcuts = NULL;
 
         g_message("debug: menu reloaded");
 
@@ -117,9 +111,14 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         gtk_widget_show_all(sep);
 
         /* Load the shortcuts up */
-        size_t n_shortcuts = sizeof(brisk_default_shortcuts) / sizeof(brisk_default_shortcuts[0]);
-        for (size_t i = 0; i < n_shortcuts; i++) {
-                brisk_menu_window_add_shortcut(self, brisk_default_shortcuts[i]);
+        shortcuts = g_settings_get_strv(self->settings, "pinned-shortcuts");
+        if (!shortcuts) {
+                return;
+        }
+
+        /* Add from gsettings */
+        for (guint i = 0; i < g_strv_length(shortcuts); i++) {
+                brisk_menu_window_add_shortcut(self, shortcuts[i]);
         }
         brisk_menu_window_set_filters_enabled(self, TRUE);
 }
