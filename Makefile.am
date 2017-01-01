@@ -17,6 +17,7 @@ EXTRA_DIST = \
 	data/brisk.gresource.xml \
 	data/org.mate.panel.applet.BriskMenuFactory.service.in \
 	data/com.solus_project.brisk.BriskMenu.mate-panel-applet.in \
+	data/com.solus-project.brisk-menu.gschema.xml \
 	data/styling.css \
 	data/brisk_system-log-out-symbolic.svg \
 	src/org.mate.ScreenSaver.xml \
@@ -160,3 +161,8 @@ brisk_menu_LDADD = \
 	$(X11_LIBS) \
 	$(MENU_LIBS) \
 	$(APPLET_LIBS)
+
+gsettings_SCHEMAS = \
+	data/com.solus-project.brisk-menu.gschema.xml
+
+@GSETTINGS_RULES@

@@ -29,5 +29,8 @@ brisk-menu
 *.mate-panel-applet
 *.service
 
+# Gschema cruft
+*.gschema.valid
+
 libsaver-glue.*
 libsession-glue.*

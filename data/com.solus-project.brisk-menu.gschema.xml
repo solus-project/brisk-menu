@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="brisk-menu">
+  <schema path="/com/solus-project/brisk-menu/" id="com.solus-project.brisk-menu">
+    <key type="as" name="pinned-shortcuts">
+      <default>['matecc.desktop']</default>
+      <summary>Pinned Shortcuts</summary>
+      <description>These shortcuts will appear in the Brisk Menu sidepane.</description>
+    </key>
+  </schema>
+</schemalist>
