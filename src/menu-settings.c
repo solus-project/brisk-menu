@@ -19,7 +19,18 @@ BRISK_END_PEDANTIC
 
 void brisk_menu_window_init_settings(BriskMenuWindow *self)
 {
+        GtkSettings *gtk_settings = NULL;
+
         self->settings = g_settings_new("com.solus-project.brisk-menu");
+
+        gtk_settings = gtk_settings_get_default();
+
+        /* Make dark-theme key work */
+        g_settings_bind(self->settings,
+                        "dark-theme",
+                        gtk_settings,
+                        "gtk-application-prefer-dark-theme",
+                        G_SETTINGS_BIND_DEFAULT);
 }
 
 /*
