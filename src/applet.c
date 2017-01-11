@@ -253,8 +253,15 @@ static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *
         if (!g_str_has_prefix(id, "BriskMenu")) {
                 return FALSE;
         }
+        const char *home = NULL;
+        __attribute__((unused)) int ret = 0;
+
+        home = g_get_home_dir();
+        if (home) {
+                ret = chdir(home);
+        }
+
         g_set_application_name("Brisk Menu Launcher");
-        /* TODO: Fix things up to be more useful. */
         gtk_widget_show(GTK_WIDGET(applet));
         return TRUE;
 }
