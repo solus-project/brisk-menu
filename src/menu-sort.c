@@ -50,7 +50,8 @@ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v
 {
         GtkWidget *child1, *child2 = NULL;
         MateMenuTreeEntry *entryA, *entryB = NULL;
-        const gchar *nameA, *nameB = NULL;
+        autofree(gchar) *nameA = NULL;
+        autofree(gchar) *nameB = NULL;
         BriskMenuWindow *self = NULL;
 
         self = BRISK_MENU_WINDOW(v);
@@ -67,10 +68,9 @@ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v
                 return (sc1 > sc2) - (sc1 - sc2);
         }
 
-        nameA = matemenu_tree_entry_get_display_name(entryA);
-        nameB = matemenu_tree_entry_get_display_name(entryB);
-
-        /* TODO: Get score for the search term. */
+        /* Ensure we compare lower case only */
+        nameA = g_ascii_strdown(matemenu_tree_entry_get_display_name(entryA), -1);
+        nameB = g_ascii_strdown(matemenu_tree_entry_get_display_name(entryB), -1);
         return g_strcmp0(nameA, nameB);
 }
 
