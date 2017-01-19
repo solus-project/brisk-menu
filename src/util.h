@@ -73,6 +73,11 @@
 #define __brisk_public__ __attribute__((visibility("default")))
 
 /**
+ * Mark the function as a pure function to the compiler
+ */
+#define __brisk_pure__ __attribute__((pure))
+
+/**
  * Taken out of libnica
  */
 #define DEF_AUTOFREE(N, C)                                                                         \

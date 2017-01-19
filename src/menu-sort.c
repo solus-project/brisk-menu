@@ -23,7 +23,7 @@ BRISK_END_PEDANTIC
 /**
  * Compute a score for the given entry based on the input term.
  */
-__attribute__((pure)) static gint brisk_get_entry_score(GAppInfo *info, const gchar *term)
+__brisk_pure__ static gint brisk_get_entry_score(GAppInfo *info, const gchar *term)
 {
         gint score = 0;
         autofree(gchar) *name = NULL;
@@ -46,7 +46,7 @@ __attribute__((pure)) static gint brisk_get_entry_score(GAppInfo *info, const gc
         return score;
 }
 
-gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v)
+__brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v)
 {
         GtkWidget *child1, *child2 = NULL;
         GAppInfo *infoA, *infoB = NULL;

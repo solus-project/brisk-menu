@@ -93,7 +93,8 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
  *
  * Returning TRUE means the app should be displayed
  */
-static gboolean brisk_menu_window_filter_group(BriskMenuWindow *self, MateMenuTreeEntry *entry)
+__brisk_pure__ static gboolean brisk_menu_window_filter_group(BriskMenuWindow *self,
+                                                              MateMenuTreeEntry *entry)
 {
         MateMenuTreeDirectory *parent = NULL;
 
@@ -126,7 +127,7 @@ static gboolean brisk_menu_window_filter_group(BriskMenuWindow *self, MateMenuTr
  * the search itself to be sorted based on the results, with the "most similar"
  * appearing near the top.
  */
-static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, GAppInfo *info)
+__brisk_pure__ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, GAppInfo *info)
 {
         const gchar *fields[] = {
                 g_app_info_get_display_name(info),
@@ -156,7 +157,7 @@ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, GAppInfo *i
  * Responsible for filtering the selection based on active group or search
  * term.
  */
-gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
+__brisk_pure__ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 {
         BriskMenuWindow *self = NULL;
         MateMenuTreeEntry *entry = NULL;
