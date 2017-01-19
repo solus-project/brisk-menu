@@ -78,6 +78,9 @@ struct _BriskMenuWindow {
 
         /* Global settings for all BriskMenu instances */
         GSettings *settings;
+
+        /* Acknowledge a single ID "contains" map */
+        GHashTable *desktop_store;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */

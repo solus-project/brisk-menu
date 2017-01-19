@@ -162,6 +162,8 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         MateMenuTreeEntry *entry = NULL;
         GtkWidget *child = NULL;
         MateMenuTree *childTree = NULL;
+        const gchar *desktop_id = NULL;
+        GtkWidget *compare_child = NULL;
 
         self = BRISK_MENU_WINDOW(v);
 
@@ -175,6 +177,19 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         g_object_get(child, "entry", &entry, "tree", &childTree, NULL);
         if (!entry) {
                 return FALSE;
+        }
+
+        /* Desktop ID's are unique, so the last entry added for an ID is the
+         * button we want to display. Basically, a button can be duplicated and
+         * appear in multiple categories. By keeping a unique ID -> button mapping,
+         * we ensure we only ever show it once in the search function.
+         */
+        desktop_id = matemenu_tree_entry_get_desktop_file_id(entry);
+        if (desktop_id) {
+                compare_child = g_hash_table_lookup(self->desktop_store, desktop_id);
+                if (compare_child && compare_child != child) {
+                        return FALSE;
+                }
         }
 
         /* Do they belong to the same tree ? */

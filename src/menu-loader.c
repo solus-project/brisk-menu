@@ -66,10 +66,18 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
                         /* Tree entry maps to a BriskMenuEntryButton */
                         GtkWidget *button = NULL;
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
+                        const gchar *desktop_id = NULL;
 
                         button = brisk_menu_entry_button_new(self->launcher, root_tree, entry);
                         gtk_container_add(GTK_CONTAINER(self->apps), button);
                         gtk_widget_show_all(button);
+
+                        /* Store the .id -> button so we can filter on the last included .id */
+                        desktop_id = matemenu_tree_entry_get_desktop_file_id(entry);
+                        if (!desktop_id) {
+                                break;
+                        }
+                        g_hash_table_insert(self->desktop_store, g_strdup(desktop_id), button);
                 } break;
                 default:
                         break;
@@ -87,6 +95,9 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         autofree(gstrv) *shortcuts = NULL;
 
         g_message("debug: menu reloaded");
+
+        /* Nuke the current mapping */
+        g_hash_table_remove_all(self->desktop_store);
 
         brisk_menu_window_set_filters_enabled(self, FALSE);
 

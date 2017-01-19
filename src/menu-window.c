@@ -61,6 +61,7 @@ static void brisk_menu_window_dispose(GObject *obj)
         g_clear_object(&self->session);
         g_clear_object(&self->saver);
         g_clear_object(&self->settings);
+        g_clear_pointer(&self->desktop_store, g_hash_table_unref);
 
         G_OBJECT_CLASS(brisk_menu_window_parent_class)->dispose(obj);
 }
@@ -98,6 +99,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         self->launcher = brisk_menu_launcher_new();
         brisk_menu_window_load_css(self);
         brisk_menu_window_init_settings(self);
+        self->desktop_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
         gtk_window_set_type_hint(GTK_WINDOW(self), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
