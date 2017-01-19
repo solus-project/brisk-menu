@@ -17,7 +17,6 @@ BRISK_BEGIN_PEDANTIC
 #include "entry-button.h"
 #include "launcher.h"
 #include "menu-private.h"
-#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
 
@@ -48,7 +47,7 @@ struct _BriskMenuEntryButton {
 
 G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
 
-enum { PROP_ENTRY = 1, PROP_TREE, PROP_LAUNCHER, N_PROPS };
+enum { PROP_ENTRY = 1, PROP_INFO, PROP_TREE, PROP_LAUNCHER, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -62,6 +61,9 @@ static void brisk_menu_entry_button_set_property(GObject *object, guint id, cons
         switch (id) {
         case PROP_ENTRY:
                 self->entry = g_value_get_pointer(value);
+                break;
+        case PROP_INFO:
+                self->info = g_value_get_pointer(value);
                 break;
         case PROP_TREE:
                 self->tree = g_value_get_pointer(value);
@@ -84,6 +86,9 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
         case PROP_ENTRY:
                 g_value_set_pointer(value, self->entry);
                 break;
+        case PROP_INFO:
+                g_value_set_pointer(value, self->info);
+                break;
         case PROP_TREE:
                 g_value_set_pointer(value, self->tree);
                 break;
@@ -102,7 +107,7 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
  * Construct a new BriskMenuEntryButton object
  */
 GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, MateMenuTree *tree,
-                                       MateMenuTreeEntry *entry)
+                                       MateMenuTreeEntry *entry, GDesktopAppInfo *info)
 {
         return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON,
                             "launcher",
@@ -111,6 +116,8 @@ GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, MateMenuTree
                             tree,
                             "entry",
                             entry,
+                            "info",
+                            info,
                             NULL);
 }
 
@@ -129,17 +136,6 @@ static void brisk_menu_entry_button_dispose(GObject *obj)
         G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->dispose(obj);
 }
 
-static GIcon *brisk_menu_entry_button_create_gicon(const char *path)
-{
-        autofree(GFile) *file = NULL;
-
-        file = g_file_new_for_path(path);
-        if (!file) {
-                return NULL;
-        }
-        return g_file_icon_new(file);
-}
-
 /**
  * Handle constructor specifics for our button
  */
@@ -147,33 +143,26 @@ static void brisk_menu_entry_button_constructed(GObject *obj)
 {
         const gchar *label = NULL;
         BriskMenuEntryButton *self = NULL;
-        const gchar *icon_name = NULL;
-        const gchar *desktop_id = NULL;
+        GIcon *icon = NULL;
 
         self = BRISK_MENU_ENTRY_BUTTON(obj);
 
-        /* matemenu has no gicon support, so do it ourselves. */
-        icon_name = matemenu_tree_entry_get_icon(self->entry);
-        if (icon_name && icon_name[0] == '/') {
-                autofree(GIcon) *ico = brisk_menu_entry_button_create_gicon(icon_name);
-                gtk_image_set_from_gicon(GTK_IMAGE(self->image), ico, GTK_ICON_SIZE_INVALID);
+        icon = g_app_info_get_icon(G_APP_INFO(self->info));
+        if (icon) {
+                gtk_image_set_from_gicon(GTK_IMAGE(self->image), icon, GTK_ICON_SIZE_INVALID);
         } else {
                 gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
-                                             icon_name,
+                                             "image-missing",
                                              GTK_ICON_SIZE_INVALID);
         }
+
         gtk_image_set_pixel_size(GTK_IMAGE(self->image), 24);
 
         /* Determine our label based on the app */
-        label = matemenu_tree_entry_get_name(self->entry);
+        label = g_app_info_get_name(G_APP_INFO(self->info));
         gtk_label_set_label(GTK_LABEL(self->label), label);
-        gtk_widget_set_tooltip_text(GTK_WIDGET(self), matemenu_tree_entry_get_comment(self->entry));
-
-        /* Load our .desktop info */
-        desktop_id = matemenu_tree_entry_get_desktop_file_path(self->entry);
-        if (desktop_id) {
-                self->info = g_desktop_app_info_new_from_filename(desktop_id);
-        }
+        gtk_widget_set_tooltip_text(GTK_WIDGET(self),
+                                    g_app_info_get_description(G_APP_INFO(self->info)));
 
         G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->constructed(obj);
 }
@@ -207,6 +196,10 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
                                                           "The MateMenuTreeEntry",
                                                           "Entry that this launcher represents",
                                                           G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_INFO] = g_param_spec_pointer("info",
+                                                         "The GDesktopAppInfo",
+                                                         "Corresponding .desktop file",
+                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         obj_properties[PROP_TREE] = g_param_spec_pointer("tree",
                                                          "The MateMenuTree",
                                                          "Tree that this entry belongs to",
@@ -272,10 +265,8 @@ static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *conte
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
         GIcon *icon = NULL;
 
-        /* If we have a .desktop & icon, use it */
-        if (self->info) {
-                icon = g_app_info_get_icon(G_APP_INFO(self->info));
-        }
+        /* If we have a .desktop icon, use it */
+        icon = g_app_info_get_icon(G_APP_INFO(self->info));
 
         /* Fallback to the default */
         if (!icon) {
@@ -321,9 +312,6 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
 
-        if (!self->info) {
-                return;
-        }
         const gchar *uris[2];
 
         const gchar *desktop_path = NULL;
@@ -348,9 +336,6 @@ static void brisk_menu_entry_clicked(GtkButton *widget)
 
 void brisk_menu_entry_button_launch(BriskMenuEntryButton *self)
 {
-        if (!self->info) {
-                return;
-        }
         brisk_menu_launcher_start(self->launcher, GTK_WIDGET(self), G_APP_INFO(self->info));
 }
 
