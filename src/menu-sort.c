@@ -23,7 +23,7 @@ BRISK_END_PEDANTIC
 /**
  * Compute a score for the given entry based on the input term.
  */
-static gint brisk_get_entry_score(GAppInfo *info, gchar *term)
+__attribute__((pure)) static gint brisk_get_entry_score(GAppInfo *info, const gchar *term)
 {
         gint score = 0;
         autofree(gchar) *name = NULL;
