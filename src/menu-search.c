@@ -126,13 +126,13 @@ static gboolean brisk_menu_window_filter_group(BriskMenuWindow *self, MateMenuTr
  * the search itself to be sorted based on the results, with the "most similar"
  * appearing near the top.
  */
-static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, MateMenuTreeEntry *entry)
+static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, GAppInfo *info)
 {
         const gchar *fields[] = {
-                matemenu_tree_entry_get_display_name(entry),
-                matemenu_tree_entry_get_comment(entry),
-                matemenu_tree_entry_get_name(entry),
-                matemenu_tree_entry_get_exec(entry),
+                g_app_info_get_display_name(info),
+                g_app_info_get_description(info),
+                g_app_info_get_name(info),
+                g_app_info_get_executable(info),
         };
 
         for (size_t i = 0; i < sizeof(fields) / sizeof(fields[0]); i++) {
@@ -160,6 +160,7 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 {
         BriskMenuWindow *self = NULL;
         MateMenuTreeEntry *entry = NULL;
+        GAppInfo *info = NULL;
         GtkWidget *child = NULL;
         MateMenuTree *childTree = NULL;
         const gchar *desktop_id = NULL;
@@ -174,7 +175,7 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));
 
-        g_object_get(child, "entry", &entry, "tree", &childTree, NULL);
+        g_object_get(child, "entry", &entry, "tree", &childTree, "info", &info, NULL);
         if (!entry) {
                 return FALSE;
         }
@@ -184,7 +185,7 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
          * appear in multiple categories. By keeping a unique ID -> button mapping,
          * we ensure we only ever show it once in the search function.
          */
-        desktop_id = matemenu_tree_entry_get_desktop_file_id(entry);
+        desktop_id = g_app_info_get_id(info);
         if (desktop_id) {
                 compare_child = g_hash_table_lookup(self->desktop_store, desktop_id);
                 if (compare_child && compare_child != child) {
@@ -199,7 +200,7 @@ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 
         /* Have search term? Filter on that. */
         if (self->search_term) {
-                return brisk_menu_window_filter_term(self, entry);
+                return brisk_menu_window_filter_term(self, info);
         }
 
         /* Filter based on group */
