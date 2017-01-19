@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 #include <string.h>
 BRISK_END_PEDANTIC
@@ -112,6 +113,24 @@ __brisk_pure__ static gboolean brisk_menu_window_filter_group(BriskMenuWindow *s
         return TRUE;
 }
 
+__brisk_pure__ static gboolean brisk_menu_array_contains(const gchar **fields, size_t n_fields,
+                                                         const gchar *term)
+{
+        for (size_t i = 0; i < n_fields; i++) {
+                if (!fields[i]) {
+                        continue;
+                }
+                autofree(gchar) *contents = g_strstrip(g_ascii_strdown(fields[i], -1));
+                if (g_str_match_string(term, contents, TRUE)) {
+                        return TRUE;
+                }
+                if (strstr(contents, term)) {
+                        return TRUE;
+                }
+        }
+        return FALSE;
+}
+
 /**
  * brisk_menu_window_filter_term:
  *
@@ -135,20 +154,19 @@ __brisk_pure__ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *se
                 g_app_info_get_name(info),
                 g_app_info_get_executable(info),
         };
+        const gchar *const *keywords = g_desktop_app_info_get_keywords(G_DESKTOP_APP_INFO(info));
 
-        for (size_t i = 0; i < sizeof(fields) / sizeof(fields[0]); i++) {
-                if (!fields[i]) {
-                        continue;
-                }
-                autofree(gchar) *contents = g_strstrip(g_ascii_strdown(fields[i], -1));
-                if (g_str_match_string(self->search_term, contents, TRUE)) {
-                        return TRUE;
-                }
-                if (strstr(contents, self->search_term)) {
-                        return TRUE;
-                }
+        if (brisk_menu_array_contains(fields, G_N_ELEMENTS(fields), self->search_term)) {
+                return TRUE;
         }
-        return FALSE;
+
+        if (!keywords) {
+                return FALSE;
+        }
+
+        return brisk_menu_array_contains((const gchar **)keywords,
+                                         g_strv_length((gchar **)keywords),
+                                         self->search_term);
 }
 
 /**
