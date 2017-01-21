@@ -19,6 +19,7 @@ BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
 #include "menu-private.h"
 #include "menu-window.h"
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
 BRISK_END_PEDANTIC
@@ -261,7 +262,7 @@ static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *
                 ret = chdir(home);
         }
 
-        g_set_application_name("Brisk Menu Launcher");
+        g_set_application_name(_("Brisk Menu Launcher"));
         gtk_widget_show(GTK_WIDGET(applet));
         return TRUE;
 }
