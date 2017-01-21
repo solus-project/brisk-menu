@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:43+0000\n"
+"POT-Creation-Date: 2017-01-21 04:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Ikey Doherty <ikey@solus-project.com>, 2017\n"
 "Language-Team: English (United Kingdom) (https://www.transifex.com/solus-project/teams/68407/en_GB/)\n"
@@ -18,6 +18,27 @@ msgstr ""
 "Language: en_GB\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#. Now add the label
+#: ../src/applet.c:177
+msgid "Menu"
+msgstr "Menu"
+
 #: ../src/applet.c:265
 msgid "Brisk Menu Launcher"
 msgstr "Brisk Menu Launcher"
+
+#: ../src/category-button.c:130
+msgid "All"
+msgstr "All"
+
+#: ../src/menu-session.c:144
+msgid "End the current session"
+msgstr "End the current session"
+
+#: ../src/menu-session.c:155
+msgid "Lock the screen"
+msgstr "Lock the screen"
+
+#: ../src/menu-session.c:166
+msgid "Turn off the device"
+msgstr "Turn off the device"
