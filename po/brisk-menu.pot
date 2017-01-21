@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:43+0000\n"
+"POT-Creation-Date: 2017-01-21 04:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#. Now add the label
+#: ../src/applet.c:177
+msgid "Menu"
+msgstr ""
+
 #: ../src/applet.c:265
 msgid "Brisk Menu Launcher"
+msgstr ""
+
+#: ../src/category-button.c:130
+msgid "All"
+msgstr ""
+
+#: ../src/menu-session.c:144
+msgid "End the current session"
+msgstr ""
+
+#: ../src/menu-session.c:155
+msgid "Lock the screen"
+msgstr ""
+
+#: ../src/menu-session.c:166
+msgid "Turn off the device"
 msgstr ""
