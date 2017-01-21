@@ -47,10 +47,19 @@ PKG_CHECK_MODULES(APPLET,
                  ]
 )
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+                 po/Makefile.in])
+
+IT_PROG_INTLTOOL([0.50.0])
+GETTEXT_PACKAGE=brisk-menu
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE",
+                   [The prefix for our gettext translation domains.])
+
 
 AC_OUTPUT
 
+AM_GLIB_GNU_GETTEXT
 AC_MSG_RESULT([
         brisk-menu $VERSION
         =====================

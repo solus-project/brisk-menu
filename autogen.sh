@@ -8,6 +8,7 @@ PKG_NAME="brisk-menu"
 prevdir="$PWD"
 cd "$srcdir"
 
+intltoolize --force
 AUTORECONF=`which autoreconf`
 if test -z $AUTORECONF;
 then

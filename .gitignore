@@ -9,7 +9,7 @@ depcomp
 install-sh
 libtool
 ltmain.sh
-m4/
+m4/*.m4
 missing
 .deps
 .dirstamp
@@ -34,3 +34,7 @@ brisk-menu
 
 libsaver-glue.*
 libsession-glue.*
+
+po/Makefile.in.in
+po/POTFILES
+po/stamp-it
