@@ -38,3 +38,4 @@ libsession-glue.*
 po/Makefile.in.in
 po/POTFILES
 po/stamp-it
+po/*.gmo

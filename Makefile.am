@@ -167,3 +167,8 @@ gsettings_SCHEMAS = \
 	data/com.solus-project.brisk-menu.gschema.xml
 
 @GSETTINGS_RULES@
+
+SUBDIRS = \
+	. \
+	po
+
