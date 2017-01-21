@@ -15,6 +15,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
@@ -140,7 +141,7 @@ void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
         widget = gtk_button_new_from_icon_name("brisk_system-log-out-symbolic", GTK_ICON_SIZE_MENU);
         self->button_logout = widget;
         g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_logout), self);
-        gtk_widget_set_tooltip_text(widget, "End the current session");
+        gtk_widget_set_tooltip_text(widget, _("End the current session"));
         gtk_widget_set_can_focus(widget, FALSE);
         gtk_container_add(GTK_CONTAINER(box), widget);
         style = gtk_widget_get_style_context(widget);
@@ -151,7 +152,7 @@ void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
                                                GTK_ICON_SIZE_SMALL_TOOLBAR);
         self->button_lock = widget;
         g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_lock), self);
-        gtk_widget_set_tooltip_text(widget, "Lock the screen");
+        gtk_widget_set_tooltip_text(widget, _("Lock the screen"));
         gtk_widget_set_can_focus(widget, FALSE);
         gtk_container_add(GTK_CONTAINER(box), widget);
         style = gtk_widget_get_style_context(widget);
@@ -162,7 +163,7 @@ void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
             gtk_button_new_from_icon_name("system-shutdown-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
         self->button_shutdown = widget;
         g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_shutdown), self);
-        gtk_widget_set_tooltip_text(widget, "Turn off the device");
+        gtk_widget_set_tooltip_text(widget, _("Turn off the device"));
         gtk_widget_set_can_focus(widget, FALSE);
         gtk_container_add(GTK_CONTAINER(box), widget);
         style = gtk_widget_get_style_context(widget);

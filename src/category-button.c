@@ -16,6 +16,7 @@
 BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
 #include "menu-private.h"
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <matemenu-tree.h>
 BRISK_END_PEDANTIC
@@ -126,8 +127,7 @@ static void brisk_menu_category_button_constructed(GObject *obj)
                 label = matemenu_tree_directory_get_name(self->group);
                 icon_name = matemenu_tree_directory_get_icon(self->group);
         } else {
-                // label = _("All");
-                label = "All";
+                label = _("All");
                 icon_name = "starred";
         }
 
