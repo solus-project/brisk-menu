@@ -1,0 +1,44 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-21 04:56+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Federico Damián Schonborn <federico.d.schonborn@gmail.com>, 2017\n"
+"Language-Team: Spanish (Argentina) (https://www.transifex.com/solus-project/teams/68407/es_AR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_AR\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Now add the label
+#: ../src/applet.c:177
+msgid "Menu"
+msgstr "Menú"
+
+#: ../src/applet.c:265
+msgid "Brisk Menu Launcher"
+msgstr "Lanzador del menú Brisk"
+
+#: ../src/category-button.c:130
+msgid "All"
+msgstr "Todos"
+
+#: ../src/menu-session.c:144
+msgid "End the current session"
+msgstr "Finalizar la sesión"
+
+#: ../src/menu-session.c:155
+msgid "Lock the screen"
+msgstr "Bloquear la pantalla"
+
+#: ../src/menu-session.c:166
+msgid "Turn off the device"
+msgstr "Apagar el dispositivo"
