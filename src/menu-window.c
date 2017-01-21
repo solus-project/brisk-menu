@@ -302,6 +302,9 @@ static void brisk_menu_window_hide(GtkWidget *widget)
         gtk_adjustment_set_value(adjustment, 0);
         adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self->sidebar_scroll));
         gtk_adjustment_set_value(adjustment, 0);
+
+        /* Unselect any current "apps" */
+        gtk_list_box_select_row(GTK_LIST_BOX(self->apps), NULL);
 }
 
 /**

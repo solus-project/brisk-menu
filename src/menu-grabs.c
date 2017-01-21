@@ -60,14 +60,18 @@ void brisk_menu_window_configure_grabs(BriskMenuWindow *self)
 static gboolean brisk_menu_window_map(GtkWidget *widget, __brisk_unused__ gpointer udata)
 {
         GdkWindow *window = NULL;
+        BriskMenuWindow *self = NULL;
+
+        self = BRISK_MENU_WINDOW(widget);
 
         /* Forcibly request focus */
         window = gtk_widget_get_window(widget);
         gdk_window_set_accept_focus(window, TRUE);
         gdk_window_focus(window, GDK_CURRENT_TIME);
         gtk_window_present(GTK_WINDOW(widget));
+        gtk_widget_grab_focus(self->search);
 
-        brisk_menu_window_grab(BRISK_MENU_WINDOW(widget));
+        brisk_menu_window_grab(self);
 
         return GDK_EVENT_STOP;
 }
