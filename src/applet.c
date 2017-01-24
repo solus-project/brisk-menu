@@ -150,10 +150,10 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
  */
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
-        setlocale (LC_ALL, "");
-        bindtextdomain (GETTEXT_PACKAGE, MATELOCALEDIR);
-        bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-        textdomain (GETTEXT_PACKAGE);
+        setlocale(LC_ALL, "");
+        bindtextdomain(GETTEXT_PACKAGE, MATELOCALEDIR);
+        bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+        textdomain(GETTEXT_PACKAGE);
 
         GtkWidget *toggle, *layout, *image, *label, *menu = NULL;
 
