@@ -3,7 +3,7 @@
  *
  * Largely inspired by: https://esite.ch/2011/02/global-hotkeys-with-vala/
  *
- * Copyright © 2016 Ikey Doherty <ikey@solus-project.com>
+ * Copyright © 2016-2017 Ikey Doherty <ikey@solus-project.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
