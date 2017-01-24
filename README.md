@@ -15,6 +15,16 @@ brisk-menu is a [Solus project](https://solus-project.com/).
 
 ![logo](https://build.solus-project.com/logo.png)
 
+Building Brisk Menu
+-------------------
+
+ - Please ensure you have GTK 3.18 *minimum*
+ - Please ensure you are using a GTK 3.18 build of MATE 1.16 or newer
+
+    ./autogen.sh --prefix=/usr
+    make -j$(($(getconf _NPROCESSORS_ONLN)+1))
+    sudo make install
+
 Features
 --------
 
