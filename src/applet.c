@@ -206,6 +206,8 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         if (!brisk_key_binder_bind(self->binder, "<Ctrl>F10", hotkey_cb, self)) {
                 g_message("Failed to bind keyboard shortcut");
         }
+
+        brisk_menu_window_set_search_position(BRISK_MENU_WINDOW(self->menu), BRISK_SEARCH_POS_TOP);
 }
 
 /**

@@ -345,6 +345,14 @@ void brisk_menu_window_activated(__brisk_unused__ BriskMenuWindow *self, GtkList
         brisk_menu_entry_button_launch(button);
 }
 
+void brisk_menu_window_set_search_position(BriskMenuWindow *self, BriskSearchPosition position)
+{
+        GtkWidget *layout = NULL;
+
+        layout = gtk_bin_get_child(GTK_BIN(self));
+        gtk_container_child_set(GTK_CONTAINER(layout), self->search, "position", position, NULL);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
