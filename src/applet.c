@@ -11,6 +11,7 @@
 
 #define _GNU_SOURCE
 
+#include "config.h"
 #include "util.h"
 
 BRISK_BEGIN_PEDANTIC
