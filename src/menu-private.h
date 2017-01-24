@@ -22,9 +22,9 @@
 
 typedef enum {
         SEARCH_POS_MIN = 0,
-        SEARCH_POS_AUTOMATIC = 1 << 0,
+        SEARCH_POS_BOTTOM = 1 << 0,
         SEARCH_POS_TOP = 1 << 1,
-        SEARCH_POS_BOTTOM = 1 << 2,
+        SEARCH_POS_AUTOMATIC = 1 << 2,
         SEARCH_POS_MAX,
 } SearchPosition;
 
