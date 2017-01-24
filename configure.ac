@@ -89,7 +89,7 @@ AC_OUTPUT
 AM_GLIB_GNU_GETTEXT
 AC_MSG_RESULT([
         brisk-menu $VERSION
-        =====================
+        =================
 
         prefix:                 ${prefix}
         libdir:                 ${libdir}
