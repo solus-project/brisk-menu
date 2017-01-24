@@ -49,7 +49,7 @@ Currently, very lacking! Remember, it's still in early development.
 
 Some items that are currently known to be definite options in the roadmap:
 
- - Persistent storage of settings
+ - Persistent storage of settings ✓
  - Option to disable category icons for modern look
  - Configurable menu button icon + label on applet
  - 'Favourite' item capability
