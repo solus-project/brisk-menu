@@ -17,11 +17,14 @@ BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
 BRISK_END_PEDANTIC
 
+static void brisk_menu_window_settings_changed(GSettings *settings, const gchar *key, gpointer v);
+
 void brisk_menu_window_init_settings(BriskMenuWindow *self)
 {
         GtkSettings *gtk_settings = NULL;
 
         self->settings = g_settings_new("com.solus-project.brisk-menu");
+        self->orient = MATE_PANEL_APPLET_ORIENT_DOWN;
 
         gtk_settings = gtk_settings_get_default();
 
@@ -31,6 +34,62 @@ void brisk_menu_window_init_settings(BriskMenuWindow *self)
                         gtk_settings,
                         "gtk-application-prefer-dark-theme",
                         G_SETTINGS_BIND_DEFAULT);
+
+        g_signal_connect(self->settings,
+                         "changed",
+                         G_CALLBACK(brisk_menu_window_settings_changed),
+                         self);
+}
+
+void brisk_menu_window_pump_settings(BriskMenuWindow *self)
+{
+        brisk_menu_window_settings_changed(self->settings, "search-position", self);
+}
+
+static void brisk_menu_window_settings_changed(GSettings *settings, const gchar *key, gpointer v)
+{
+        BriskMenuWindow *self = v;
+
+        if (g_str_equal(key, "search-position")) {
+                brisk_menu_window_update_search(self, g_settings_get_enum(settings, key));
+                return;
+        }
+}
+
+/**
+ * Update the position of the search bar in accordance with settings
+ */
+void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos)
+{
+        SearchPosition position = pos;
+        GtkWidget *layout = NULL;
+        gint n_pos = 0;
+
+        layout = gtk_bin_get_child(GTK_BIN(self));
+
+        if (position < SEARCH_POS_MIN || position >= SEARCH_POS_MAX) {
+                position = SEARCH_POS_AUTOMATIC;
+        }
+
+        switch (position) {
+        case SEARCH_POS_AUTOMATIC: {
+                /* Orient up = bottom panel. Stick search at bottom */
+                if (self->orient == MATE_PANEL_APPLET_ORIENT_UP) {
+                        n_pos = 1;
+                } else {
+                        n_pos = 0;
+                }
+        } break;
+        case SEARCH_POS_TOP:
+                n_pos = 0;
+                break;
+        case SEARCH_POS_BOTTOM:
+        default:
+                n_pos = 1;
+                break;
+        }
+
+        gtk_container_child_set(GTK_CONTAINER(layout), self->search, "position", n_pos, NULL);
 }
 
 /*

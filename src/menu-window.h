@@ -13,14 +13,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
-
-/**
- * Defines the position of the Brisk menu search bar
- */
-typedef enum {
-        BRISK_SEARCH_POS_TOP = 0,   /* Show at top of window */
-        BRISK_SEARCH_POS_BOTTOM = 1 /* Show at bottom of window */
-} BriskSearchPosition;
+#include <mate-panel-applet.h>
 
 G_BEGIN_DECLS
 
@@ -41,7 +34,10 @@ GtkWidget *brisk_menu_window_new(void);
 
 GType brisk_menu_window_get_type(void);
 
-void brisk_menu_window_set_search_position(BriskMenuWindow *window, BriskSearchPosition position);
+/**
+ * Update the orientation knowledge for the menu
+ */
+void brisk_menu_window_set_orient(BriskMenuWindow *window, MatePanelAppletOrient orient);
 
 G_END_DECLS
 

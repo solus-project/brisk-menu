@@ -61,6 +61,7 @@ __attribute__((destructor)) static void brisk_resource_deinit(void)
  */
 static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer v);
 static void hotkey_cb(GdkEvent *event, gpointer v);
+static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient);
 
 /**
  * Update the position for the menu.
@@ -139,9 +140,13 @@ static void brisk_menu_applet_dispose(GObject *obj)
 static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+        MatePanelAppletClass *mate_class = MATE_PANEL_APPLET_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_menu_applet_dispose;
+
+        /* mate vtable hookup */
+        mate_class->change_orient = brisk_menu_applet_change_orient;
 }
 
 /**
@@ -207,7 +212,12 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
                 g_message("Failed to bind keyboard shortcut");
         }
 
-        brisk_menu_window_set_search_position(BRISK_MENU_WINDOW(self->menu), BRISK_SEARCH_POS_TOP);
+        /* Fix the orient now we're up */
+        brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu),
+                                     mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
+
+        /* Pump the settings */
+        brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
 }
 
 /**
@@ -249,6 +259,16 @@ static gboolean toggle_menu(BriskMenuApplet *self)
 static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
 {
         g_idle_add((GSourceFunc)toggle_menu, v);
+}
+
+/**
+ * Panel orientation changed, tell the menu
+ */
+static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient)
+{
+        BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
+
+        brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu), orient);
 }
 
 static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id,

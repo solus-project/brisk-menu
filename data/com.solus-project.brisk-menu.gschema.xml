@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="brisk-menu">
+  <enum id="com.solus-project.brisk-menu.SearchPosition">
+      <value nick="bottom" value="1" />
+      <value nick="top" value="2" />
+      <value nick="automatic" value="4" />
+  </enum>
   <schema path="/com/solus-project/brisk-menu/" id="com.solus-project.brisk-menu">
     <key type="as" name="pinned-shortcuts">
       <default>['matecc.desktop']</default>
@@ -10,6 +15,11 @@
       <default>false</default>
       <summary>Use dark theme variant for Brisk Menu</summary>
       <description>Use the dark theme for Brisk Menu aka night mode</description>
+    </key>
+    <key enum="com.solus-project.brisk-menu.SearchPosition" name="search-position">
+      <default>'top'</default>
+      <summary>Search bar position</summary>
+      <description>Where the search bar will appear in the menu</description>
     </key>
   </schema>
 </schemalist>

@@ -17,7 +17,16 @@
 #include "menu-window.h"
 #include "util.h"
 #include <gtk/gtk.h>
+#include <mate-panel-applet.h>
 #include <matemenu-tree.h>
+
+typedef enum {
+        SEARCH_POS_MIN = 0,
+        SEARCH_POS_AUTOMATIC = 1 << 0,
+        SEARCH_POS_TOP = 1 << 1,
+        SEARCH_POS_BOTTOM = 1 << 2,
+        SEARCH_POS_MAX,
+} SearchPosition;
 
 struct _BriskMenuWindowClass {
         GtkWindowClass parent_class;
@@ -81,6 +90,9 @@ struct _BriskMenuWindow {
 
         /* Acknowledge a single ID "contains" map */
         GHashTable *desktop_store;
+
+        /* Current orientation */
+        MatePanelAppletOrient orient;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
@@ -112,6 +124,8 @@ gboolean brisk_menu_window_setup_session(BriskMenuWindow *self);
 
 /* Settings */
 void brisk_menu_window_init_settings(BriskMenuWindow *self);
+void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos);
+void brisk_menu_window_pump_settings(BriskMenuWindow *self);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)

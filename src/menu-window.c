@@ -345,12 +345,10 @@ void brisk_menu_window_activated(__brisk_unused__ BriskMenuWindow *self, GtkList
         brisk_menu_entry_button_launch(button);
 }
 
-void brisk_menu_window_set_search_position(BriskMenuWindow *self, BriskSearchPosition position)
+void brisk_menu_window_set_orient(BriskMenuWindow *self, MatePanelAppletOrient orient)
 {
-        GtkWidget *layout = NULL;
-
-        layout = gtk_bin_get_child(GTK_BIN(self));
-        gtk_container_child_set(GTK_CONTAINER(layout), self->search, "position", position, NULL);
+        self->orient = orient;
+        brisk_menu_window_update_search(self, self->orient);
 }
 
 /*
