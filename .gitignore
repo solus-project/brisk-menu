@@ -14,6 +14,7 @@ missing
 .deps
 .dirstamp
 *.o
+stamp-h1
 
 # gresource cruft
 brisk-resources.*
