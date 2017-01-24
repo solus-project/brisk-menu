@@ -10,13 +10,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-21 04:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: utybo <utybo@users.noreply.github.com>, 2017\n"
-"Language-Team: French (France) (https://www.transifex.com/solus-project/teams/68407/fr_FR/)\n"
+"Last-Translator: Dzej Kob <accountxyz@protonmail.com>, 2017\n"
+"Language-Team: Polish (https://www.transifex.com/solus-project/teams/68407/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: pl\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Now add the label
 #: ../src/applet.c:177
@@ -25,20 +25,20 @@ msgstr "Menu"
 
 #: ../src/applet.c:265
 msgid "Brisk Menu Launcher"
-msgstr "Lanceur de Menu Brisk"
+msgstr "Brisk Menu Launcher"
 
 #: ../src/category-button.c:130
 msgid "All"
-msgstr "Tout"
+msgstr "Wszystkie"
 
 #: ../src/menu-session.c:144
 msgid "End the current session"
-msgstr "Fermer la session en cours"
+msgstr "Zakończ obecną sesję"
 
 #: ../src/menu-session.c:155
 msgid "Lock the screen"
-msgstr "Vérouiller l'écran"
+msgstr "Zablokuj ekran"
 
 #: ../src/menu-session.c:166
 msgid "Turn off the device"
-msgstr "Éteindre l'appareil"
+msgstr "Wyłącz urządzenie"
