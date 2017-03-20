@@ -16,6 +16,11 @@
       <summary>Use dark theme variant for Brisk Menu</summary>
       <description>Use the dark theme for Brisk Menu aka night mode</description>
     </key>
+    <key type="b" name="rollover-activate">
+      <default>false</default>
+      <summary>Activate categories with mouse rollover</summary>
+      <description>Categories will be activated by hovering with the mouse</description>
+    </key>
     <key enum="com.solus-project.brisk-menu.SearchPosition" name="search-position">
       <default>'top'</default>
       <summary>Search bar position</summary>
