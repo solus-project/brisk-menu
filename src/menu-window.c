@@ -240,6 +240,30 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
 }
 
 /**
+ * Fired by entering into the category button with a roll over
+ */
+static gboolean brisk_menu_window_on_enter(BriskMenuWindow *self,
+                                           __brisk_unused__ GdkEventCrossing *event,
+                                           GtkWidget *button)
+{
+        GtkToggleButton *but = GTK_TOGGLE_BUTTON(button);
+
+        /* Whether we're in rollover mode */
+        if (!self->rollover) {
+                return GDK_EVENT_PROPAGATE;
+        }
+
+        if (!gtk_toggle_button_get_active(but) || !gtk_widget_get_visible(button)) {
+                return GDK_EVENT_PROPAGATE;
+        }
+
+        /* Force activation through rollover */
+        gtk_toggle_button_set_active(but, TRUE);
+
+        return GDK_EVENT_PROPAGATE;
+}
+
+/**
  * brisk_menu_window_associate_category:
  *
  * This will hook up the category button for events to enable us to filter the
@@ -248,6 +272,10 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button)
 {
         g_signal_connect_swapped(button, "toggled", G_CALLBACK(brisk_menu_window_on_toggled), self);
+        g_signal_connect_swapped(button,
+                                 "enter-notify-event",
+                                 G_CALLBACK(brisk_menu_window_on_enter),
+                                 self);
 }
 
 /**

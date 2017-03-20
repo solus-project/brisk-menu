@@ -93,6 +93,9 @@ struct _BriskMenuWindow {
         /* Whether we have a grab or not */
         gboolean grabbed;
 
+        /* Whether we're in rollover mode or not */
+        gboolean rollover;
+
         /* Session management */
         GnomeSessionManager *session;
         MateScreenSaver *saver;
