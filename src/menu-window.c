@@ -253,7 +253,7 @@ static gboolean brisk_menu_window_on_enter(BriskMenuWindow *self,
                 return GDK_EVENT_PROPAGATE;
         }
 
-        if (!gtk_toggle_button_get_active(but) || !gtk_widget_get_visible(button)) {
+        if (gtk_toggle_button_get_active(but) || !gtk_widget_get_visible(button)) {
                 return GDK_EVENT_PROPAGATE;
         }
 
