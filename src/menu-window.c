@@ -106,7 +106,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_window_set_skip_pager_hint(GTK_WINDOW(self), TRUE);
         gtk_window_set_skip_taskbar_hint(GTK_WINDOW(self), TRUE);
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(style, "brisk-menu");
+        gtk_style_context_add_class(style, BRISK_STYLE_MAIN);
 
         /* Hook up grabs */
         brisk_menu_window_configure_grabs(self);
@@ -146,6 +146,8 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                                        GTK_POLICY_AUTOMATIC);
         gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(scroll), FALSE);
         self->sidebar = widget;
+        style = gtk_widget_get_style_context(self->sidebar);
+        gtk_style_context_add_class(style, BRISK_STYLE_SIDEBAR);
         self->sidebar_scroll = scroll;
         gtk_container_add(GTK_CONTAINER(scroll), widget);
 
@@ -178,7 +180,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
 
         /* Style up the app box */
         style = gtk_widget_get_style_context(widget);
-        gtk_style_context_add_class(style, "apps-list");
+        gtk_style_context_add_class(style, BRISK_STYLE_APPS_LIST);
         gtk_style_context_add_class(style, "view");
         gtk_style_context_add_class(style, "content-view");
         gtk_style_context_remove_class(style, "background");

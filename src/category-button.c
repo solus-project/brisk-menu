@@ -217,7 +217,7 @@ static void brisk_menu_category_button_init(BriskMenuCategoryButton *self)
 
         /* Flatten the button */
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(style, "flat");
+        gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
 }
 
 /*

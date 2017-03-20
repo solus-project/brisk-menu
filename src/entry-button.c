@@ -249,7 +249,7 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 
         /* Flatten the button */
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(style, "flat");
+        gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
 
         /* Hook up drag so users can drag .desktop from here elsewhere */
         gtk_drag_source_set(GTK_WIDGET(self), GDK_BUTTON1_MASK, drag_targets, 2, GDK_ACTION_COPY);
