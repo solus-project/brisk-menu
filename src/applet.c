@@ -20,10 +20,16 @@ BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
 #include "menu-private.h"
 #include "menu-window.h"
+#include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
 BRISK_END_PEDANTIC
+
+/**
+ * UI definition for our right click menu
+ */
+#define BRISK_MENU_XML "<menuitem name=\"Edit Menus\" action=\"EditMenus\" />"
 
 struct _BriskMenuAppletClass {
         MatePanelAppletClass parent_class;
@@ -55,6 +61,20 @@ __attribute__((destructor)) static void brisk_resource_deinit(void)
 {
         brisk_resources_unregister_resource();
 }
+
+/**
+ * GtkAction callbacks
+ */
+static void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
+
+static const GtkActionEntry brisk_actions[] = { {
+    "EditMenus",
+    GTK_STOCK_EDIT,
+    N_("_Edit Menus"),
+    NULL,
+    NULL,
+    G_CALLBACK(brisk_menu_applet_edit_menus),
+} };
 
 /**
  * Handle showing of the menu
@@ -271,6 +291,44 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu), orient);
 }
 
+static void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuApplet *self)
+{
+        static const char *editors[] = {
+                "menulibre.desktop", "mozo.desktop",
+        };
+        static const char *binaries[] = {
+                "menulibre", "mozo",
+        };
+        for (size_t i = 0; i < G_N_ELEMENTS(editors); i++) {
+                autofree(gchar) *p = NULL;
+                autofree(GAppInfo) *app = NULL;
+                BriskMenuLauncher *launcher = ((BRISK_MENU_WINDOW(self->menu))->launcher);
+                GDesktopAppInfo *info = NULL;
+
+                p = g_find_program_in_path(binaries[i]);
+                if (!p) {
+                        continue;
+                }
+
+                info = g_desktop_app_info_new(editors[i]);
+                if (!info) {
+                        app = g_app_info_create_from_commandline(p,
+                                                                 NULL,
+                                                                 G_APP_INFO_CREATE_NONE,
+                                                                 NULL);
+                } else {
+                        app = G_APP_INFO(info);
+                }
+                if (!app) {
+                        continue;
+                }
+                info = G_DESKTOP_APP_INFO(app);
+                brisk_menu_launcher_start(launcher, GTK_WIDGET(self), app);
+                return;
+        }
+        g_message("Failed to launch menu editor");
+}
+
 static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id,
                                           __brisk_unused__ gpointer v)
 {
@@ -279,11 +337,18 @@ static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *
         }
         const char *home = NULL;
         __attribute__((unused)) int ret = 0;
+        autofree(GtkActionGroup) *group = NULL;
 
         home = g_get_home_dir();
         if (home) {
                 ret = chdir(home);
         }
+
+        /* Setup the action group and hand it to the mate panel */
+        group = gtk_action_group_new("Brisk Menu Actions");
+        gtk_action_group_set_translation_domain(group, GETTEXT_PACKAGE);
+        gtk_action_group_add_actions(group, brisk_actions, G_N_ELEMENTS(brisk_actions), applet);
+        mate_panel_applet_setup_menu(applet, BRISK_MENU_XML, group);
 
         g_set_application_name(_("Brisk Menu Launcher"));
         gtk_widget_show(GTK_WIDGET(applet));

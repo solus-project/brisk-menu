@@ -122,7 +122,9 @@ void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppI
 
         /* Hide the menu before kicking off the launch */
         toplevel = gtk_widget_get_toplevel(parent);
-        gtk_widget_hide(toplevel);
+        if (!PANEL_IS_APPLET(parent)) {
+                gtk_widget_hide(toplevel);
+        }
 
         /* We may support DnD URIs onto the icons at some point, not for now. */
         g_app_info_launch(app_info, NULL, G_APP_LAUNCH_CONTEXT(self->context), NULL);
