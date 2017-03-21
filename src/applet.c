@@ -67,6 +67,7 @@ __attribute__((destructor)) static void brisk_resource_deinit(void)
  */
 static void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 static const GtkActionEntry brisk_actions[] = { {
     "EditMenus",
     GTK_STOCK_EDIT,
@@ -75,6 +76,7 @@ static const GtkActionEntry brisk_actions[] = { {
     NULL,
     G_CALLBACK(brisk_menu_applet_edit_menus),
 } };
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 /**
  * Handle showing of the menu
@@ -345,10 +347,12 @@ static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *
         }
 
         /* Setup the action group and hand it to the mate panel */
+        G_GNUC_BEGIN_IGNORE_DEPRECATIONS
         group = gtk_action_group_new("Brisk Menu Actions");
         gtk_action_group_set_translation_domain(group, GETTEXT_PACKAGE);
         gtk_action_group_add_actions(group, brisk_actions, G_N_ELEMENTS(brisk_actions), applet);
         mate_panel_applet_setup_menu(applet, BRISK_MENU_XML, group);
+        G_GNUC_END_IGNORE_DEPRECATIONS
 
         g_set_application_name(_("Brisk Menu Launcher"));
         gtk_widget_show(GTK_WIDGET(applet));
