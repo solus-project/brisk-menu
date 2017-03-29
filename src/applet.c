@@ -179,6 +179,7 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
         GtkWidget *toggle, *layout, *image, *label, *menu = NULL;
+        GtkStyleContext *style = NULL;
 
         self->binder = brisk_key_binder_new();
 
@@ -189,6 +190,8 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         gtk_container_add(GTK_CONTAINER(self), toggle);
         g_signal_connect_swapped(toggle, "button-press-event", G_CALLBACK(button_press_cb), self);
         gtk_button_set_relief(GTK_BUTTON(toggle), GTK_RELIEF_NONE);
+        style = gtk_widget_get_style_context(toggle);
+        gtk_style_context_add_class(style, BRISK_STYLE_BUTTON);
 
         /* Layout will contain icon + label */
         layout = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
