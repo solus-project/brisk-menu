@@ -16,6 +16,17 @@
 
 G_BEGIN_DECLS
 
+/**
+ * BriskKeyBinder is used to bind global x11 shortcuts
+ */
+struct _BriskKeyBinder {
+        GObject parent;
+        GdkWindow *root_window;
+        GHashTable *bindings;
+        const gchar *shortcut;
+        gboolean wait_for_release;
+};
+
 typedef struct _BriskKeyBinder BriskKeyBinder;
 typedef struct _BriskKeyBinderClass BriskKeyBinderClass;
 

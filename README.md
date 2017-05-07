@@ -33,8 +33,7 @@ Features
 Currently, very lacking! Remember, it's still in early development.
 
  - Keyboard centric (mice welcome too, of course)
- - Basic hotkey support (<kbd>CTRL+F10</kbd>)
-   Needs fixing to support <kbd>Super</kbd> shortcut
+ - Hotkey support (defaults to <kbd>CTRL+F10</kbd>, configurable in gsettings)
  - Stupid-fast
  - Efficient, useful searching.
  - Automatically reload

@@ -233,16 +233,13 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Load initially in the idle loop, prevent lagging panel on startup */
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 
-        if (!brisk_key_binder_bind(self->binder, "<Ctrl>F10", hotkey_cb, self)) {
-                g_message("Failed to bind keyboard shortcut");
-        }
-
         /* Fix the orient now we're up */
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu),
                                      mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
 
         /* Pump the settings */
-        brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
+        brisk_menu_applet_init_settings(BRISK_MENU_WINDOW(self->menu), BRISK_MENU_APPLET(self));
+        brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu), BRISK_MENU_APPLET(self));
 }
 
 /**
@@ -284,6 +281,21 @@ static gboolean toggle_menu(BriskMenuApplet *self)
 static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
 {
         g_idle_add((GSourceFunc)toggle_menu, v);
+}
+
+/**
+ * Update global hotkey
+ */
+void brisk_menu_applet_set_hotkey(BriskMenuApplet *self, const gchar *shortcut)
+{
+        if ((self->binder)->shortcut) {
+                /* attempt to unbind current shortcut */
+                brisk_key_binder_unbind(self->binder, (self->binder)->shortcut);
+        }
+
+        if (!brisk_key_binder_bind(self->binder, shortcut, hotkey_cb, self)) {
+                g_message("Failed to bind keyboard shortcut");
+        }
 }
 
 /**
