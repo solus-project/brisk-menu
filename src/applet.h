@@ -30,6 +30,7 @@ typedef struct _BriskMenuAppletClass BriskMenuAppletClass;
         (G_TYPE_INSTANCE_GET_CLASS((o), BRISK_TYPE_MENU_APPLET, BriskMenuAppletClass))
 
 GType brisk_menu_applet_get_type(void);
+void brisk_menu_applet_set_hotkey(BriskMenuApplet *self, const gchar *shortcut);
 
 G_END_DECLS
 

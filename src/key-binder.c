@@ -18,6 +18,7 @@
 BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
 #include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
@@ -25,15 +26,6 @@ BRISK_END_PEDANTIC
 
 struct _BriskKeyBinderClass {
         GObjectClass parent_class;
-};
-
-/**
- * BriskKeyBinder is used to bind global x11 shortcuts
- */
-struct _BriskKeyBinder {
-        GObject parent;
-        GdkWindow *root_window;
-        GHashTable *bindings;
 };
 
 /**
@@ -143,22 +135,45 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
         const gchar *key = NULL;
         const KeyBinding *binding = NULL;
         guint mods;
+        Display *display = NULL;
+        KeySym keysym;
 
         self = BRISK_KEY_BINDER(v);
+        display = GDK_WINDOW_XDISPLAY(self->root_window);
 
-        if (xev->type != KeyRelease) {
+        if (xev->type != KeyRelease && xev->type != KeyPress) {
                 return GDK_FILTER_CONTINUE;
         }
 
         /* unset mask of the lock keys */
         mods = xev->xkey.state & ~(_modifiers[7]);
 
+        /* unset mask of Mod4 if using Super_L key as hotkey */
+        keysym = XkbKeycodeToKeysym(display, (KeyCode) xev->xkey.keycode, 0, 0);
+        if (keysym == GDK_KEY_Super_L) {
+                mods = mods & ~((guint) GDK_MOD4_MASK);
+        }
+
         g_hash_table_iter_init(&iter, self->bindings);
 
         /* Find a matching binding */
         while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&binding)) {
-                if (xev->xkey.keycode == binding->keycode && mods == binding->mods) {
-                        binding->func(event, binding->udata);
+                /* capture initial key press */
+                if (xev->xkey.keycode == binding->keycode && xev->type == KeyPress && !self->wait_for_release) {
+                        if (mods == binding->mods) {
+                                self->wait_for_release = TRUE;
+                        }
+                } else if (xev->xkey.keycode == binding->keycode && self->wait_for_release) {
+                        /* capture release within same shortcut sequence */
+                        if (xev->type == KeyRelease) {
+                                self->wait_for_release = FALSE;
+                                binding->func(event, binding->udata);
+                        }
+                } else {
+                        /* when breaking the shortcut sequence, send the event up the window hierarchy
+                         * in case it's part of a different shortcut sequence (e.g. <Mod4>a) */
+                        XSendEvent(display, (Window) NULL, TRUE, KeyPressMask | KeyReleaseMask, xev);
+                        self->wait_for_release = FALSE;
                 }
         }
 
@@ -181,6 +196,7 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
         if (g_hash_table_contains(self->bindings, shortcut)) {
                 return FALSE;
         }
+        self->shortcut = shortcut;
 
         gtk_accelerator_parse(shortcut, &keysym, &mod);
         display = GDK_WINDOW_XDISPLAY(self->root_window);
@@ -203,7 +219,7 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
         gdk_error_trap_push();
         for (size_t i = 0; i < G_N_ELEMENTS(_modifiers); i++) {
                 GdkModifierType m = _modifiers[i];
-                XGrabKey(display, key, mod | m, id, FALSE, GrabModeAsync, GrabModeAsync);
+                XGrabKey(display, key, mod | m, id, TRUE, GrabModeAsync, GrabModeAsync);
         }
         gdk_flush();
 

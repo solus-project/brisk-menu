@@ -18,6 +18,7 @@ BRISK_BEGIN_PEDANTIC
 BRISK_END_PEDANTIC
 
 static void brisk_menu_window_settings_changed(GSettings *settings, const gchar *key, gpointer v);
+static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
 
 void brisk_menu_window_init_settings(BriskMenuWindow *self)
 {
@@ -41,10 +42,22 @@ void brisk_menu_window_init_settings(BriskMenuWindow *self)
                          self);
 }
 
-void brisk_menu_window_pump_settings(BriskMenuWindow *self)
+void brisk_menu_applet_init_settings(BriskMenuWindow *self, BriskMenuApplet *applet)
+{
+        self->settings = g_settings_new("com.solus-project.brisk-menu");
+
+        /* capture changes in settings that affect the menu applet */
+        g_signal_connect(self->settings,
+                         "changed",
+                         G_CALLBACK(brisk_menu_applet_settings_changed),
+                         applet);
+}
+
+void brisk_menu_window_pump_settings(BriskMenuWindow *self, BriskMenuApplet *applet)
 {
         brisk_menu_window_settings_changed(self->settings, "search-position", self);
         brisk_menu_window_settings_changed(self->settings, "rollover-activate", self);
+        brisk_menu_applet_settings_changed(self->settings, "hot-key", applet);
 }
 
 static void brisk_menu_window_settings_changed(GSettings *settings, const gchar *key, gpointer v)
@@ -56,6 +69,17 @@ static void brisk_menu_window_settings_changed(GSettings *settings, const gchar 
                 return;
         } else if (g_str_equal(key, "rollover-activate")) {
                 self->rollover = g_settings_get_boolean(settings, key);
+        }
+}
+
+/* callback for changing applet settings */
+static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v)
+{
+        BriskMenuApplet *self = v;
+        gchar *shortcut = g_settings_get_string(settings, key);
+
+        if (g_str_equal(key, "hot-key")) {
+                brisk_menu_applet_set_hotkey(self, shortcut);
         }
 }
 
