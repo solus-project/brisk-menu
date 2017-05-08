@@ -15,7 +15,6 @@
 #include "libsaver-glue.h"
 #include "libsession-glue.h"
 #include "menu-window.h"
-#include "applet.h"
 #include "util.h"
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
@@ -148,9 +147,8 @@ gboolean brisk_menu_window_setup_session(BriskMenuWindow *self);
 
 /* Settings */
 void brisk_menu_window_init_settings(BriskMenuWindow *self);
-void brisk_menu_applet_init_settings(BriskMenuWindow *self, BriskMenuApplet *applet);
 void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos);
-void brisk_menu_window_pump_settings(BriskMenuWindow *self, BriskMenuApplet *applet);
+void brisk_menu_window_pump_settings(BriskMenuWindow *self);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)

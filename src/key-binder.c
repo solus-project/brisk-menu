@@ -29,6 +29,16 @@ struct _BriskKeyBinderClass {
 };
 
 /**
+ * BriskKeyBinder is used to bind global x11 shortcuts
+ */
+struct _BriskKeyBinder {
+        GObject parent;
+        GdkWindow *root_window;
+        GHashTable *bindings;
+        gboolean wait_for_release;
+};
+
+/**
  * A KeyBinding is used to map the input + function pointer into something
  * we can store and test.
  */
@@ -196,7 +206,6 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
         if (g_hash_table_contains(self->bindings, shortcut)) {
                 return FALSE;
         }
-        self->shortcut = shortcut;
 
         gtk_accelerator_parse(shortcut, &keysym, &mod);
         display = GDK_WINDOW_XDISPLAY(self->root_window);
