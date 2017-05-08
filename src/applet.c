@@ -41,6 +41,8 @@ struct _BriskMenuApplet {
         GtkWidget *label;
         GtkWidget *image;
         GtkWidget *menu;
+        GSettings *settings;
+        const gchar *shortcut;
         BriskKeyBinder *binder;
 };
 
@@ -84,6 +86,11 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer v);
 static void hotkey_cb(GdkEvent *event, gpointer v);
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient);
+
+/* Handle applet settings */
+void brisk_menu_applet_init_settings(BriskMenuApplet *self);
+void brisk_menu_applet_set_hotkey(BriskMenuApplet *self, const gchar *shortcut);
+static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
 
 /**
  * Update the position for the menu.
@@ -150,6 +157,7 @@ static void brisk_menu_applet_dispose(GObject *obj)
         }
 
         g_clear_object(&self->binder);
+        g_clear_object(&self->settings);
 
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }
@@ -171,6 +179,20 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
         mate_class->change_orient = brisk_menu_applet_change_orient;
 }
 
+void brisk_menu_applet_init_settings(BriskMenuApplet *self)
+{
+        self->settings = g_settings_new("com.solus-project.brisk-menu");
+
+        /* capture changes in settings that affect the menu applet */
+        g_signal_connect(self->settings,
+                         "changed",
+                         G_CALLBACK(brisk_menu_applet_settings_changed),
+                         self);
+
+        /* Pump applet settings */
+        brisk_menu_applet_settings_changed(self->settings, "hot-key", self);
+}
+
 /**
  * brisk_menu_applet_init:
  *
@@ -182,6 +204,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         GtkStyleContext *style = NULL;
 
         self->binder = brisk_key_binder_new();
+        brisk_menu_applet_init_settings(self);
 
         /* Create the toggle button */
         toggle = gtk_toggle_button_new();
@@ -238,8 +261,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
                                      mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
 
         /* Pump the settings */
-        brisk_menu_applet_init_settings(BRISK_MENU_WINDOW(self->menu), BRISK_MENU_APPLET(self));
-        brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu), BRISK_MENU_APPLET(self));
+        brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
 }
 
 /**
@@ -288,13 +310,27 @@ static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
  */
 void brisk_menu_applet_set_hotkey(BriskMenuApplet *self, const gchar *shortcut)
 {
-        if ((self->binder)->shortcut) {
+        if (self->shortcut) {
                 /* attempt to unbind current shortcut */
-                brisk_key_binder_unbind(self->binder, (self->binder)->shortcut);
+                brisk_key_binder_unbind(self->binder, self->shortcut);
         }
 
-        if (!brisk_key_binder_bind(self->binder, shortcut, hotkey_cb, self)) {
+        if (brisk_key_binder_bind(self->binder, shortcut, hotkey_cb, self)) {
+                self->shortcut = shortcut;
+        } else {
                 g_message("Failed to bind keyboard shortcut");
+        }
+}
+
+/**
+ * Callback for changing applet settings
+ */
+static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v)
+{
+        BriskMenuApplet *self = v;
+
+        if (g_str_equal(key, "hot-key")) {
+                brisk_menu_applet_set_hotkey(self, g_settings_get_string(settings, key));
         }
 }
 
