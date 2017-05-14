@@ -27,7 +27,7 @@
       <description>Where the search bar will appear in the menu</description>
     </key>
     <key type="s" name="hot-key">
-      <default>'<![CDATA[<Ctrl>F10]]>'</default>
+      <default>'<![CDATA[<Super_L>]]>'</default>
       <summary>Keyboard shortcut</summary>
       <description>Accelerator key for opening and closing the menu.</description>
     </key>
