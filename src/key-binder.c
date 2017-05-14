@@ -17,8 +17,8 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
-#include <X11/Xlib.h>
 #include <X11/XKBlib.h>
+#include <X11/Xlib.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gtk/gtk.h>
@@ -159,9 +159,9 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
         mods = xev->xkey.state & ~(_modifiers[7]);
 
         /* unset mask of Mod4 if using Super_L key as hotkey */
-        keysym = XkbKeycodeToKeysym(display, (KeyCode) xev->xkey.keycode, 0, 0);
+        keysym = XkbKeycodeToKeysym(display, (KeyCode)xev->xkey.keycode, 0, 0);
         if (keysym == GDK_KEY_Super_L) {
-                mods = mods & ~((guint) GDK_MOD4_MASK);
+                mods = mods & ~((guint)GDK_MOD4_MASK);
         }
 
         g_hash_table_iter_init(&iter, self->bindings);
@@ -169,7 +169,8 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
         /* Find a matching binding */
         while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&binding)) {
                 /* capture initial key press */
-                if (xev->xkey.keycode == binding->keycode && xev->type == KeyPress && !self->wait_for_release) {
+                if (xev->xkey.keycode == binding->keycode && xev->type == KeyPress &&
+                    !self->wait_for_release) {
                         if (mods == binding->mods) {
                                 self->wait_for_release = TRUE;
                         }
@@ -180,9 +181,10 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                                 binding->func(event, binding->udata);
                         }
                 } else {
-                        /* when breaking the shortcut sequence, send the event up the window hierarchy
+                        /* when breaking the shortcut sequence, send the event up the window
+                         * hierarchy
                          * in case it's part of a different shortcut sequence (e.g. <Mod4>a) */
-                        XSendEvent(display, (Window) NULL, TRUE, KeyPressMask | KeyReleaseMask, xev);
+                        XSendEvent(display, (Window)NULL, TRUE, KeyPressMask | KeyReleaseMask, xev);
                         self->wait_for_release = FALSE;
                 }
         }
