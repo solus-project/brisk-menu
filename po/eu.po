@@ -10,35 +10,35 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-21 04:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Josué Vargas <josue.vargas.cazar@gmail.com>, 2017\n"
-"Language-Team: Spanish (Argentina) (https://www.transifex.com/solus-project/teams/68407/es_AR/)\n"
+"Last-Translator: John Smith <aboutafteragain@gmail.com>, 2017\n"
+"Language-Team: Basque (https://www.transifex.com/solus-project/teams/68407/eu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_AR\n"
+"Language: eu\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Now add the label
 #: ../src/applet.c:177
 msgid "Menu"
-msgstr "Menú"
+msgstr "Menua"
 
 #: ../src/applet.c:265
 msgid "Brisk Menu Launcher"
-msgstr "Lanzador del Menú Brisk"
+msgstr "Brisk Menu Abiarazlea"
 
 #: ../src/category-button.c:130
 msgid "All"
-msgstr "Todo"
+msgstr "Dena"
 
 #: ../src/menu-session.c:144
 msgid "End the current session"
-msgstr "Terminar la sesión actual"
+msgstr "Amaitu uneko saioa"
 
 #: ../src/menu-session.c:155
 msgid "Lock the screen"
-msgstr "Bloquear la pantalla"
+msgstr "Blokeatu pantaila"
 
 #: ../src/menu-session.c:166
 msgid "Turn off the device"
-msgstr "Apagar el dispositivo"
+msgstr "Gailua itzali"

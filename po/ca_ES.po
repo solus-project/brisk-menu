@@ -10,12 +10,12 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-01-21 04:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Josué Vargas <josue.vargas.cazar@gmail.com>, 2017\n"
-"Language-Team: Spanish (Argentina) (https://www.transifex.com/solus-project/teams/68407/es_AR/)\n"
+"Last-Translator: Davidmp <medipas@gmail.com>, 2017\n"
+"Language-Team: Catalan (Spain) (https://www.transifex.com/solus-project/teams/68407/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_AR\n"
+"Language: ca_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Now add the label
@@ -25,20 +25,20 @@ msgstr "Menú"
 
 #: ../src/applet.c:265
 msgid "Brisk Menu Launcher"
-msgstr "Lanzador del Menú Brisk"
+msgstr "Llançador del menú Brisk"
 
 #: ../src/category-button.c:130
 msgid "All"
-msgstr "Todo"
+msgstr "Tot"
 
 #: ../src/menu-session.c:144
 msgid "End the current session"
-msgstr "Terminar la sesión actual"
+msgstr "Acaba la sessió actual"
 
 #: ../src/menu-session.c:155
 msgid "Lock the screen"
-msgstr "Bloquear la pantalla"
+msgstr "Bloqueja la pantalla"
 
 #: ../src/menu-session.c:166
 msgid "Turn off the device"
-msgstr "Apagar el dispositivo"
+msgstr "Atura el dispositiu"
