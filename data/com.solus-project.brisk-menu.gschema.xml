@@ -31,5 +31,10 @@
       <summary>Keyboard shortcut</summary>
       <description>Accelerator key for opening and closing the menu.</description>
     </key>
+    <key type="s" name="label-text">
+      <default>""</default>
+      <summary>Button label text</summary>
+      <description>Change the label text for the menu button</description>
+    </key>
   </schema>
 </schemalist>
