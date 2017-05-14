@@ -90,6 +90,7 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
+void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key);
 
 /**
  * Update the position for the menu.
@@ -228,10 +229,13 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         gtk_widget_set_halign(image, GTK_ALIGN_START);
 
         /* Now add the label */
-        label = gtk_label_new(_("Menu"));
+        label = gtk_label_new(NULL);
         self->label = label;
         gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
         gtk_widget_set_margin_end(label, 4);
+
+        /* Pump the label setting */
+        brisk_menu_applet_settings_changed(self->settings, "label-text", self);
 
         /* Fix label alignment */
         gtk_widget_set_halign(label, GTK_ALIGN_START);
@@ -311,19 +315,36 @@ static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v)
 {
         BriskMenuApplet *self = v;
-        gchar *bound = NULL;
+        gchar *value = NULL;
 
-        /* We only monitor the binding here */
-        if (!g_str_equal(key, "hot-key")) {
-                return;
+        value = g_settings_get_string(settings, key);
+
+        if (g_str_equal(key, "hot-key")) {
+                brisk_menu_applet_update_hotkey(self, value);
+        } else if (g_str_equal(key, "label-text")) {
+                if (strlen(value) > 0) {
+                        gtk_label_set_text(GTK_LABEL(self->label), value);
+                } else {
+                        gtk_label_set_text(GTK_LABEL(self->label), _("Menu"));
+                }
         }
+
+        g_free(value);
+}
+
+/**
+ * Update the applet hotkey in accordance with settings
+ */
+void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key)
+{
+        gchar *bound = NULL;
 
         if (self->shortcut) {
                 brisk_key_binder_unbind(self->binder, self->shortcut);
                 g_clear_pointer(&self->shortcut, g_free);
         }
 
-        bound = g_settings_get_string(settings, key);
+        bound = key;
 
         if (!brisk_key_binder_bind(self->binder, bound, hotkey_cb, self)) {
                 g_message("Failed to bind keyboard shortcut");
