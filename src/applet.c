@@ -42,7 +42,7 @@ struct _BriskMenuApplet {
         GtkWidget *image;
         GtkWidget *menu;
         GSettings *settings;
-        const gchar *shortcut;
+        gchar *shortcut;
         BriskKeyBinder *binder;
 };
 
@@ -89,7 +89,6 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
 
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
-void brisk_menu_applet_set_hotkey(BriskMenuApplet *self, const gchar *shortcut);
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
 
 /**
@@ -158,6 +157,7 @@ static void brisk_menu_applet_dispose(GObject *obj)
 
         g_clear_object(&self->binder);
         g_clear_object(&self->settings);
+        g_clear_pointer(&self->shortcut, g_free);
 
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }
@@ -306,32 +306,32 @@ static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
 }
 
 /**
- * Update global hotkey
- */
-void brisk_menu_applet_set_hotkey(BriskMenuApplet *self, const gchar *shortcut)
-{
-        if (self->shortcut) {
-                /* attempt to unbind current shortcut */
-                brisk_key_binder_unbind(self->binder, self->shortcut);
-        }
-
-        if (brisk_key_binder_bind(self->binder, shortcut, hotkey_cb, self)) {
-                self->shortcut = shortcut;
-        } else {
-                g_message("Failed to bind keyboard shortcut");
-        }
-}
-
-/**
  * Callback for changing applet settings
  */
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v)
 {
         BriskMenuApplet *self = v;
+        gchar *bound = NULL;
 
-        if (g_str_equal(key, "hot-key")) {
-                brisk_menu_applet_set_hotkey(self, g_settings_get_string(settings, key));
+        /* We only monitor the binding here */
+        if (!g_str_equal(key, "hot-key")) {
+                return;
         }
+
+        if (self->shortcut) {
+                brisk_key_binder_unbind(self->binder, self->shortcut);
+                g_clear_pointer(&self->shortcut, g_free);
+        }
+
+        bound = g_settings_get_string(settings, key);
+
+        if (!brisk_key_binder_bind(self->binder, bound, hotkey_cb, self)) {
+                g_message("Failed to bind keyboard shortcut");
+                g_free(bound);
+                return;
+        }
+
+        self->shortcut = bound;
 }
 
 /**
