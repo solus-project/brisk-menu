@@ -18,8 +18,32 @@ G_BEGIN_DECLS
 typedef struct _BriskBackend BriskBackend;
 typedef struct _BriskBackendClass BriskBackendClass;
 
+/**
+ * Flags to indicate the support level of a given backend
+ */
+typedef enum {
+        BRISK_BACKEND_FAVOURITES = 1 << 0, /**<Supports "favourites" management */
+        BRISK_BACKEND_KEYBOARD = 1 << 1,   /**<Supports keyboard shortcuts */
+        BRISK_BACKEND_SOURCE = 1 << 2,     /**<Provides data which must be loaded */
+} BriskBackendFlags;
+
 struct _BriskBackendClass {
         GObjectClass parent_class;
+
+        /* All plugins must implement these methods */
+        unsigned int (*get_flags)(BriskBackend *);
+        const gchar *(*get_id)(BriskBackend *);
+        const gchar *(*get_display_name)(BriskBackend *);
+
+        /* Favourites functions (Missing parameters!) */
+        gboolean (*pin_object)(BriskBackend *);
+        gboolean (*is_object_pinned)(BriskBackend *);
+        gboolean (*unpin_object)(BriskBackend *);
+
+        /* All plugins given an opportunity to load later in life */
+        gboolean (*load)(BriskBackend *);
+
+        gpointer padding[12];
 };
 
 /**
@@ -28,9 +52,6 @@ struct _BriskBackendClass {
  */
 struct _BriskBackend {
         GObject parent;
-
-        /* TODO: Add vfuncs */
-        gpointer padding[12];
 };
 
 #define BRISK_TYPE_BACKEND brisk_backend_get_type()
