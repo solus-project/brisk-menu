@@ -17,9 +17,9 @@
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
 #include "brisk-resources.h"
-#include "key-binder.h"
-#include "menu-private.h"
-#include "menu-window.h"
+#include "frontend/menu-private.h"
+#include "frontend/menu-window.h"
+#include "lib/key-binder.h"
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>

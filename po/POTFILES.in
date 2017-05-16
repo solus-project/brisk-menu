@@ -1,3 +1,3 @@
-src/applet.c
-src/category-button.c
-src/menu-session.c
+src/mate-applet/applet.c
+src/frontend/category-button.c
+src/frontend/menu-session.c

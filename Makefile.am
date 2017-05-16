@@ -10,6 +10,10 @@ AM_CFLAGS = \
 	-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_2_44		\
 	-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_2_44
 
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/src/ \
+	-I$(top_srcdir)/src/lib
+
 EXTRA_DIST = \
 	autogen.sh \
 	LICENSE \
@@ -20,8 +24,8 @@ EXTRA_DIST = \
 	data/com.solus-project.brisk-menu.gschema.xml \
 	data/styling.css \
 	data/brisk_system-log-out-symbolic.svg \
-	src/org.mate.ScreenSaver.xml \
-	src/org.gnome.SessionManager.xml
+	src/frontend/org.mate.ScreenSaver.xml \
+	src/frontend/org.gnome.SessionManager.xml
 
 iconsdir = \
 	$(datadir)/icons/hicolor/scalable/actions
@@ -33,12 +37,14 @@ libexec_PROGRAMS = \
 	brisk-menu
 
 noinst_LTLIBRARIES = \
-	libbriskresources.la
+	libbriskresources.la \
+	libbriskui.la \
+	libbriskutil.la
 
 brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/brisk.gresource.xml)
 
 # Generate the glue
-libsession-glue.h: $(top_srcdir)/src/org.gnome.SessionManager.xml
+libsession-glue.h: $(top_srcdir)/src/frontend/org.gnome.SessionManager.xml
 	gdbus-codegen --interface-prefix org.gnome. \
 	--c-namespace Gnome  \
 	--generate-c-code libsession-glue $<
@@ -46,7 +52,7 @@ libsession-glue.h: $(top_srcdir)/src/org.gnome.SessionManager.xml
 libsession-glue.c: libsession-glue.h
 
 # Generate the screensaver glue
-libsaver-glue.h: $(top_srcdir)/src/org.mate.ScreenSaver.xml
+libsaver-glue.h: $(top_srcdir)/src/frontend/org.mate.ScreenSaver.xml
 	gdbus-codegen --interface-prefix org.mate. \
 	--c-namespace Mate \
 	--generate-c-code libsaver-glue $<
@@ -111,6 +117,7 @@ brisk-resources.h: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 brisk-resources.c: $(top_srcdir)/data/brisk.gresource.xml $(theme_resources)
 	glib-compile-resources --manual-register --target=$@ --sourcedir=$(top_srcdir)/data --generate-source --c-name brisk_resources $<
 
+
 # Build this separately due to major spammy compiler warnings
 libbriskresources_la_SOURCES = \
 	brisk-resources.h \
@@ -122,41 +129,67 @@ libbriskresources_la_CFLAGS = \
 libbriskresources_la_LIBADD = \
 	$(GIO_LIBS)
 
+libbriskutil_la_SOURCES = \
+	src/lib/key-binder.h \
+	src/lib/key-binder.c \
+	src/lib/util.h
+
+libbriskutil_la_CFLAGS = \
+	$(GTK_CFLAGS) \
+	$(X11_CFLAGS) \
+	$(AM_CFLAGS)
+
+libbriskutil_la_LIBADD = \
+	$(GTK_LIBS) \
+	$(X11_LIBS)
+
+libbriskui_la_SOURCES = \
+	src/frontend/category-button.h \
+	src/frontend/category-button.c \
+	src/frontend/desktop-button.h \
+	src/frontend/desktop-button.c \
+	src/frontend/entry-button.h \
+	src/frontend/entry-button.c \
+	src/frontend/launcher.h \
+	src/frontend/launcher.c \
+	src/frontend/menu-grabs.c \
+	src/frontend/menu-keyboard.c \
+	src/frontend/menu-loader.c \
+	src/frontend/menu-private.h \
+	src/frontend/menu-search.c \
+	src/frontend/menu-session.c \
+	src/frontend/menu-settings.c \
+	src/frontend/menu-sort.c \
+	src/frontend/menu-window.h \
+	src/frontend/menu-window.c
+
+libbriskui_la_CFLAGS = \
+	$(GTK_CFLAGS) \
+	$(APPLET_CFLAGS) \
+	$(X11_CFLAGS) \
+	$(MENU_CFLAGS) \
+	$(AM_CFLAGS)
+
+libbriskui_la_LIBADD = \
+	$(GTK_LIBS) \
+	$(X11_LIBS) \
+	$(MENU_LIBS)
+
 # Helper to let us develop the window portion first
 brisk_menu_SOURCES = \
-	src/applet.h \
-	src/applet.c \
-	src/category-button.h \
-	src/category-button.c \
-	src/desktop-button.h \
-	src/desktop-button.c \
-	src/entry-button.h \
-	src/entry-button.c \
-	src/key-binder.h \
-	src/key-binder.c \
-	src/launcher.h \
-	src/launcher.c \
-	src/menu-grabs.c \
-	src/menu-keyboard.c \
-	src/menu-loader.c \
-	src/menu-private.h \
-	src/menu-search.c \
-	src/menu-session.c \
-	src/menu-settings.c \
-	src/menu-sort.c \
-	src/menu-window.h \
-	src/menu-window.c \
-	src/util.h
+	src/mate-applet/applet.h \
+	src/mate-applet/applet.c
 
 brisk_menu_CFLAGS = \
 	$(GTK_CFLAGS) \
-	$(X11_CFLAGS) \
-	$(MENU_CFLAGS) \
 	$(APPLET_CFLAGS) \
+	$(MENU_CFLAGS) \
 	$(AM_CFLAGS)
 
 brisk_menu_LDADD = \
 	libbriskresources.la \
+	libbriskui.la \
+	libbriskutil.la \
 	libsession-stub.la \
 	$(GTK_LIBS) \
 	$(X11_LIBS) \
