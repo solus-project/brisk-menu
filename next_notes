@@ -5,6 +5,13 @@ Favourites:
  - Favourites category on sidebar
  - Support DND reordering
 
+Note to self:
+
+        - Consider using GSimpleAction based API and have the backend
+          register them with the main action group.
+          Then dynamically build a context menu from actions supported
+          for the current item, including favourites system.
+
 Item {
     Name()              /* name for the item */
     Summary()           /* summary for the item */
