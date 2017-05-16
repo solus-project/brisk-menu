@@ -39,7 +39,8 @@ libexec_PROGRAMS = \
 noinst_LTLIBRARIES = \
 	libbriskresources.la \
 	libbriskui.la \
-	libbriskutil.la
+	libbriskutil.la \
+	libbriskbackend.la
 
 brisk_resources = $(shell glib-compile-resources --sourcedir=$(top_srcdir)/data --generate-dependencies $(top_srcdir)/data/brisk.gresource.xml)
 
@@ -143,6 +144,18 @@ libbriskutil_la_LIBADD = \
 	$(GTK_LIBS) \
 	$(X11_LIBS)
 
+# Backend management
+libbriskbackend_la_SOURCES = \
+	src/backend/backend.h \
+	src/backend/backend.c
+
+libbriskbackend_la_CFLAGS = \
+	$(GIO_CFLAGS) \
+	$(AM_CFLAGS)
+
+libbriskbackend_la_LIBADD = \
+	$(GIO_LIBS)
+
 libbriskui_la_SOURCES = \
 	src/frontend/category-button.h \
 	src/frontend/category-button.c \
@@ -188,6 +201,7 @@ brisk_menu_CFLAGS = \
 
 brisk_menu_LDADD = \
 	libbriskresources.la \
+	libbriskbackend.la \
 	libbriskui.la \
 	libbriskutil.la \
 	libsession-stub.la \
