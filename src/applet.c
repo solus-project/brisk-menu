@@ -254,6 +254,13 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         self->label = label;
         gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
         gtk_widget_set_margin_end(label, 4);
+        /* Set it up for visibility toggling */
+        gtk_widget_show_all(label);
+        gtk_widget_set_no_show_all(label, TRUE);
+        gtk_widget_hide(label);
+
+        /* Update label visibility dependent on config */
+        g_settings_bind(self->settings, "label-visible", label, "visible", G_SETTINGS_BIND_DEFAULT);
 
         /* Pump the label setting */
         brisk_menu_applet_settings_changed(self->settings, "label-text", self);

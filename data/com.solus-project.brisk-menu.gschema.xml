@@ -36,5 +36,10 @@
       <summary>Button label text</summary>
       <description>Change the label text for the menu button</description>
     </key>
+    <key type="b" name="label-visible">
+      <default>true</default>
+      <summary>Button label visibility</summary>
+      <description>Control the visibility of the main button label</description>
+    </key>
   </schema>
 </schemalist>
