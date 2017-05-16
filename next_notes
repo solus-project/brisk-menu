@@ -38,7 +38,7 @@ BriskBackend abstract {
     DisplayName()               /* How to render in displays */
 
     signal SectionAdded(obj)    /* New menu section added */
-    signal SectionRemove(obj)   /* New menu section added */
+    signal SectionRemoved(obj)  /* New menu section added */
     signal ItemRemoved(obj)     /* One thing removed */
     signal ItemAdded(obj)       /* One thing added */
     signal Reset()              /* All my things went (i.e. mate-menus reload) */
