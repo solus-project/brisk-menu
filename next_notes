@@ -6,13 +6,14 @@ Favourites:
  - Support DND reordering
 
 Item {
-    Name()        /* name for the item */
-    Summary()     /* summary for the item */
-    Image()       /* Display image */
-    Backend()     /* Where this object came from */
-    ID()          /* Identifier for the object, i.e. $backend:$localID (desktop-files:firefox.desktop) */
+    Name()              /* name for the item */
+    Summary()           /* summary for the item */
+    Image()             /* Display image */
+    Backend()           /* Where this object came from */
+    ID()                /* Identifier for the object, i.e. $backend:$localID (desktop-files:firefox.desktop) */
 
-    Launch()    /* Request that this item launch itself */
+    MatchesTerm(term)   /* Does this item match the given search term ? */
+    Launch()            /* Request that this item launch itself */
 }
 
 Section {
@@ -20,6 +21,7 @@ Section {
     Image()             /* Display image */
     Backend()           /* Where it doth originate */
     ID()                /* Get the ID for this section, i.e. $backend:$localID (desktop-files:games.menu) */
+    Visible()           /* Whether this section should be shown in the menu or not */
 
     CanHoldItem(item)   /* Whether or not we can display the current item in filtering */
 }
@@ -32,7 +34,7 @@ flags {
 
 BriskBackend abstract {
     Flags()                     /* Flags this backend supports */
-    Name()                      /* Internal module name */
+    ID()                        /* Internal module ID */
     DisplayName()               /* How to render in displays */
 
     signal SectionAdded(obj)    /* New menu section added */
