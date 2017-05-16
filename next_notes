@@ -1,0 +1,68 @@
+Favourites:
+
+ - Support Ctrl+1 -> Ctrl+0 hotkeys for top 10 favs
+ - Right click item favourite/unfavourite context menu
+ - Favourites category on sidebar
+ - Support DND reordering
+
+Item {
+    Name()        /* name for the item */
+    Summary()     /* summary for the item */
+    Image()       /* Display image */
+    Backend()     /* Where this object came from */
+    ID()          /* Identifier for the object, i.e. $backend:$localID (desktop-files:firefox.desktop) */
+
+    Launch()    /* Request that this item launch itself */
+}
+
+Section {
+    Name()              /* Name of this section */
+    Image()             /* Display image */
+    Backend()           /* Where it doth originate */
+    ID()                /* Get the ID for this section, i.e. $backend:$localID (desktop-files:games.menu) */
+
+    CanHoldItem(item)   /* Whether or not we can display the current item in filtering */
+}
+
+flags {
+    FAVOURITE,  /* I handle pinning */
+    KEYBOARD,   /* I am allowed to have keyboard shortcuts */
+    SOURCE      /* I am a source of data. I feed you! */
+}
+
+BriskBackend abstract {
+    Flags()                     /* Flags this backend supports */
+    Name()                      /* Internal module name */
+    DisplayName()               /* How to render in displays */
+
+    signal SectionAdded(obj)    /* New menu section added */
+    signal SectionRemove(obj)   /* New menu section added */
+    signal ItemRemoved(obj)     /* One thing removed */
+    signal ItemAdded(obj)       /* One thing added */
+    signal Reset()              /* All my things went (i.e. mate-menus reload) */
+
+    /* Virtual functions for favourites */
+    ->Pin(obj) bool
+    ->IsPinned(obj) bool
+    ->Unpin(obj) bool
+
+    /* Virtual function for all */
+    ->Load() error
+}
+
+example:
+
+PinBackend b;
+DesktopBackend d;
+Item firefox = ...;
+
+section = Section { "Favourites", someImg, b, "favourites:section" }
+b.SectionAdded(section)
+
+section.CanHoldItem(firefox);
+-> false;
+
+section.Pin(firefox);
+currentSection = section;
+section.CanHoldItem(firefox);
+-> true;
