@@ -140,6 +140,27 @@ static void place_menu(BriskMenuApplet *self)
 }
 
 /**
+ * Handle hiding the menu when it comes to the shortcut key only.
+ * i.e. the Super_L key.
+ */
+static gboolean brisk_menu_applet_key_press(BriskMenuApplet *self, GdkEvent *event, GtkWidget *menu)
+{
+        autofree(gchar) *accel_name = NULL;
+
+        if (!self->shortcut) {
+                return GDK_EVENT_PROPAGATE;
+        }
+
+        accel_name = gtk_accelerator_name(event->key.keyval, event->key.state);
+        if (!accel_name || g_ascii_strcasecmp(self->shortcut, accel_name) != 0) {
+                return GDK_EVENT_PROPAGATE;
+        }
+
+        gtk_widget_hide(menu);
+        return GDK_EVENT_STOP;
+}
+
+/**
  * brisk_menu_applet_dispose:
  *
  * Clean up a BriskMenuApplet instance
@@ -253,6 +274,11 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Construct our menu */
         menu = brisk_menu_window_new();
         self->menu = menu;
+        /* We handle the shortcut side of the events, not the escape key */
+        g_signal_connect_swapped(self->menu,
+                                 "key-press-event",
+                                 G_CALLBACK(brisk_menu_applet_key_press),
+                                 self);
 
         /* Render "active" toggle only when the window is open, automatically. */
         g_object_bind_property(menu, "visible", toggle, "active", G_BINDING_DEFAULT);
