@@ -52,6 +52,20 @@ static void brisk_menu_window_recurse_root(BriskMenuWindow *self, MateMenuTreeDi
                         /* Tree directory maps to a BriskMenuCategoryButton */
                         GtkWidget *button = NULL;
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
+                        GSList *children = NULL;
+                        guint n_children = 0;
+
+                        /* This does add a tiny bit of cost but it allows us to
+                         * skip empty directories */
+                        children = matemenu_tree_directory_get_contents(dir);
+                        if (children) {
+                                n_children = g_slist_length(children);
+                                g_slist_free_full(children, matemenu_tree_item_unref);
+                        }
+
+                        if (n_children < 1) {
+                                continue;
+                        }
 
                         button = brisk_menu_category_button_new(root_tree, dir);
                         gtk_radio_button_join_group(GTK_RADIO_BUTTON(button),
