@@ -51,6 +51,106 @@ static void brisk_backend_init(__brisk_unused__ BriskBackend *self)
 {
 }
 
+/**
+ * brisk_backend_get_flags:
+ *
+ * Return the supported flags for the backend
+ */
+unsigned int brisk_backend_get_flags(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+        g_assert(klazz->get_flags != NULL);
+        return klazz->get_flags(backend);
+}
+
+/**
+ * brisk_backend_get_id:
+ *
+ * Return the unique ID for the backend
+ * @note This string is owned by the backend and must not be freed
+ */
+const gchar *brisk_backend_get_id(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+        g_assert(klazz->get_id != NULL);
+        return klazz->get_id(backend);
+}
+
+/**
+ * brisk_backend_get_display_name:
+ *
+ * Return the display name for the backend
+ * @note This string is owned by the backend and must not be freed
+ */
+const gchar *brisk_backend_get_display_name(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+        g_assert(klazz->get_display_name != NULL);
+        return klazz->get_display_name(backend);
+}
+
+/* Favourites specific functionality (missing full signatures!) */
+
+/**
+ * brisk_backend_pin_object:
+ *
+ * Attempt to pin the selected item in the backend for prioritising
+ * in access and display
+ */
+gboolean brisk_backend_pin_object(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+
+        g_return_val_if_fail(klazz->pin_object != NULL, FALSE);
+        return klazz->pin_object(backend);
+}
+
+/**
+ * brisk_backend_is_object_pinned:
+ *
+ * Determine if the given object was previously pinned or not
+ */
+gboolean brisk_backend_is_object_pinned(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+
+        g_return_val_if_fail(klazz->is_object_pinned != NULL, FALSE);
+        return klazz->is_object_pinned(backend);
+}
+
+/**
+ * brisk_backend_unpin_object:
+ *
+ * Unpin a previously pinned object.
+ */
+gboolean brisk_backend_unpin_object(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+
+        g_return_val_if_fail(klazz->unpin_object != NULL, FALSE);
+        return klazz->unpin_object(backend);
+}
+
+/**
+ * brisk_backend_load:
+ *
+ * Attempt to load the backend for the first time
+ */
+gboolean brisk_backend_load(BriskBackend *backend)
+{
+        g_assert(backend != NULL);
+        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
+
+        g_return_val_if_fail(klazz->load != NULL, FALSE);
+        return klazz->load(backend);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

@@ -64,6 +64,21 @@ struct _BriskBackend {
 
 GType brisk_backend_get_type(void);
 
+/* API Methods Follow */
+
+/* Core vfuncs required by everyone */
+unsigned int brisk_backend_get_flags(BriskBackend *backend);
+const gchar *brisk_backend_get_id(BriskBackend *backend);
+const gchar *brisk_backend_get_display_name(BriskBackend *backend);
+
+/* Favourites specific functionality */
+gboolean brisk_backend_pin_object(BriskBackend *backend);
+gboolean brisk_backend_is_object_pinned(BriskBackend *backend);
+gboolean brisk_backend_unpin_object(BriskBackend *backend);
+
+/* Attempt to load for the first time */
+gboolean brisk_backend_load(BriskBackend *backend);
+
 G_END_DECLS
 
 /*
