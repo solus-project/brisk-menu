@@ -335,22 +335,17 @@ static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar 
  */
 void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key)
 {
-        gchar *bound = NULL;
-
         if (self->shortcut) {
                 brisk_key_binder_unbind(self->binder, self->shortcut);
                 g_clear_pointer(&self->shortcut, g_free);
         }
 
-        bound = key;
-
-        if (!brisk_key_binder_bind(self->binder, bound, hotkey_cb, self)) {
+        if (!brisk_key_binder_bind(self->binder, key, hotkey_cb, self)) {
                 g_message("Failed to bind keyboard shortcut");
-                g_free(bound);
                 return;
         }
 
-        self->shortcut = bound;
+        self->shortcut = g_strdup(key);
 }
 
 /**
