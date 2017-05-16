@@ -315,21 +315,19 @@ static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v)
 {
         BriskMenuApplet *self = v;
-        gchar *value = NULL;
-
-        value = g_settings_get_string(settings, key);
+        autofree(gchar) *value = NULL;
 
         if (g_str_equal(key, "hot-key")) {
+                value = g_settings_get_string(settings, key);
                 brisk_menu_applet_update_hotkey(self, value);
         } else if (g_str_equal(key, "label-text")) {
-                if (strlen(value) > 0) {
-                        gtk_label_set_text(GTK_LABEL(self->label), value);
-                } else {
+                value = g_settings_get_string(settings, key);
+                if (g_str_equal(value, "")) {
                         gtk_label_set_text(GTK_LABEL(self->label), _("Menu"));
+                } else {
+                        gtk_label_set_text(GTK_LABEL(self->label), value);
                 }
         }
-
-        g_free(value);
 }
 
 /**
