@@ -45,6 +45,12 @@ struct _BriskAppsBackend {
 G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 
 static gboolean brisk_apps_backend_load(BriskBackend *backend);
+static void brisk_apps_backend_build_from_tree(BriskAppsBackend *self, MateMenuTree *tree);
+static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
+                                            MateMenuTreeDirectory *directory);
+
+DEF_AUTOFREE(GSList, g_slist_free)
+DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
 
 /**
  * Tell the frontends what we are
@@ -129,17 +135,69 @@ static gboolean brisk_apps_backend_load(BriskBackend *backend)
                 return FALSE;
         }
 
-        /* TODO: Stick in the idle monitor here */
-
         self->tree_settings = matemenu_tree_lookup(SETTINGS_MENU_ID, MATEMENU_TREE_FLAGS_NONE);
         if (!self->tree_settings) {
                 g_warning("Cannot load MATE Control Center items from %s", SETTINGS_MENU_ID);
                 return TRUE;
         }
-        /* TODO: Stick monitor here too */
+
+        /* Load menus
+         * TODO: Do this on the idle
+         */
+        brisk_apps_backend_build_from_tree(self, self->tree_apps);
+        brisk_apps_backend_build_from_tree(self, self->tree_settings);
 
         /* Basically done */
         return TRUE;
+}
+
+/**
+ * brisk_apps_backend_build_from_tree:
+ *
+ * Begin building content using the given tree
+ */
+static void brisk_apps_backend_build_from_tree(BriskAppsBackend *self, MateMenuTree *tree)
+{
+        if (!tree) {
+                return;
+        }
+        MateMenuTreeDirectory *dir = matemenu_tree_get_root_directory(tree);
+        brisk_apps_backend_recurse_root(self, dir);
+}
+
+/**
+ * brisk_apps_backend_recurse_root:
+ *
+ * Walk the directory and construct sections/items for every directory/entry
+ * that we encounter.
+ */
+static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
+                                            MateMenuTreeDirectory *directory)
+{
+        autofree(GSList) *kids = NULL;
+        GSList *elem = NULL;
+
+        kids = matemenu_tree_directory_get_contents(directory);
+
+        /* Iterate the root tree */
+        for (elem = kids; elem; elem = elem->next) {
+                autofree(MateMenuTreeItem) *item = elem->data;
+
+                switch (matemenu_tree_item_get_type(item)) {
+                case MATEMENU_TREE_ITEM_DIRECTORY: {
+                        MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
+
+                        /* Descend into the section */
+                        brisk_apps_backend_recurse_root(self, dir);
+                } break;
+                case MATEMENU_TREE_ITEM_ENTRY: {
+                        /* TODO: Emit a real item here */
+                        brisk_backend_item_added(BRISK_BACKEND(self), NULL);
+                } break;
+                default:
+                        break;
+                }
+        }
 }
 
 /**
