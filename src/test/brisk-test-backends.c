@@ -50,6 +50,11 @@ static inline void fail_if(bool b, const char *fmt, ...)
         exit(1);
 }
 
+static void test_item_added(BriskBackend *backend, BriskItem *item, gpointer v)
+{
+        g_message("Got a new item");
+}
+
 /**
  * Test the applications backend
  */
@@ -62,6 +67,8 @@ static void run_apps_backend_test(void)
 
         fail_if((brisk_backend_get_flags(backend) & BRISK_BACKEND_SOURCE) != BRISK_BACKEND_SOURCE,
                 "Invalid flags for backend");
+
+        g_signal_connect(backend, "item-added", G_CALLBACK(test_item_added), NULL);
 
         fail_if(!brisk_backend_load(backend), "Failed to load the apps backend");
 }
