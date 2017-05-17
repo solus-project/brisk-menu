@@ -77,7 +77,7 @@ static void brisk_backend_class_init(BriskBackendClass *klazz)
          *
          * Used to notify the frontend that an item is being removed
          */
-        backend_signals[BACKEND_SIGNAL_ITEM_ADDED] =
+        backend_signals[BACKEND_SIGNAL_ITEM_REMOVED] =
             g_signal_new("item-removed",
                          BRISK_TYPE_BACKEND,
                          G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
