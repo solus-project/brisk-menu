@@ -30,7 +30,7 @@ BRISK_END_PEDANTIC
 #define SETTINGS_MENU_ID "matecc.menu"
 
 struct _BriskAppsBackendClass {
-        BriskBackend parent_class;
+        BriskBackendClass parent_class;
 };
 
 /**
