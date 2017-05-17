@@ -99,7 +99,7 @@ static void brisk_backend_class_init(BriskBackendClass *klazz)
             g_signal_new("reset",
                          BRISK_TYPE_BACKEND,
                          G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-                         G_STRUCT_OFFSET(BriskBackendClass, item_removed),
+                         G_STRUCT_OFFSET(BriskBackendClass, reset),
                          NULL,
                          NULL,
                          NULL,
