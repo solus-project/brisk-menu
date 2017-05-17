@@ -147,7 +147,9 @@ libbriskutil_la_LIBADD = \
 # Backend management
 libbriskbackend_la_SOURCES = \
 	src/backend/backend.h \
-	src/backend/backend.c
+	src/backend/backend.c \
+	src/backend/item.h \
+	src/backend/item.c
 
 libbriskbackend_la_CFLAGS = \
 	$(GIO_CFLAGS) \
