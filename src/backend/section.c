@@ -80,6 +80,21 @@ const gchar *brisk_section_get_name(BriskSection *section)
 }
 
 /**
+ * brisk_section_get_icon:
+ *
+ * Returns the Icon for this menu in the display.
+ */
+const GIcon *brisk_section_get_icon(BriskSection *section)
+{
+        g_assert(section != NULL);
+        BriskSectionClass *klazz = BRISK_SECTION_GET_CLASS(section);
+        if (!klazz->get_icon) {
+                return NULL;
+        }
+        return klazz->get_icon(section);
+}
+
+/**
  * brisk_section_can_show_item:
  *
  * Returns true if the items can be shown under this section

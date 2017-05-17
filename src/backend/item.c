@@ -94,6 +94,21 @@ const gchar *brisk_item_get_summary(BriskItem *item)
 }
 
 /**
+ * brisk_item_get_icon:
+ *
+ * Returns the icon used to display this item in the menu
+ */
+const GIcon *brisk_item_get_icon(BriskItem *item)
+{
+        g_assert(item != NULL);
+        BriskItemClass *klazz = BRISK_ITEM_GET_CLASS(item);
+        if (!klazz->get_icon) {
+                return NULL;
+        }
+        return klazz->get_icon(item);
+}
+
+/**
  * brisk_item_matches_search:
  *
  * Returns true if the item matches the given search term

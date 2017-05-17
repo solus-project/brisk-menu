@@ -12,6 +12,7 @@
 #pragma once
 
 #include "item.h"
+#include <gio/gio.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -25,6 +26,7 @@ struct _BriskSectionClass {
         /* These must be implemented by subclasses */
         const gchar *(*get_id)(BriskSection *);
         const gchar *(*get_name)(BriskSection *);
+        const GIcon *(*get_icon)(BriskSection *);
 
         gboolean (*can_show_item)(BriskSection *, BriskItem *);
 
@@ -54,6 +56,7 @@ GType brisk_section_get_type(void);
 /* Core vfuncs required by everyone */
 const gchar *brisk_section_get_id(BriskSection *section);
 const gchar *brisk_section_get_name(BriskSection *section);
+const GIcon *brisk_section_get_icon(BriskSection *section);
 gboolean brisk_section_can_show_item(BriskSection *section, BriskItem *item);
 
 G_END_DECLS

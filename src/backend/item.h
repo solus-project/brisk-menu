@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <gio/gio.h>
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -25,6 +26,7 @@ struct _BriskItemClass {
         const gchar *(*get_id)(BriskItem *);
         const gchar *(*get_name)(BriskItem *);
         const gchar *(*get_summary)(BriskItem *);
+        const GIcon *(*get_icon)(BriskItem *item);
 
         /* If the subclass supports searching, override this */
         gboolean (*matches_search)(BriskItem *, gchar *);
@@ -58,6 +60,7 @@ GType brisk_item_get_type(void);
 const gchar *brisk_item_get_id(BriskItem *item);
 const gchar *brisk_item_get_name(BriskItem *item);
 const gchar *brisk_item_get_summary(BriskItem *item);
+const GIcon *brisk_item_get_icon(BriskItem *item);
 gboolean brisk_item_matches_search(BriskItem *item, gchar *term);
 
 /* Attempt to load for the first time */
