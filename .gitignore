@@ -25,6 +25,7 @@ brisk-resources.*
 .libs/
 
 brisk-menu
+/brisk-test-backends
 
 # Data files for mate-panel
 *.mate-panel-applet

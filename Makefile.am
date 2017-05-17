@@ -36,6 +36,9 @@ icons_DATA = \
 libexec_PROGRAMS = \
 	brisk-menu
 
+noinst_PROGRAMS = \
+	brisk-test-backends
+
 noinst_LTLIBRARIES = \
 	libbriskresources.la \
 	libbriskui.la \
@@ -217,6 +220,20 @@ brisk_menu_LDADD = \
 	$(X11_LIBS) \
 	$(MENU_LIBS) \
 	$(APPLET_LIBS)
+
+brisk_test_backends_SOURCES = \
+	src/test/brisk-test-backends.c
+
+brisk_test_backends_CFLAGS = \
+	$(GTK_CFLAGS) \
+	$(MENU_CFLAGS) \
+	$(AM_CFLAGS)
+
+brisk_test_backends_LDADD = \
+	libbriskbackend.la \
+	libbriskutil.la \
+	$(GTK_LIBS) \
+	$(MENU_LIBS)
 
 gsettings_SCHEMAS = \
 	data/com.solus-project.brisk-menu.gschema.xml
