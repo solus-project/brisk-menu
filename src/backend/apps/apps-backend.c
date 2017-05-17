@@ -38,19 +38,19 @@ struct _BriskAppsBackendClass {
  */
 struct _BriskAppsBackend {
         BriskBackend parent;
-        MateMenuTree *tree_apps;
-        MateMenuTree *tree_settings;
 };
 
 G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 
 static gboolean brisk_apps_backend_load(BriskBackend *backend);
-static void brisk_apps_backend_build_from_tree(BriskAppsBackend *self, MateMenuTree *tree);
+static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const gchar *id);
 static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                                             MateMenuTreeDirectory *directory);
 
 DEF_AUTOFREE(GSList, g_slist_free)
+DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
 DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
+DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
 
 /**
  * Tell the frontends what we are
@@ -77,11 +77,6 @@ static const gchar *brisk_apps_backend_get_display_name(__brisk_unused__ BriskBa
  */
 static void brisk_apps_backend_dispose(GObject *obj)
 {
-        BriskAppsBackend *self = BRISK_APPS_BACKEND(obj);
-
-        g_clear_pointer(&self->tree_apps, matemenu_tree_unref);
-        g_clear_pointer(&self->tree_settings, matemenu_tree_unref);
-
         G_OBJECT_CLASS(brisk_apps_backend_parent_class)->dispose(obj);
 }
 
@@ -125,44 +120,43 @@ static gboolean brisk_apps_backend_load(BriskBackend *backend)
         BriskAppsBackend *self = NULL;
 
         self = BRISK_APPS_BACKEND(backend);
-        g_clear_pointer(&self->tree_apps, matemenu_tree_unref);
-        g_clear_pointer(&self->tree_settings, matemenu_tree_unref);
 
-        self->tree_apps = matemenu_tree_lookup(APPS_MENU_ID, MATEMENU_TREE_FLAGS_NONE);
+        /* TODO: Load menus on the idle callback.. */
 
-        if (!self->tree_apps) {
-                g_warning("Failed to load any applications");
+        if (!brisk_apps_backend_build_from_tree(self, APPS_MENU_ID)) {
+                g_warning("Failed to load required apps menu id: %s", APPS_MENU_ID);
                 return FALSE;
         }
 
-        self->tree_settings = matemenu_tree_lookup(SETTINGS_MENU_ID, MATEMENU_TREE_FLAGS_NONE);
-        if (!self->tree_settings) {
-                g_warning("Cannot load MATE Control Center items from %s", SETTINGS_MENU_ID);
-                return TRUE;
+        if (!brisk_apps_backend_build_from_tree(self, SETTINGS_MENU_ID)) {
+                g_warning("Failed to load settings menu id: %s", SETTINGS_MENU_ID);
+                return FALSE;
         }
 
-        /* Load menus
-         * TODO: Do this on the idle
-         */
-        brisk_apps_backend_build_from_tree(self, self->tree_apps);
-        brisk_apps_backend_build_from_tree(self, self->tree_settings);
-
-        /* Basically done */
         return TRUE;
 }
 
 /**
  * brisk_apps_backend_build_from_tree:
  *
- * Begin building content using the given tree
+ * Begin building content using the given tree ID, cleaning up once it's done.
  */
-static void brisk_apps_backend_build_from_tree(BriskAppsBackend *self, MateMenuTree *tree)
+static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const gchar *menu_id)
 {
+        autofree(MateMenuTree) *tree = NULL;
+        autofree(MateMenuTreeDirectory) *dir = NULL;
+
+        tree = matemenu_tree_lookup(menu_id, MATEMENU_TREE_FLAGS_NONE);
         if (!tree) {
-                return;
+                return FALSE;
         }
-        MateMenuTreeDirectory *dir = matemenu_tree_get_root_directory(tree);
+
+        dir = matemenu_tree_get_root_directory(tree);
+        if (!dir) {
+                return FALSE;
+        }
         brisk_apps_backend_recurse_root(self, dir);
+        return TRUE;
 }
 
 /**
