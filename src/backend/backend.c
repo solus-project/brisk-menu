@@ -201,6 +201,17 @@ void brisk_backend_section_removed(BriskBackend *self, const gchar *id)
 }
 
 /**
+ * brisk_backend_reset:
+ *
+ * Implementations may use this method to emit the signal reset
+ */
+void brisk_backend_reset(BriskBackend *self)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_RESET], 0);
+}
+
+/**
  * brisk_backend_get_flags:
  *
  * Return the supported flags for the backend

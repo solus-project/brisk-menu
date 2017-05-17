@@ -95,6 +95,8 @@ void brisk_backend_item_added(BriskBackend *backend, BriskItem *item);
 void brisk_backend_item_removed(BriskBackend *backend, const gchar *id);
 void brisk_backend_section_added(BriskBackend *backend, BriskSection *section);
 void brisk_backend_section_removed(BriskBackend *backend, const gchar *id);
+void brisk_backend_reset(BriskBackend *backend);
+
 G_END_DECLS
 
 /*
