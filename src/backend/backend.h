@@ -85,6 +85,12 @@ gboolean brisk_backend_unpin_item(BriskBackend *backend, BriskItem *item);
 /* Attempt to load for the first time */
 gboolean brisk_backend_load(BriskBackend *backend);
 
+/**
+ * Helpers for subclasses
+ */
+void brisk_backend_item_added(BriskBackend *backend, BriskItem *item);
+void brisk_backend_item_removed(BriskBackend *backend, const gchar *id);
+
 G_END_DECLS
 
 /*

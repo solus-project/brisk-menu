@@ -117,6 +117,28 @@ static void brisk_backend_init(__brisk_unused__ BriskBackend *self)
 }
 
 /**
+ * brisk_backend_item_added:
+ *
+ * Implementations may use this method to emit the signal item-added
+ */
+void brisk_backend_item_added(BriskBackend *self, BriskItem *item)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_ITEM_ADDED], 0, item);
+}
+
+/**
+ * brisk_backend_item_removed:
+ *
+ * Implementations may use this method to emit the signal item-removed
+ */
+void brisk_backend_item_removed(BriskBackend *self, const gchar *id)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_ITEM_REMOVED], 0, id);
+}
+
+/**
  * brisk_backend_get_flags:
  *
  * Return the supported flags for the backend
