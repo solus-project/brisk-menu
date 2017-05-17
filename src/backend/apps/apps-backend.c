@@ -15,10 +15,13 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "apps-backend.h"
+#include "apps-item.h"
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <matemenu-tree.h>
 BRISK_END_PEDANTIC
+
+DEF_AUTOFREE(GDesktopAppInfo, g_object_unref)
 
 /**
  * Main application menu ID
@@ -269,7 +272,27 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                 } break;
                 case MATEMENU_TREE_ITEM_ENTRY: {
                         /* TODO: Emit a real item here */
-                        brisk_backend_item_added(BRISK_BACKEND(self), NULL);
+                        MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
+                        autofree(GDesktopAppInfo) *info = NULL;
+                        const gchar *desktop_file = NULL;
+                        BriskItem *app_item = NULL;
+
+                        desktop_file = matemenu_tree_entry_get_desktop_file_path(entry);
+
+                        /* idk */
+                        if (!desktop_file) {
+                                break;
+                        }
+
+                        /* Must have a desktop file */
+                        info = g_desktop_app_info_new_from_filename(desktop_file);
+                        if (!info) {
+                                break;
+                        }
+                        /* If signal subscribers wish to keep it, they can ref it */
+                        app_item = brisk_apps_item_new(info);
+                        brisk_backend_item_added(BRISK_BACKEND(self), app_item);
+                        g_object_unref(app_item);
                 } break;
                 default:
                         break;

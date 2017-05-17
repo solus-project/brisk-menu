@@ -55,7 +55,7 @@ static void brisk_apps_item_set_property(GObject *object, guint id, const GValue
 
         switch (id) {
         case PROP_INFO:
-                self->info = g_value_get_pointer(value);
+                self->info = g_value_dup_object(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -114,10 +114,11 @@ static void brisk_apps_item_class_init(BriskAppsItemClass *klazz)
         obj_class->set_property = brisk_apps_item_set_property;
         obj_class->get_property = brisk_apps_item_get_property;
 
-        obj_properties[PROP_INFO] = g_param_spec_pointer("info",
-                                                         "The GDesktopAppInfo",
-                                                         "Corresponding .desktop file",
-                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_INFO] = g_param_spec_object("info",
+                                                        "The GDesktopAppInfo",
+                                                        "Corresponding .desktop file",
+                                                        G_TYPE_DESKTOP_APP_INFO,
+                                                        G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
