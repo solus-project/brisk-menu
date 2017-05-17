@@ -16,6 +16,7 @@
 BRISK_BEGIN_PEDANTIC
 #include "apps-backend.h"
 #include "apps-item.h"
+#include "apps-section.h"
 #include <gio/gio.h>
 #include <glib/gi18n.h>
 #include <matemenu-tree.h>
@@ -263,9 +264,12 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                 switch (matemenu_tree_item_get_type(item)) {
                 case MATEMENU_TREE_ITEM_DIRECTORY: {
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
+                        BriskSection *section = NULL;
 
-                        /* TODO: Emit a real section here */
-                        brisk_backend_section_added(BRISK_BACKEND(self), NULL);
+                        /* If signal subscribers wish to keep it, they can ref it */
+                        section = brisk_apps_section_new(dir);
+                        brisk_backend_section_added(BRISK_BACKEND(self), section);
+                        g_object_unref(section);
 
                         /* Descend into the section */
                         brisk_apps_backend_recurse_root(self, dir);

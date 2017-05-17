@@ -56,10 +56,13 @@ static void test_item_added(__brisk_unused__ BriskBackend *backend, BriskItem *i
         g_message("Got a new item: %s \"%s\"", brisk_item_get_id(item), brisk_item_get_name(item));
 }
 
-static void test_section_added(__brisk_unused__ BriskBackend *backend,
-                               __brisk_unused__ BriskSection *section, __brisk_unused__ gpointer v)
+static void test_section_added(__brisk_unused__ BriskBackend *backend, BriskSection *section,
+                               __brisk_unused__ gpointer v)
 {
-        g_message("Got a new section");
+        fputs("\n", stdout);
+        g_message("Got a new section: %s \"%s\"\n",
+                  brisk_section_get_id(section),
+                  brisk_section_get_name(section));
 }
 
 /**
