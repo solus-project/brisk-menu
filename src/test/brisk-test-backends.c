@@ -50,12 +50,14 @@ static inline void fail_if(bool b, const char *fmt, ...)
         exit(1);
 }
 
-static void test_item_added(BriskBackend *backend, BriskItem *item, gpointer v)
+static void test_item_added(__brisk_unused__ BriskBackend *backend, BriskItem *item,
+                            __brisk_unused__ gpointer v)
 {
-        g_message("Got a new item");
+        g_message("Got a new item: %s \"%s\"", brisk_item_get_id(item), brisk_item_get_name(item));
 }
 
-static void test_section_added(BriskBackend *backend, BriskSection *section, gpointer v)
+static void test_section_added(__brisk_unused__ BriskBackend *backend,
+                               __brisk_unused__ BriskSection *section, __brisk_unused__ gpointer v)
 {
         g_message("Got a new section");
 }
@@ -63,13 +65,8 @@ static void test_section_added(BriskBackend *backend, BriskSection *section, gpo
 /**
  * Test the applications backend
  */
-static void run_apps_backend_test(void)
+static void run_apps_backend_test(BriskBackend *backend, GMainLoop *loop)
 {
-        autofree(BriskBackend) *backend = NULL;
-
-        backend = brisk_apps_backend_new();
-        fail_if(backend == NULL, "Failed to construct apps backend");
-
         fail_if((brisk_backend_get_flags(backend) & BRISK_BACKEND_SOURCE) != BRISK_BACKEND_SOURCE,
                 "Invalid flags for backend");
 
@@ -77,11 +74,22 @@ static void run_apps_backend_test(void)
         g_signal_connect(backend, "section-added", G_CALLBACK(test_section_added), NULL);
 
         fail_if(!brisk_backend_load(backend), "Failed to load the apps backend");
+
+        /* Stop processing after 5 seconds */
+        g_timeout_add_seconds(5, (GSourceFunc)g_main_loop_quit, loop);
 }
 
 int main(__brisk_unused__ int argc, __brisk_unused__ char **argv)
 {
-        run_apps_backend_test();
+        GMainLoop *loop = NULL;
+        autofree(BriskBackend) *backend = NULL;
+        backend = brisk_apps_backend_new();
+        fail_if(backend == NULL, "Failed to construct apps backend");
+
+        loop = g_main_loop_new(NULL, FALSE);
+        run_apps_backend_test(backend, loop);
+        g_main_loop_run(loop);
+        g_main_loop_unref(loop);
 }
 
 /*
