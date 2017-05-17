@@ -19,17 +19,6 @@ G_BEGIN_DECLS
 typedef struct _BriskAppsBackend BriskAppsBackend;
 typedef struct _BriskAppsBackendClass BriskAppsBackendClass;
 
-struct _BriskAppsBackendClass {
-        BriskBackend parent_class;
-};
-
-/**
- * BriskAppsBackend implements support for .desktop files in Brisk
- */
-struct _BriskAppsBackend {
-        BriskBackend parent;
-};
-
 #define BRISK_TYPE_APPS_BACKEND brisk_apps_backend_get_type()
 #define BRISK_APPS_BACKEND(o)                                                                      \
         (G_TYPE_CHECK_INSTANCE_CAST((o), BRISK_TYPE_APPS_BACKEND, BriskAppsBackend))

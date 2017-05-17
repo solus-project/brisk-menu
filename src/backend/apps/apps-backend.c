@@ -16,7 +16,31 @@
 BRISK_BEGIN_PEDANTIC
 #include "apps-backend.h"
 #include <glib/gi18n.h>
+#include <matemenu-tree.h>
 BRISK_END_PEDANTIC
+
+/**
+ * Main application menu ID
+ */
+#define APPS_MENU_ID "mate-applications.menu"
+
+/**
+ * Settings menu ID
+ */
+#define SETTINGS_MENU_ID "matecc.menu"
+
+struct _BriskAppsBackendClass {
+        BriskBackend parent_class;
+};
+
+/**
+ * BriskAppsBackend implements support for .desktop files in Brisk
+ */
+struct _BriskAppsBackend {
+        BriskBackend parent;
+        MateMenuTree *tree_apps;
+        MateMenuTree *tree_settings;
+};
 
 G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 
@@ -47,6 +71,11 @@ static const gchar *brisk_apps_backend_get_display_name(__brisk_unused__ BriskBa
  */
 static void brisk_apps_backend_dispose(GObject *obj)
 {
+        BriskAppsBackend *self = BRISK_APPS_BACKEND(obj);
+
+        g_clear_pointer(&self->tree_apps, matemenu_tree_unref);
+        g_clear_pointer(&self->tree_settings, matemenu_tree_unref);
+
         G_OBJECT_CLASS(brisk_apps_backend_parent_class)->dispose(obj);
 }
 
@@ -85,9 +114,32 @@ static void brisk_apps_backend_init(__brisk_unused__ BriskAppsBackend *self)
  * Begin loading menu structures and fire off the first scheduled adds to the
  * menu.
  */
-static gboolean brisk_apps_backend_load(__brisk_unused__ BriskBackend *backend)
+static gboolean brisk_apps_backend_load(BriskBackend *backend)
 {
-        return FALSE;
+        BriskAppsBackend *self = NULL;
+
+        self = BRISK_APPS_BACKEND(backend);
+        g_clear_pointer(&self->tree_apps, matemenu_tree_unref);
+        g_clear_pointer(&self->tree_settings, matemenu_tree_unref);
+
+        self->tree_apps = matemenu_tree_lookup(APPS_MENU_ID, MATEMENU_TREE_FLAGS_NONE);
+
+        if (!self->tree_apps) {
+                g_warning("Failed to load any applications");
+                return FALSE;
+        }
+
+        /* TODO: Stick in the idle monitor here */
+
+        self->tree_settings = matemenu_tree_lookup(SETTINGS_MENU_ID, MATEMENU_TREE_FLAGS_NONE);
+        if (!self->tree_settings) {
+                g_warning("Cannot load MATE Control Center items from %s", SETTINGS_MENU_ID);
+                return TRUE;
+        }
+        /* TODO: Stick monitor here too */
+
+        /* Basically done */
+        return TRUE;
 }
 
 /**

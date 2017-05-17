@@ -157,10 +157,12 @@ libbriskbackend_la_SOURCES = \
 
 libbriskbackend_la_CFLAGS = \
 	$(GIO_CFLAGS) \
+	$(MENU_CFLAGS) \
 	$(AM_CFLAGS)
 
 libbriskbackend_la_LIBADD = \
-	$(GIO_LIBS)
+	$(GIO_LIBS) \
+	$(MENU_LIBS)
 
 libbriskui_la_SOURCES = \
 	src/frontend/category-button.h \
