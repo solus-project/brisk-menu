@@ -50,12 +50,20 @@ static inline void fail_if(bool b, const char *fmt, ...)
         exit(1);
 }
 
+/**
+ * Test the applications backend
+ */
 static void run_apps_backend_test(void)
 {
         autofree(BriskBackend) *backend = NULL;
 
         backend = brisk_apps_backend_new();
         fail_if(backend == NULL, "Failed to construct apps backend");
+
+        fail_if((brisk_backend_get_flags(backend) & BRISK_BACKEND_SOURCE) != BRISK_BACKEND_SOURCE,
+                "Invalid flags for backend");
+
+        fail_if(!brisk_backend_load(backend), "Failed to load the apps backend");
 }
 
 int main(__brisk_unused__ int argc, __brisk_unused__ char **argv)
