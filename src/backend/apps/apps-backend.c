@@ -187,6 +187,9 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                 case MATEMENU_TREE_ITEM_DIRECTORY: {
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
 
+                        /* TODO: Emit a real section here */
+                        brisk_backend_section_added(BRISK_BACKEND(self), NULL);
+
                         /* Descend into the section */
                         brisk_apps_backend_recurse_root(self, dir);
                 } break;

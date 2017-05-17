@@ -55,6 +55,11 @@ static void test_item_added(BriskBackend *backend, BriskItem *item, gpointer v)
         g_message("Got a new item");
 }
 
+static void test_section_added(BriskBackend *backend, BriskSection *section, gpointer v)
+{
+        g_message("Got a new section");
+}
+
 /**
  * Test the applications backend
  */
@@ -69,6 +74,7 @@ static void run_apps_backend_test(void)
                 "Invalid flags for backend");
 
         g_signal_connect(backend, "item-added", G_CALLBACK(test_item_added), NULL);
+        g_signal_connect(backend, "section-added", G_CALLBACK(test_section_added), NULL);
 
         fail_if(!brisk_backend_load(backend), "Failed to load the apps backend");
 }
