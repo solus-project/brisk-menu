@@ -92,49 +92,49 @@ const gchar *brisk_backend_get_display_name(BriskBackend *backend)
         return klazz->get_display_name(backend);
 }
 
-/* Favourites specific functionality (missing full signatures!) */
+/* Favourites specific functionality */
 
 /**
- * brisk_backend_pin_object:
+ * brisk_backend_pin_item:
  *
  * Attempt to pin the selected item in the backend for prioritising
  * in access and display
  */
-gboolean brisk_backend_pin_object(BriskBackend *backend)
+gboolean brisk_backend_pin_item(BriskBackend *backend, BriskItem *item)
 {
         g_assert(backend != NULL);
         BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
 
-        g_return_val_if_fail(klazz->pin_object != NULL, FALSE);
-        return klazz->pin_object(backend);
+        g_return_val_if_fail(klazz->pin_item != NULL, FALSE);
+        return klazz->pin_item(backend, item);
 }
 
 /**
- * brisk_backend_is_object_pinned:
+ * brisk_backend_is_item_pinned:
  *
- * Determine if the given object was previously pinned or not
+ * Determine if the given item was previously pinned or not
  */
-gboolean brisk_backend_is_object_pinned(BriskBackend *backend)
+gboolean brisk_backend_is_item_pinned(BriskBackend *backend, BriskItem *item)
 {
         g_assert(backend != NULL);
         BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
 
-        g_return_val_if_fail(klazz->is_object_pinned != NULL, FALSE);
-        return klazz->is_object_pinned(backend);
+        g_return_val_if_fail(klazz->is_item_pinned != NULL, FALSE);
+        return klazz->is_item_pinned(backend, item);
 }
 
 /**
- * brisk_backend_unpin_object:
+ * brisk_backend_unpin_item:
  *
- * Unpin a previously pinned object.
+ * Unpin a previously pinned item.
  */
-gboolean brisk_backend_unpin_object(BriskBackend *backend)
+gboolean brisk_backend_unpin_item(BriskBackend *backend, BriskItem *item)
 {
         g_assert(backend != NULL);
         BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
 
-        g_return_val_if_fail(klazz->unpin_object != NULL, FALSE);
-        return klazz->unpin_object(backend);
+        g_return_val_if_fail(klazz->unpin_item != NULL, FALSE);
+        return klazz->unpin_item(backend, item);
 }
 
 /**

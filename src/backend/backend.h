@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "item.h"
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -35,10 +36,10 @@ struct _BriskBackendClass {
         const gchar *(*get_id)(BriskBackend *);
         const gchar *(*get_display_name)(BriskBackend *);
 
-        /* Favourites functions (Missing parameters!) */
-        gboolean (*pin_object)(BriskBackend *);
-        gboolean (*is_object_pinned)(BriskBackend *);
-        gboolean (*unpin_object)(BriskBackend *);
+        /* Favourites functions */
+        gboolean (*pin_item)(BriskBackend *, BriskItem *);
+        gboolean (*is_item_pinned)(BriskBackend *, BriskItem *);
+        gboolean (*unpin_item)(BriskBackend *, BriskItem *);
 
         /* All plugins given an opportunity to load later in life */
         gboolean (*load)(BriskBackend *);
@@ -72,9 +73,9 @@ const gchar *brisk_backend_get_id(BriskBackend *backend);
 const gchar *brisk_backend_get_display_name(BriskBackend *backend);
 
 /* Favourites specific functionality */
-gboolean brisk_backend_pin_object(BriskBackend *backend);
-gboolean brisk_backend_is_object_pinned(BriskBackend *backend);
-gboolean brisk_backend_unpin_object(BriskBackend *backend);
+gboolean brisk_backend_pin_item(BriskBackend *backend, BriskItem *item);
+gboolean brisk_backend_is_item_pinned(BriskBackend *backend, BriskItem *item);
+gboolean brisk_backend_unpin_item(BriskBackend *backend, BriskItem *item);
 
 /* Attempt to load for the first time */
 gboolean brisk_backend_load(BriskBackend *backend);
