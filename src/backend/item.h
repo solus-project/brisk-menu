@@ -36,8 +36,8 @@ struct _BriskItemClass {
 };
 
 /**
- * BriskItem is an abstract top-level class which is used as the base
- * of all other backend implementations within Brisk.
+ * BriskItem represents a single "thing" within Brisk, such as an application
+ * launcher or file.
  */
 struct _BriskItem {
         GObject parent;

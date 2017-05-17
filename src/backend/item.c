@@ -69,7 +69,7 @@ const gchar *brisk_item_get_id(BriskItem *item)
  * brisk_item_get_name:
  *
  * Returns the item name used when display the item in the menu
- * @note This string belongs to the backend, and must not be freed by the caller
+ * @note This string belongs to the item, and must not be freed by the caller
  */
 const gchar *brisk_item_get_name(BriskItem *item)
 {
@@ -83,7 +83,7 @@ const gchar *brisk_item_get_name(BriskItem *item)
  * brisk_item_get_summary:
  *
  * Returns the summary used when display the item in the menu
- * @note This string belongs to the backend, and must not be freed by the caller
+ * @note This string belongs to the item, and must not be freed by the caller
  */
 const gchar *brisk_item_get_summary(BriskItem *item)
 {
