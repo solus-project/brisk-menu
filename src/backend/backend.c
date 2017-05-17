@@ -22,6 +22,8 @@ BRISK_END_PEDANTIC
  */
 enum { BACKEND_SIGNAL_ITEM_ADDED = 0,
        BACKEND_SIGNAL_ITEM_REMOVED,
+       BACKEND_SIGNAL_SECTION_ADDED,
+       BACKEND_SIGNAL_SECTION_REMOVED,
        BACKEND_SIGNAL_RESET,
        N_SIGNALS };
 
@@ -90,6 +92,44 @@ static void brisk_backend_class_init(BriskBackendClass *klazz)
                          G_TYPE_STRING);
 
         /**
+         * BriskBackend::section-added
+         * @backend: The backend that created the section
+         * @item: The newly available section
+         *
+         * Used to notify the frontend that a new section is available for consumption
+         */
+        backend_signals[BACKEND_SIGNAL_SECTION_ADDED] =
+            g_signal_new("section-added",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, section_added),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         BRISK_TYPE_SECTION);
+
+        /**
+         * BriskBackend::section-removed
+         * @backend: The backend that removed the section
+         * @id: The section's ID that is being removed
+         *
+         * Used to notify the frontend that an section is being removed
+         */
+        backend_signals[BACKEND_SIGNAL_SECTION_REMOVED] =
+            g_signal_new("section-removed",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, section_removed),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         G_TYPE_STRING);
+
+        /**
          * BriskBackend::reset
          * @backend: The backend that was reset
          *
@@ -136,6 +176,28 @@ void brisk_backend_item_removed(BriskBackend *self, const gchar *id)
 {
         g_assert(self != NULL);
         g_signal_emit(self, backend_signals[BACKEND_SIGNAL_ITEM_REMOVED], 0, id);
+}
+
+/**
+ * brisk_backend_section_added:
+ *
+ * Implementations may use this method to emit the signal section-added
+ */
+void brisk_backend_section_added(BriskBackend *self, BriskSection *section)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_SECTION_ADDED], 0, section);
+}
+
+/**
+ * brisk_backend_section_removed:
+ *
+ * Implementations may use this method to emit the signal section-removed
+ */
+void brisk_backend_section_removed(BriskBackend *self, const gchar *id)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_SECTION_REMOVED], 0, id);
 }
 
 /**

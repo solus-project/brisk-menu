@@ -12,6 +12,7 @@
 #pragma once
 
 #include "item.h"
+#include "section.h"
 #include <glib-object.h>
 
 G_BEGIN_DECLS
@@ -47,6 +48,8 @@ struct _BriskBackendClass {
         /* Signals, gtk-doc style with param names */
         void (*item_added)(BriskBackend *backend, BriskItem *item);
         void (*item_removed)(BriskBackend *backend, const gchar *id);
+        void (*section_added)(BriskBackend *backend, BriskSection *section);
+        void (*section_removed)(BriskBackend *backend, const gchar *id);
         void (*reset)(BriskBackend *backend);
 
         gpointer padding[12];
@@ -90,7 +93,8 @@ gboolean brisk_backend_load(BriskBackend *backend);
  */
 void brisk_backend_item_added(BriskBackend *backend, BriskItem *item);
 void brisk_backend_item_removed(BriskBackend *backend, const gchar *id);
-
+void brisk_backend_section_added(BriskBackend *backend, BriskSection *section);
+void brisk_backend_section_removed(BriskBackend *backend, const gchar *id);
 G_END_DECLS
 
 /*
