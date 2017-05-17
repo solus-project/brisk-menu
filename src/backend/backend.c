@@ -68,7 +68,7 @@ static void brisk_backend_class_init(BriskBackendClass *klazz)
                          NULL,
                          G_TYPE_NONE,
                          1,
-                         G_TYPE_POINTER);
+                         BRISK_TYPE_ITEM);
 
         /**
          * BriskBackend::item-removed
