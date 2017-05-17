@@ -156,7 +156,9 @@ libbriskbackend_la_SOURCES = \
 	src/backend/section.h \
 	src/backend/section.c \
 	src/backend/apps/apps-backend.h \
-	src/backend/apps/apps-backend.c
+	src/backend/apps/apps-backend.c \
+	src/backend/apps/apps-item.h \
+	src/backend/apps/apps-item.c
 
 libbriskbackend_la_CFLAGS = \
 	$(GIO_CFLAGS) \
