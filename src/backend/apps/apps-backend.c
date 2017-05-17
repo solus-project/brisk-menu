@@ -20,6 +20,8 @@ BRISK_END_PEDANTIC
 
 G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 
+static gboolean brisk_apps_backend_load(BriskBackend *backend);
+
 /**
  * Tell the frontends what we are
  */
@@ -62,6 +64,7 @@ static void brisk_apps_backend_class_init(BriskAppsBackendClass *klazz)
         b_class->get_flags = brisk_apps_backend_get_flags;
         b_class->get_id = brisk_apps_backend_get_id;
         b_class->get_display_name = brisk_apps_backend_get_display_name;
+        b_class->load = brisk_apps_backend_load;
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_apps_backend_dispose;
@@ -74,6 +77,17 @@ static void brisk_apps_backend_class_init(BriskAppsBackendClass *klazz)
  */
 static void brisk_apps_backend_init(__brisk_unused__ BriskAppsBackend *self)
 {
+}
+
+/**
+ * brisk_apps_backend_load:
+ *
+ * Begin loading menu structures and fire off the first scheduled adds to the
+ * menu.
+ */
+static gboolean brisk_apps_backend_load(__brisk_unused__ BriskBackend *backend)
+{
+        return FALSE;
 }
 
 /**
