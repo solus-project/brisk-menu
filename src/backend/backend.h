@@ -44,6 +44,11 @@ struct _BriskBackendClass {
         /* All plugins given an opportunity to load later in life */
         gboolean (*load)(BriskBackend *);
 
+        /* Signals, gtk-doc style with param names */
+        void (*item_added)(BriskBackend *backend, BriskItem *item);
+        void (*item_removed)(BriskBackend *backend, const gchar *id);
+        void (*reset)(BriskBackend *backend);
+
         gpointer padding[12];
 };
 

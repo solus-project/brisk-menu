@@ -17,6 +17,16 @@ BRISK_BEGIN_PEDANTIC
 #include "backend.h"
 BRISK_END_PEDANTIC
 
+/**
+ * IDs for our signals
+ */
+enum { BACKEND_SIGNAL_ITEM_ADDED = 0,
+       BACKEND_SIGNAL_ITEM_REMOVED,
+       BACKEND_SIGNAL_RESET,
+       N_SIGNALS };
+
+static guint backend_signals[N_SIGNALS] = { 0 };
+
 G_DEFINE_TYPE(BriskBackend, brisk_backend, G_TYPE_OBJECT)
 
 /**
@@ -40,6 +50,61 @@ static void brisk_backend_class_init(BriskBackendClass *klazz)
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_backend_dispose;
+
+        /**
+         * BriskBackend::item-added
+         * @backend: The backend that created the item
+         * @item: The newly available item
+         *
+         * Used to notify the frontend that a new item is available for consumption
+         */
+        backend_signals[BACKEND_SIGNAL_ITEM_ADDED] =
+            g_signal_new("item-added",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, item_added),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         G_TYPE_POINTER);
+
+        /**
+         * BriskBackend::item-removed
+         * @backend: The backend that removed the item
+         * @id: The item's ID that is being removed
+         *
+         * Used to notify the frontend that an item is being removed
+         */
+        backend_signals[BACKEND_SIGNAL_ITEM_ADDED] =
+            g_signal_new("item-removed",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, item_removed),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         G_TYPE_STRING);
+
+        /**
+         * BriskBackend::reset
+         * @backend: The backend that was reset
+         *
+         * Used to notify the frontend that all Item's should be destroyed
+         */
+        backend_signals[BACKEND_SIGNAL_RESET] =
+            g_signal_new("reset",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, item_removed),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         0);
 }
 
 /**
