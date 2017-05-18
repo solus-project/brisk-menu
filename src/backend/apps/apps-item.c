@@ -162,7 +162,6 @@ static const gchar *brisk_apps_item_get_id(BriskItem *item)
 static const gchar *brisk_apps_item_get_name(BriskItem *item)
 {
         BriskAppsItem *self = BRISK_APPS_ITEM(item);
-        /* TODO: Consider using display name */
         return g_app_info_get_name(G_APP_INFO(self->info));
 }
 

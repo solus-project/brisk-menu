@@ -357,7 +357,6 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         brisk_apps_backend_recurse_root(self, dir, root);
                 } break;
                 case MATEMENU_TREE_ITEM_ENTRY: {
-                        /* TODO: Emit a real item here */
                         MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
                         autofree(GDesktopAppInfo) *info = NULL;
                         const gchar *desktop_file = NULL;
