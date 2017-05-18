@@ -23,18 +23,35 @@ BRISK_END_PEDANTIC
 /**
  * Update sensitivity - ignoring non checkboxes
  */
-static void brisk_menu_set_categories_sensitive(BriskMenuWindow *self, gboolean sensitive)
+static void brisk_menu_set_checks_sensitive(GtkWidget *parent, gboolean sensitive)
 {
         autofree(GList) *kids = NULL;
         GList *elem = NULL;
 
-        kids = gtk_container_get_children(GTK_CONTAINER(self->sidebar));
+        kids = gtk_container_get_children(GTK_CONTAINER(parent));
         for (elem = kids; elem; elem = elem->next) {
                 GtkWidget *kid = elem->data;
                 if (!GTK_IS_CHECK_BUTTON(kid)) {
                         continue;
                 }
                 gtk_widget_set_sensitive(kid, sensitive);
+        }
+}
+
+/**
+ * Ask all boxes to update their section children
+ */
+static void brisk_menu_set_categories_sensitive(BriskMenuWindow *self, gboolean sensitive)
+{
+        brisk_menu_set_checks_sensitive(self->sidebar, sensitive);
+        GHashTableIter iter;
+        __attribute__((unused)) gchar *key = NULL;
+        GtkWidget *box = NULL;
+
+        /* Update all sideboxes for search */
+        g_hash_table_iter_init(&iter, self->section_boxes);
+        while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&box)) {
+                brisk_menu_set_checks_sensitive(box, sensitive);
         }
 }
 
