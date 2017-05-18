@@ -27,6 +27,14 @@ BRISK_END_PEDANTIC
 static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id);
 
 /**
+ * Return the section box for the given backend ID
+ */
+static GtkWidget *brisk_menu_window_get_section_box(BriskMenuWindow *self, BriskBackend *backend)
+{
+        return g_hash_table_lookup(self->section_boxes, brisk_backend_get_id(backend));
+}
+
+/**
  * Begin a build of the menu structure
  */
 static void brisk_menu_window_build(BriskMenuWindow *self)
@@ -78,14 +86,20 @@ static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
                                        __brisk_unused__ BriskBackend *backend)
 {
         GtkWidget *button = NULL;
+        const gchar *item_id = brisk_item_get_id(item);
 
-        g_message("Item: %s", brisk_item_get_id(item));
+        /* Skip dupes */
+        if (g_hash_table_lookup(self->item_store, item_id) != NULL) {
+                return;
+        }
+
+        g_message("Item: %s", item_id);
 
         button = brisk_menu_entry_button_new(self->launcher, item);
         gtk_container_add(GTK_CONTAINER(self->apps), button);
         gtk_widget_show_all(button);
 
-        g_hash_table_insert(self->item_store, g_strdup(brisk_item_get_id(item)), button);
+        g_hash_table_insert(self->item_store, g_strdup(item_id), button);
 }
 
 /**
@@ -94,6 +108,7 @@ static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
 static void brisk_menu_window_add_section(BriskMenuWindow *self, BriskSection *section,
                                           __brisk_unused__ BriskBackend *backend)
 {
+        /* TODO: Add buttons to the section box */
         g_message("Section: %s", brisk_section_get_id(section));
 }
 
@@ -106,32 +121,99 @@ static void brisk_menu_window_reset(BriskMenuWindow *self, BriskBackend *backend
 }
 
 /**
+ * Load a single backend as stored in the map
+ */
+static void brisk_menu_window_load_backend(BriskMenuWindow *self, const gchar *backend_id)
+{
+        BriskBackend *backend = NULL;
+
+        backend = g_hash_table_lookup(self->backends, backend_id);
+        if (G_UNLIKELY(backend == NULL)) {
+                g_warning("Tried to load invalid backend: '%s'", backend_id);
+                return;
+        }
+        if (!brisk_backend_load(backend)) {
+                g_warning("Failed to load backend: '%s'", backend_id);
+        }
+}
+
+/**
  * Load the menus and place them into the window regions
  */
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self)
 {
         g_message("Menu loading not yet implemented!");
-        brisk_backend_load(self->apps_backend);
+
+        /* TODO: Move this somewhere not fucking stupid. */
         brisk_menu_window_build(self);
+        static const gchar *backends[] = {
+                "apps",
+        };
+
+        /* Now init all backends */
+        for (guint i = 0; i < G_N_ELEMENTS(backends); i++) {
+                brisk_menu_window_load_backend(self, backends[i]);
+        }
+
         return G_SOURCE_REMOVE;
 }
 
-void brisk_menu_window_init_backends(BriskMenuWindow *self)
+/**
+ * Generic function allowing us to set up screen estate and signals for
+ * a given backend
+ */
+static void brisk_menu_window_init_backend(BriskMenuWindow *self, BriskBackend *backend)
 {
-        /* Hook up the primary data source */
-        self->apps_backend = brisk_apps_backend_new();
-        g_signal_connect_swapped(self->apps_backend,
+        GtkWidget *box = NULL;
+        const gchar *backend_id = brisk_backend_get_id(backend);
+
+        if (g_hash_table_lookup(self->section_boxes, backend_id)) {
+                g_message("debug: tried to load existing backend '%s'", backend_id);
+                return;
+        }
+
+        /* Hook up the signals first */
+        g_signal_connect_swapped(backend,
                                  "item-added",
                                  G_CALLBACK(brisk_menu_window_add_item),
                                  self);
-        g_signal_connect_swapped(self->apps_backend,
+        g_signal_connect_swapped(backend,
                                  "section-added",
                                  G_CALLBACK(brisk_menu_window_add_section),
                                  self);
-        g_signal_connect_swapped(self->apps_backend,
-                                 "reset",
-                                 G_CALLBACK(brisk_menu_window_reset),
-                                 self);
+        g_signal_connect_swapped(backend, "reset", G_CALLBACK(brisk_menu_window_reset), self);
+
+        box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), box, FALSE, FALSE, 0);
+
+        /* Always ensure that the box is placed after "All" but not after any
+         * non-section boxes
+         */
+        gtk_box_reorder_child(GTK_BOX(self->sidebar), box, (gint)g_hash_table_size(self->backends));
+
+        g_hash_table_insert(self->section_boxes, (gchar *)backend_id, box);
+
+        g_message("debug: activated backend '%s'", backend_id);
+}
+
+/**
+ * Utility to insert a single backend
+ */
+static inline void brisk_menu_window_insert_backend(BriskMenuWindow *self, BriskBackend *backend)
+{
+        const gchar *backend_id = brisk_backend_get_id(backend);
+        g_hash_table_insert(self->backends, (gchar *)backend_id, backend);
+        brisk_menu_window_init_backend(self, backend);
+}
+
+/**
+ * Bring up the initial backends
+ *
+ * @note Currently we only have AppsBackend
+ */
+void brisk_menu_window_init_backends(BriskMenuWindow *self)
+{
+        brisk_menu_window_insert_backend(self, brisk_apps_backend_new());
 }
 
 /**

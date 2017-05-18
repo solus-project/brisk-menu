@@ -65,6 +65,11 @@ struct _BriskMenuWindow {
         GtkWidget *sidebar;
         GtkWidget *sidebar_scroll;
 
+        /* Each backend gets its own box in the sidebar */
+        GHashTable *section_boxes;
+        /* Each backend is also plugged into one big map */
+        GHashTable *backends;
+
         /* VBox for the sidebar container */
         GtkWidget *sidebar_wrap;
 
@@ -74,9 +79,6 @@ struct _BriskMenuWindow {
         /* Actual applications */
         GtkWidget *apps;
         GtkWidget *apps_scroll;
-
-        /* TODO: Support multiple backends */
-        BriskBackend *apps_backend;
 
         /* The All categories button */
         GtkWidget *all_button;
