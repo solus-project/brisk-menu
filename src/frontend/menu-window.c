@@ -15,10 +15,12 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "category-button.h"
+#include "desktop-button.h"
 #include "entry-button.h"
 #include "launcher.h"
 #include "menu-private.h"
 #include "menu-window.h"
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
@@ -26,6 +28,8 @@ G_DEFINE_TYPE(BriskMenuWindow, brisk_menu_window, GTK_TYPE_WINDOW)
 
 static void brisk_menu_window_load_css(BriskMenuWindow *self);
 static void brisk_menu_window_hide(GtkWidget *widget);
+static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id);
+static void brisk_menu_window_build_sidebar(BriskMenuWindow *self);
 
 /**
  * brisk_menu_window_new:
@@ -219,6 +223,8 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                          G_CALLBACK(brisk_menu_window_key_release),
                          NULL);
 
+        brisk_menu_window_build_sidebar(self);
+
         brisk_menu_window_init_backends(self);
 
         /* Hook up dbus later on */
@@ -386,6 +392,63 @@ void brisk_menu_window_set_orient(BriskMenuWindow *self, MatePanelAppletOrient o
 {
         self->orient = orient;
         brisk_menu_window_update_search(self, self->orient);
+}
+
+/**
+ * Begin a build of the menu structure
+ */
+static void brisk_menu_window_build_sidebar(BriskMenuWindow *self)
+{
+        GtkWidget *sep = NULL;
+        autofree(gstrv) *shortcuts = NULL;
+
+        brisk_menu_window_set_filters_enabled(self, FALSE);
+
+        /* Special meaning for NULL group */
+        self->all_button = brisk_menu_category_button_new(NULL);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), self->all_button, FALSE, FALSE, 0);
+        gtk_widget_show_all(self->all_button);
+        brisk_menu_window_associate_category(self, self->all_button);
+
+        /* Separate the things */
+        sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), sep, FALSE, FALSE, 5);
+        gtk_widget_show_all(sep);
+
+        /* Load the shortcuts up */
+        shortcuts = g_settings_get_strv(self->settings, "pinned-shortcuts");
+        if (!shortcuts) {
+                return;
+        }
+
+        /* Add from gsettings */
+        for (guint i = 0; i < g_strv_length(shortcuts); i++) {
+                brisk_menu_window_add_shortcut(self, shortcuts[i]);
+        }
+
+        brisk_menu_window_set_filters_enabled(self, TRUE);
+}
+
+/**
+ * brisk_menu_window_add_shortcut
+ *
+ * If we can create a .desktop launcher for the given name, add a new button to
+ * the sidebar as a quick launch facility.
+ */
+static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id)
+{
+        GDesktopAppInfo *info = NULL;
+        GtkWidget *button = NULL;
+
+        info = g_desktop_app_info_new(id);
+        if (!info) {
+                g_message("Not adding missing %s to BriskMenu", id);
+                return;
+        }
+
+        button = brisk_menu_desktop_button_new(self->launcher, G_APP_INFO(info));
+        gtk_widget_show_all(button);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 1);
 }
 
 /*
