@@ -2,3 +2,7 @@
     background-color: transparent;
     background-image: none;
 }
+
+.brisk-button-vertical {
+    padding: 0;
+}
