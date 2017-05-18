@@ -199,6 +199,7 @@ libbriskui_la_CFLAGS = \
 	$(AM_CFLAGS)
 
 libbriskui_la_LIBADD = \
+	libbriskbackend.la \
 	$(GTK_LIBS) \
 	$(X11_LIBS) \
 	$(MENU_LIBS)

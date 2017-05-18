@@ -18,7 +18,6 @@ BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <matemenu-tree.h>
 BRISK_END_PEDANTIC
 
 struct _BriskMenuCategoryButtonClass {
@@ -30,15 +29,14 @@ struct _BriskMenuCategoryButtonClass {
  */
 struct _BriskMenuCategoryButton {
         GtkRadioButton parent;
-        MateMenuTreeDirectory *group;
-        MateMenuTree *tree;
+        BriskSection *section;
         GtkWidget *label;
         GtkWidget *image;
 };
 
 G_DEFINE_TYPE(BriskMenuCategoryButton, brisk_menu_category_button, GTK_TYPE_RADIO_BUTTON)
 
-enum { PROP_GROUP = 1, PROP_TREE, N_PROPS };
+enum { PROP_SECTION = 1, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -50,11 +48,8 @@ static void brisk_menu_category_button_set_property(GObject *object, guint id, c
         BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(object);
 
         switch (id) {
-        case PROP_GROUP:
-                self->group = g_value_get_pointer(value);
-                break;
-        case PROP_TREE:
-                self->tree = g_value_get_pointer(value);
+        case PROP_SECTION:
+                self->section = g_value_dup_object(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -68,11 +63,8 @@ static void brisk_menu_category_button_get_property(GObject *object, guint id, G
         BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(object);
 
         switch (id) {
-        case PROP_GROUP:
-                g_value_set_pointer(value, self->group);
-                break;
-        case PROP_TREE:
-                g_value_set_pointer(value, self->tree);
+        case PROP_SECTION:
+                g_value_set_object(value, self->section);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -85,9 +77,9 @@ static void brisk_menu_category_button_get_property(GObject *object, guint id, G
  *
  * Construct a new BriskMenuCategoryButton object
  */
-GtkWidget *brisk_menu_category_button_new(MateMenuTree *tree, MateMenuTreeDirectory *group)
+GtkWidget *brisk_menu_category_button_new(BriskSection *section)
 {
-        return g_object_new(BRISK_TYPE_MENU_CATEGORY_BUTTON, "tree", tree, "group", group, NULL);
+        return g_object_new(BRISK_TYPE_MENU_CATEGORY_BUTTON, "section", section, NULL);
 }
 
 /**
@@ -100,49 +92,29 @@ static void brisk_menu_category_button_dispose(GObject *obj)
         G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->dispose(obj);
 }
 
-static GIcon *brisk_menu_category_button_create_gicon(const char *path)
-{
-        autofree(GFile) *file = NULL;
-
-        file = g_file_new_for_path(path);
-        if (!file) {
-                return NULL;
-        }
-        return g_file_icon_new(file);
-}
-
 /**
  * Handle constructor specifics for our button
  */
 static void brisk_menu_category_button_constructed(GObject *obj)
 {
-        const gchar *label = NULL;
         BriskMenuCategoryButton *self = NULL;
-        const gchar *icon_name = NULL;
 
         self = BRISK_MENU_CATEGORY_BUTTON(obj);
 
-        /* Determine our label based on groupness */
-        if (self->group) {
-                label = matemenu_tree_directory_get_name(self->group);
-                icon_name = matemenu_tree_directory_get_icon(self->group);
+        /* If we have a section, use it, otherwise we're a special "All" button */
+        if (self->section) {
+                gtk_label_set_label(GTK_LABEL(self->label), brisk_section_get_name(self->section));
+                gtk_image_set_from_gicon(GTK_IMAGE(self->image),
+                                         (GIcon *)brisk_section_get_icon(self->section),
+                                         GTK_ICON_SIZE_BUTTON);
         } else {
-                label = _("All");
-                icon_name = "starred";
-        }
-
-        /* matemenu has no gicon support, so do it ourselves. */
-        if (icon_name && icon_name[0] == '/') {
-                autofree(GIcon) *ico = brisk_menu_category_button_create_gicon(icon_name);
-                gtk_image_set_from_gicon(GTK_IMAGE(self->image), ico, GTK_ICON_SIZE_INVALID);
-        } else {
+                gtk_label_set_label(GTK_LABEL(self->label), _("All"));
                 gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
-                                             icon_name,
-                                             GTK_ICON_SIZE_INVALID);
+                                             "starred",
+                                             GTK_ICON_SIZE_BUTTON);
         }
-        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 16);
 
-        gtk_label_set_label(GTK_LABEL(self->label), label);
+        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 16);
 
         G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->constructed(obj);
 }
@@ -162,14 +134,11 @@ static void brisk_menu_category_button_class_init(BriskMenuCategoryButtonClass *
         obj_class->get_property = brisk_menu_category_button_get_property;
         obj_class->constructed = brisk_menu_category_button_constructed;
 
-        obj_properties[PROP_GROUP] = g_param_spec_pointer("group",
-                                                          "The MateMenuTreeDirectory",
-                                                          "Directory that this category represents",
-                                                          G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
-        obj_properties[PROP_TREE] = g_param_spec_pointer("tree",
-                                                         "The MateMenuTree",
-                                                         "Tree that this category belongs to",
-                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_SECTION] = g_param_spec_object("section",
+                                                           "The BriskSection",
+                                                           "Section that this category represents",
+                                                           BRISK_TYPE_SECTION,
+                                                           G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 

@@ -65,8 +65,8 @@ const GIcon *brisk_item_get_icon(BriskItem *item);
 const gchar *brisk_item_get_backend_id(BriskItem *item);
 gboolean brisk_item_matches_search(BriskItem *item, gchar *term);
 
-/* Attempt to load for the first time */
-gboolean brisk_item_launch(BriskItem *backend);
+/* Attempt to launch this item */
+gboolean brisk_item_launch(BriskItem *item);
 
 G_END_DECLS
 

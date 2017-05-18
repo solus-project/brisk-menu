@@ -87,30 +87,22 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
 }
 
 /**
- * brisk_menu_window_filter_group:
+ * brisk_menu_window_filter_section:
  *
  * This function will handle filtering the selection based on the active
- * group, when no search term is applied.
+ * section, when no search term is applied.
  *
- * Returning TRUE means the app should be displayed
+ * Returning TRUE means the item should be displayed
  */
-__brisk_pure__ static gboolean brisk_menu_window_filter_group(BriskMenuWindow *self,
-                                                              MateMenuTreeEntry *entry)
+__brisk_pure__ static gboolean brisk_menu_window_filter_section(BriskMenuWindow *self,
+                                                                BriskItem *item)
 {
-        MateMenuTreeDirectory *parent = NULL;
-
         /* All visible */
-        if (!self->active_group) {
+        if (!self->active_section) {
                 return TRUE;
         }
 
-        parent = matemenu_tree_item_get_parent(MATEMENU_TREE_ITEM(entry));
-
-        /* Check if it matches the current group */
-        if (self->active_group != parent) {
-                return FALSE;
-        }
-        return TRUE;
+        return brisk_section_can_show_item(self->active_section, item);
 }
 
 __brisk_pure__ static gboolean brisk_menu_array_contains(const gchar **fields, size_t n_fields,
@@ -145,7 +137,7 @@ __brisk_pure__ static gboolean brisk_menu_array_contains(const gchar **fields, s
  * This could probably be improved in future to generate internal state to allow
  * the search itself to be sorted based on the results, with the "most similar"
  * appearing near the top.
- */
+ *
 __brisk_pure__ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, GAppInfo *info)
 {
         const gchar *fields[] = {
@@ -167,7 +159,7 @@ __brisk_pure__ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *se
         return brisk_menu_array_contains((const gchar **)keywords,
                                          g_strv_length((gchar **)keywords),
                                          self->search_term);
-}
+}*/
 
 /**
  * brisk_menu_window_filter_apps:
@@ -178,11 +170,10 @@ __brisk_pure__ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *se
 __brisk_pure__ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
 {
         BriskMenuWindow *self = NULL;
-        MateMenuTreeEntry *entry = NULL;
+        BriskItem *item = NULL;
         GAppInfo *info = NULL;
         GtkWidget *child = NULL;
-        MateMenuTree *childTree = NULL;
-        const gchar *desktop_id = NULL;
+        const gchar *item_id = NULL;
         GtkWidget *compare_child = NULL;
 
         self = BRISK_MENU_WINDOW(v);
@@ -194,36 +185,31 @@ __brisk_pure__ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpoint
         /* Grab our Entry widget */
         child = gtk_bin_get_child(GTK_BIN(row));
 
-        g_object_get(child, "entry", &entry, "tree", &childTree, "info", &info, NULL);
-        if (!entry) {
+        g_object_get(child, "item", &item, NULL);
+        if (!item) {
                 return FALSE;
         }
 
-        /* Desktop ID's are unique, so the last entry added for an ID is the
+        /* Item ID's are unique, so the last entry added for an ID is the
          * button we want to display. Basically, a button can be duplicated and
          * appear in multiple categories. By keeping a unique ID -> button mapping,
          * we ensure we only ever show it once in the search function.
          */
-        desktop_id = g_app_info_get_id(info);
-        if (desktop_id) {
-                compare_child = g_hash_table_lookup(self->desktop_store, desktop_id);
+        item_id = brisk_item_get_id(item);
+        if (item_id) {
+                compare_child = g_hash_table_lookup(self->item_store, item_id);
                 if (compare_child && compare_child != child) {
                         return FALSE;
                 }
         }
 
-        /* Do they belong to the same tree ? */
-        if (self->active_tree && self->active_tree != childTree) {
-                return FALSE;
+        /* If we have no search term, filter on the section */
+        if (!self->search_term) {
+                return brisk_menu_window_filter_section(self, item);
         }
 
         /* Have search term? Filter on that. */
-        if (self->search_term) {
-                return brisk_menu_window_filter_term(self, info);
-        }
-
-        /* Filter based on group */
-        return brisk_menu_window_filter_group(self, entry);
+        return brisk_item_matches_search(item, self->search_term);
 }
 
 /*

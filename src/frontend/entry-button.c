@@ -14,11 +14,11 @@
 #include "util.h"
 
 BRISK_BEGIN_PEDANTIC
+#include "backend/item.h"
 #include "entry-button.h"
 #include "launcher.h"
 #include "menu-private.h"
 #include <gtk/gtk.h>
-#include <matemenu-tree.h>
 
 BRISK_END_PEDANTIC
 
@@ -37,17 +37,15 @@ static void brisk_menu_entry_clicked(GtkButton *widget);
  */
 struct _BriskMenuEntryButton {
         GtkButton parent;
-        MateMenuTreeEntry *entry;
-        MateMenuTree *tree;
         GtkWidget *label;
         GtkWidget *image;
-        GDesktopAppInfo *info;
+        BriskItem *item;
         BriskMenuLauncher *launcher;
 };
 
 G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
 
-enum { PROP_ENTRY = 1, PROP_INFO, PROP_TREE, PROP_LAUNCHER, N_PROPS };
+enum { PROP_ITEM = 1, PROP_LAUNCHER, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -59,14 +57,8 @@ static void brisk_menu_entry_button_set_property(GObject *object, guint id, cons
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(object);
 
         switch (id) {
-        case PROP_ENTRY:
-                self->entry = g_value_get_pointer(value);
-                break;
-        case PROP_INFO:
-                self->info = g_value_get_pointer(value);
-                break;
-        case PROP_TREE:
-                self->tree = g_value_get_pointer(value);
+        case PROP_ITEM:
+                self->item = g_value_get_object(value);
                 break;
         case PROP_LAUNCHER:
                 self->launcher = g_value_get_pointer(value);
@@ -83,14 +75,8 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(object);
 
         switch (id) {
-        case PROP_ENTRY:
-                g_value_set_pointer(value, self->entry);
-                break;
-        case PROP_INFO:
-                g_value_set_pointer(value, self->info);
-                break;
-        case PROP_TREE:
-                g_value_set_pointer(value, self->tree);
+        case PROP_ITEM:
+                g_value_set_object(value, self->item);
                 break;
         case PROP_LAUNCHER:
                 g_value_set_pointer(value, self->launcher);
@@ -106,19 +92,9 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
  *
  * Construct a new BriskMenuEntryButton object
  */
-GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, MateMenuTree *tree,
-                                       MateMenuTreeEntry *entry, GDesktopAppInfo *info)
+GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item)
 {
-        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON,
-                            "launcher",
-                            launcher,
-                            "tree",
-                            tree,
-                            "entry",
-                            entry,
-                            "info",
-                            info,
-                            NULL);
+        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON, "launcher", launcher, "item", item, NULL);
 }
 
 /**
@@ -131,7 +107,7 @@ static void brisk_menu_entry_button_dispose(GObject *obj)
         BriskMenuEntryButton *self = NULL;
 
         self = BRISK_MENU_ENTRY_BUTTON(obj);
-        g_clear_object(&self->info);
+        g_clear_object(&self->item);
 
         G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->dispose(obj);
 }
@@ -141,28 +117,27 @@ static void brisk_menu_entry_button_dispose(GObject *obj)
  */
 static void brisk_menu_entry_button_constructed(GObject *obj)
 {
-        const gchar *label = NULL;
         BriskMenuEntryButton *self = NULL;
-        GIcon *icon = NULL;
+        const GIcon *icon = NULL;
 
         self = BRISK_MENU_ENTRY_BUTTON(obj);
 
-        icon = g_app_info_get_icon(G_APP_INFO(self->info));
+        icon = brisk_item_get_icon(self->item);
         if (icon) {
-                gtk_image_set_from_gicon(GTK_IMAGE(self->image), icon, GTK_ICON_SIZE_INVALID);
+                gtk_image_set_from_gicon(GTK_IMAGE(self->image),
+                                         (GIcon *)icon,
+                                         GTK_ICON_SIZE_LARGE_TOOLBAR);
         } else {
                 gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
                                              "image-missing",
-                                             GTK_ICON_SIZE_INVALID);
+                                             GTK_ICON_SIZE_LARGE_TOOLBAR);
         }
 
         gtk_image_set_pixel_size(GTK_IMAGE(self->image), 24);
 
         /* Determine our label based on the app */
-        label = g_app_info_get_name(G_APP_INFO(self->info));
-        gtk_label_set_label(GTK_LABEL(self->label), label);
-        gtk_widget_set_tooltip_text(GTK_WIDGET(self),
-                                    g_app_info_get_description(G_APP_INFO(self->info)));
+        gtk_label_set_label(GTK_LABEL(self->label), brisk_item_get_name(self->item));
+        gtk_widget_set_tooltip_text(GTK_WIDGET(self), brisk_item_get_summary(self->item));
 
         G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->constructed(obj);
 }
@@ -192,18 +167,11 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
         /* button vtable hookup */
         but_class->clicked = brisk_menu_entry_clicked;
 
-        obj_properties[PROP_ENTRY] = g_param_spec_pointer("entry",
-                                                          "The MateMenuTreeEntry",
-                                                          "Entry that this launcher represents",
-                                                          G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
-        obj_properties[PROP_INFO] = g_param_spec_pointer("info",
-                                                         "The GDesktopAppInfo",
-                                                         "Corresponding .desktop file",
-                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
-        obj_properties[PROP_TREE] = g_param_spec_pointer("tree",
-                                                         "The MateMenuTree",
-                                                         "Tree that this entry belongs to",
-                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_ITEM] = g_param_spec_object("item",
+                                                        "The BriskItem",
+                                                        "Corresponding BriskItem",
+                                                        BRISK_TYPE_ITEM,
+                                                        G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         obj_properties[PROP_LAUNCHER] = g_param_spec_pointer("launcher",
                                                              "The Brisk Launcher",
                                                              "Launcher used for starting apps",
@@ -263,10 +231,11 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
-        GIcon *icon = NULL;
+        const GIcon *icon = NULL;
+        GIcon *reffed_icon = NULL;
 
         /* If we have a .desktop icon, use it */
-        icon = g_app_info_get_icon(G_APP_INFO(self->info));
+        icon = brisk_item_get_icon(self->item);
 
         /* Fallback to the default */
         if (!icon) {
@@ -274,9 +243,9 @@ static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *conte
                 return;
         }
 
-        icon = g_object_ref(icon);
-        g_object_set_data_full(G_OBJECT(context), "_drag_icon_brisk", icon, g_object_unref);
-        gtk_drag_set_icon_gicon(context, icon, 0, 0);
+        reffed_icon = g_object_ref((GIcon *)icon);
+        g_object_set_data_full(G_OBJECT(context), "_drag_icon_brisk", reffed_icon, g_object_unref);
+        gtk_drag_set_icon_gicon(context, reffed_icon, 0, 0);
 }
 
 static gboolean hide_toplevel(GtkWidget *widget)
@@ -317,8 +286,9 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
         const gchar *desktop_path = NULL;
         autofree(gchar) *uri = NULL;
 
+        /* TODO: ADD ITEM API !
         desktop_path = g_desktop_app_info_get_filename(self->info);
-        uri = g_filename_to_uri(desktop_path, NULL, NULL);
+        uri = g_filename_to_uri(desktop_path, NULL, NULL); */
         if (!uri) {
                 return;
         }
@@ -336,7 +306,8 @@ static void brisk_menu_entry_clicked(GtkButton *widget)
 
 void brisk_menu_entry_button_launch(BriskMenuEntryButton *self)
 {
-        brisk_menu_launcher_start(self->launcher, GTK_WIDGET(self), G_APP_INFO(self->info));
+        /* TODO: Expose launcher to the item */
+        brisk_item_launch(self->item);
 }
 
 /*

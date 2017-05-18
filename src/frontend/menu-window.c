@@ -55,13 +55,13 @@ static void brisk_menu_window_dispose(GObject *obj)
                 g_clear_object(&self->css);
         }
 
-        g_clear_pointer(&self->root, matemenu_tree_unref);
         g_clear_pointer(&self->search_term, g_free);
         g_clear_object(&self->launcher);
         g_clear_object(&self->session);
         g_clear_object(&self->saver);
         g_clear_object(&self->settings);
-        g_clear_pointer(&self->desktop_store, g_hash_table_unref);
+        g_clear_object(&self->apps_backend);
+        g_clear_pointer(&self->item_store, g_hash_table_unref);
 
         G_OBJECT_CLASS(brisk_menu_window_parent_class)->dispose(obj);
 }
@@ -99,7 +99,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         self->launcher = brisk_menu_launcher_new();
         brisk_menu_window_load_css(self);
         brisk_menu_window_init_settings(self);
-        self->desktop_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+        self->item_store = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
         gtk_window_set_decorated(GTK_WINDOW(self), FALSE);
         gtk_window_set_type_hint(GTK_WINDOW(self), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
@@ -232,8 +232,7 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
         }
 
         cat = BRISK_MENU_CATEGORY_BUTTON(button);
-        g_object_get(cat, "group", &self->active_group, NULL);
-        g_object_get(cat, "tree", &self->active_tree, NULL);
+        g_object_get(cat, "section", &self->active_section, NULL);
 
         /* Start the filter. */
         gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));

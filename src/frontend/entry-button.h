@@ -11,11 +11,10 @@
 
 #pragma once
 
-#include <gio/gdesktopappinfo.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <matemenu-tree.h>
 
+#include "backend/item.h"
 #include "launcher.h"
 
 G_BEGIN_DECLS
@@ -38,8 +37,7 @@ typedef struct _BriskMenuEntryButtonClass BriskMenuEntryButtonClass;
 /**
  * Construct a new BriskMenuEntryButton from the given entry
  */
-GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, MateMenuTree *tree,
-                                       MateMenuTreeEntry *entry, GDesktopAppInfo *info);
+GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item);
 
 void brisk_menu_entry_button_launch(BriskMenuEntryButton *button);
 

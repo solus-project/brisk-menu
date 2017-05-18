@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "backend/backend.h"
 #include "launcher.h"
 #include "libsaver-glue.h"
 #include "libsession-glue.h"
@@ -18,7 +19,6 @@
 #include "util.h"
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
-#include <matemenu-tree.h>
 
 typedef enum {
         SEARCH_POS_MIN = 0,
@@ -75,17 +75,14 @@ struct _BriskMenuWindow {
         GtkWidget *apps;
         GtkWidget *apps_scroll;
 
-        /* Our tree global reference */
-        MateMenuTree *root;
+        /* TODO: Support multiple backends */
+        BriskBackend *apps_backend;
 
         /* The All categories button */
         GtkWidget *all_button;
 
-        /* The current group used in filtering */
-        MateMenuTreeDirectory *active_group;
-
-        /* The current tree parent used in filtering */
-        MateMenuTree *active_tree;
+        /* The current section used in filtering */
+        BriskSection *active_section;
 
         /* Search term, may be null at any point. Used for filtering */
         gchar *search_term;
@@ -112,7 +109,7 @@ struct _BriskMenuWindow {
         GSettings *settings;
 
         /* Acknowledge a single ID "contains" map */
-        GHashTable *desktop_store;
+        GHashTable *item_store;
 
         /* Current orientation */
         MatePanelAppletOrient orient;
@@ -151,9 +148,6 @@ void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos);
 void brisk_menu_window_pump_settings(BriskMenuWindow *self);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
-DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
-DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
-DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(GList, g_list_free)
 DEF_AUTOFREE(GFile, g_object_unref)

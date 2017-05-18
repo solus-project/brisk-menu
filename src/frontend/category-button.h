@@ -11,9 +11,9 @@
 
 #pragma once
 
+#include "backend/section.h"
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <matemenu-tree.h>
 
 G_BEGIN_DECLS
 
@@ -39,7 +39,7 @@ typedef struct _BriskMenuCategoryButtonClass BriskMenuCategoryButtonClass;
 /**
  * Construct a new BriskMenuCategoryButton from the given group
  */
-GtkWidget *brisk_menu_category_button_new(MateMenuTree *tree, MateMenuTreeDirectory *group);
+GtkWidget *brisk_menu_category_button_new(BriskSection *section);
 
 GType brisk_menu_category_button_get_type(void);
 
