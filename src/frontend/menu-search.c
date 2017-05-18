@@ -105,62 +105,6 @@ __brisk_pure__ static gboolean brisk_menu_window_filter_section(BriskMenuWindow 
         return brisk_section_can_show_item(self->active_section, item);
 }
 
-__brisk_pure__ static gboolean brisk_menu_array_contains(const gchar **fields, size_t n_fields,
-                                                         const gchar *term)
-{
-        for (size_t i = 0; i < n_fields; i++) {
-                if (!fields[i]) {
-                        continue;
-                }
-                autofree(gchar) *contents = g_strstrip(g_ascii_strdown(fields[i], -1));
-                if (g_str_match_string(term, contents, TRUE)) {
-                        return TRUE;
-                }
-                if (strstr(contents, term)) {
-                        return TRUE;
-                }
-        }
-        return FALSE;
-}
-
-/**
- * brisk_menu_window_filter_term:
- *
- * This function will handle filtering the selection based on the active search
- * term. It looks for the string within a number of the entry's fields, and will
- * hide them if they don't turn up.
- *
- * Note: This function uses g_str_match_string so that ASCII alternatives are
- * searched. This allows searching for text containing accents, etc, so that
- * the menu can be more useful in more locales.
- *
- * This could probably be improved in future to generate internal state to allow
- * the search itself to be sorted based on the results, with the "most similar"
- * appearing near the top.
- *
-__brisk_pure__ static gboolean brisk_menu_window_filter_term(BriskMenuWindow *self, GAppInfo *info)
-{
-        const gchar *fields[] = {
-                g_app_info_get_display_name(info),
-                g_app_info_get_description(info),
-                g_app_info_get_name(info),
-                g_app_info_get_executable(info),
-        };
-        const gchar *const *keywords = g_desktop_app_info_get_keywords(G_DESKTOP_APP_INFO(info));
-
-        if (brisk_menu_array_contains(fields, G_N_ELEMENTS(fields), self->search_term)) {
-                return TRUE;
-        }
-
-        if (!keywords) {
-                return FALSE;
-        }
-
-        return brisk_menu_array_contains((const gchar **)keywords,
-                                         g_strv_length((gchar **)keywords),
-                                         self->search_term);
-}*/
-
 /**
  * brisk_menu_window_filter_apps:
  *
@@ -171,7 +115,6 @@ __brisk_pure__ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpoint
 {
         BriskMenuWindow *self = NULL;
         BriskItem *item = NULL;
-        GAppInfo *info = NULL;
         GtkWidget *child = NULL;
         const gchar *item_id = NULL;
         GtkWidget *compare_child = NULL;

@@ -12,12 +12,15 @@
 #define _GNU_SOURCE
 
 #include "util.h"
+#include <string.h>
 
 BRISK_BEGIN_PEDANTIC
 #include "apps-item.h"
 BRISK_END_PEDANTIC
 
 enum { PROP_INFO = 1, N_PROPS };
+
+DEF_AUTOFREE(gchar, g_free)
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -163,13 +166,63 @@ static const char *brisk_apps_item_get_backend_id(__brisk_unused__ BriskItem *it
         return "apps";
 }
 
-/**
- * Not yet implemented
- */
-static gboolean brisk_apps_item_matches_search(__brisk_unused__ BriskItem *item,
-                                               __brisk_unused__ gchar *term)
+__brisk_pure__ static gboolean brisk_apps_array_contains(const gchar **fields, size_t n_fields,
+                                                         const gchar *term)
 {
+        for (size_t i = 0; i < n_fields; i++) {
+                if (!fields[i]) {
+                        continue;
+                }
+                autofree(gchar) *contents = g_strstrip(g_ascii_strdown(fields[i], -1));
+                if (g_str_match_string(term, contents, TRUE)) {
+                        return TRUE;
+                }
+                if (strstr(contents, term)) {
+                        return TRUE;
+                }
+        }
         return FALSE;
+}
+
+/**
+ * brisk_apps_item_matches_search:
+ *
+ * This function will handle filtering the selection based on the active search
+ * term. It looks for the string within a number of the entry's fields, and will
+ * hide them if they don't turn up.
+ *
+ * Note: This function uses g_str_match_string so that ASCII alternatives are
+ * searched. This allows searching for text containing accents, etc, so that
+ * the menu can be more useful in more locales.
+ *
+ * This could probably be improved in future to generate internal state to allow
+ * the search itself to be sorted based on the results, with the "most similar"
+ * appearing near the top.
+ */
+__brisk_pure__ static gboolean brisk_apps_item_matches_search(BriskItem *item, gchar *term)
+{
+        BriskAppsItem *self = BRISK_APPS_ITEM(item);
+
+        const gchar *fields[] = {
+                g_app_info_get_display_name(G_APP_INFO(self->info)),
+                g_app_info_get_description(G_APP_INFO(self->info)),
+                g_app_info_get_name(G_APP_INFO(self->info)),
+                g_app_info_get_executable(G_APP_INFO(self->info)),
+        };
+
+        const gchar *const *keywords = g_desktop_app_info_get_keywords(self->info);
+
+        if (brisk_apps_array_contains(fields, G_N_ELEMENTS(fields), term)) {
+                return TRUE;
+        }
+
+        if (!keywords) {
+                return FALSE;
+        }
+
+        return brisk_apps_array_contains((const gchar **)keywords,
+                                         g_strv_length((gchar **)keywords),
+                                         term);
 }
 
 /**
