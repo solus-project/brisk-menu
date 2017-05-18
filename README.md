@@ -5,7 +5,7 @@ brisk-menu
 
 Modern, efficient menu for the MATE Desktop Environment.
 
-![screenshot](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/Brisk_Menu_0.3.0.png)
+![screenshot](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/Brisk_Menu_0.4.0.png)
 
 This project is currently in very early stages, and as such is under very heavy development. The primary motivation is to provide a very usable menu, as seen in other desktops, but without the bloat and/or performance problems that plague current offerings.
 
