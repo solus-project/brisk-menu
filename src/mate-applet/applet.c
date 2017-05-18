@@ -64,6 +64,8 @@ __attribute__((destructor)) static void brisk_resource_deinit(void)
         brisk_resources_unregister_resource();
 }
 
+gint icon_sizes[] = { 16, 24, 32, 48, 64, 96, 128, 256 };
+
 /**
  * GtkAction callbacks
  */
@@ -86,6 +88,8 @@ G_GNUC_END_IGNORE_DEPRECATIONS
 static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer v);
 static void hotkey_cb(GdkEvent *event, gpointer v);
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient);
+static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size);
+static void brisk_menu_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrient orient);
 
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
@@ -199,6 +203,7 @@ static void brisk_menu_applet_class_init(BriskMenuAppletClass *klazz)
 
         /* mate vtable hookup */
         mate_class->change_orient = brisk_menu_applet_change_orient;
+        mate_class->change_size = brisk_menu_applet_change_size;
 }
 
 void brisk_menu_applet_init_settings(BriskMenuApplet *self)
@@ -240,6 +245,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
 
         /* Layout will contain icon + label */
         layout = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+        gtk_widget_set_halign(layout, GTK_ALIGN_CENTER);
         gtk_container_add(GTK_CONTAINER(toggle), layout);
 
         /* Image appears first always */
@@ -260,7 +266,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         gtk_widget_hide(label);
 
         /* Update label visibility dependent on config */
-        g_settings_bind(self->settings, "label-visible", label, "visible", G_SETTINGS_BIND_DEFAULT);
+        g_settings_bind(self->settings, "label-visible", label, "visible", G_SETTINGS_BIND_GET);
 
         /* Pump the label setting */
         brisk_menu_applet_settings_changed(self->settings, "label-text", self);
@@ -296,6 +302,9 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Fix the orient now we're up */
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu),
                                      mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
+
+        brisk_menu_adapt_layout(MATE_PANEL_APPLET(self),
+                                mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
 
         /* Pump the settings */
         brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
@@ -389,6 +398,46 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
         BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
 
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu), orient);
+        brisk_menu_adapt_layout(applet, orient);
+}
+
+static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size)
+{
+        BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
+
+        gint final_size = icon_sizes[0];
+
+        for (guint i = 0; i < G_N_ELEMENTS(icon_sizes); i++) {
+                if (icon_sizes[i] > (gint)size - 2) {
+                        break;
+                }
+                final_size = icon_sizes[i];
+        }
+
+        gtk_image_set_pixel_size(GTK_IMAGE(self->image), final_size);
+}
+
+static void brisk_menu_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrient orient)
+{
+        BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
+        GtkStyleContext *style = NULL;
+
+        style = gtk_widget_get_style_context(self->toggle);
+
+        if (orient == MATE_PANEL_APPLET_ORIENT_LEFT || orient == MATE_PANEL_APPLET_ORIENT_RIGHT) {
+                gtk_widget_hide(self->label);
+                gtk_widget_set_halign(self->image, GTK_ALIGN_CENTER);
+                gtk_style_context_add_class(style, BRISK_STYLE_BUTTON_VERTICAL);
+                gtk_widget_set_margin_end(self->image, 0);
+                return;
+        }
+
+        if (g_settings_get_boolean(self->settings, "label-visible")) {
+                gtk_widget_show(GTK_WIDGET(self->label));
+        }
+        gtk_widget_set_halign(GTK_WIDGET(self->image), GTK_ALIGN_START);
+        gtk_style_context_remove_class(style, BRISK_STYLE_BUTTON_VERTICAL);
+        gtk_widget_set_margin_end(self->image, 4);
 }
 
 static void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuApplet *self)
