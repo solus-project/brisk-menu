@@ -297,7 +297,7 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         section = brisk_apps_section_new(dir);
                         brisk_backend_section_added(BRISK_BACKEND(self), section);
 
-recurse_root:
+                recurse_root:
                         /* Descend into the section */
                         brisk_apps_backend_recurse_root(self, dir, root);
                 } break;
