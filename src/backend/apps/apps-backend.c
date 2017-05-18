@@ -32,7 +32,7 @@ DEF_AUTOFREE(GDesktopAppInfo, g_object_unref)
 /**
  * Settings menu ID
  */
-#define SETTINGS_MENU_ID "matecc.menu"
+#define SETTINGS_MENU_ID "mate-settings.menu"
 
 /**
  * We'll perform reloads 2 seconds after we get the last change
@@ -59,7 +59,8 @@ G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 static gboolean brisk_apps_backend_load(BriskBackend *backend);
 static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const gchar *id);
 static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
-                                            MateMenuTreeDirectory *directory);
+                                            MateMenuTreeDirectory *directory,
+                                            MateMenuTreeDirectory *root);
 static void brisk_apps_backend_changed(BriskAppsBackend *backend, gpointer v);
 static gboolean brisk_apps_backend_reload(BriskAppsBackend *backend);
 
@@ -256,7 +257,7 @@ static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const
         if (!dir) {
                 return FALSE;
         }
-        brisk_apps_backend_recurse_root(self, dir);
+        brisk_apps_backend_recurse_root(self, dir, dir);
         return TRUE;
 }
 
@@ -267,7 +268,8 @@ static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const
  * that we encounter.
  */
 static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
-                                            MateMenuTreeDirectory *directory)
+                                            MateMenuTreeDirectory *directory,
+                                            MateMenuTreeDirectory *root)
 {
         autofree(GSList) *kids = NULL;
         GSList *elem = NULL;
@@ -281,14 +283,23 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                 switch (matemenu_tree_item_get_type(item)) {
                 case MATEMENU_TREE_ITEM_DIRECTORY: {
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
+                        autofree(MateMenuTreeDirectory) *parent = NULL;
                         BriskSection *section = NULL;
+
+                        parent = matemenu_tree_item_get_parent(item);
+
+                        /* Nested menus basically only happen in mate-settings.menu */
+                        if (parent != root) {
+                                goto recurse_root;
+                        }
 
                         /* If signal subscribers wish to keep it, they can ref it */
                         section = brisk_apps_section_new(dir);
                         brisk_backend_section_added(BRISK_BACKEND(self), section);
 
+recurse_root:
                         /* Descend into the section */
-                        brisk_apps_backend_recurse_root(self, dir);
+                        brisk_apps_backend_recurse_root(self, dir, root);
                 } break;
                 case MATEMENU_TREE_ITEM_ENTRY: {
                         /* TODO: Emit a real item here */
