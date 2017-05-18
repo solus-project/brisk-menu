@@ -30,17 +30,20 @@ Building Brisk Menu
 Features
 --------
 
-Currently, very lacking! Remember, it's still in early development.
-
  - Keyboard centric (mice welcome too, of course)
- - Hotkey support (defaults to <kbd>CTRL+F10</kbd>, configurable in gsettings)
+ - Hotkey support (defaults to <kbd>Super</kbd>, configurable in gsettings)
  - Stupid-fast
- - Efficient, useful searching.
+ - Efficient, useful searching with prioritised listings
+ - Modular backend design split from the frontend, allowing new backends in future
+   (hint: the frontend is not tied to `.desktop` files)
+ - Configurable label (hide/text)
+ - Automatically adapt to vertical panels
  - Automatically reload
  - Filter via categories
  - Session/screensaver controls
  - Drag & drop support for launchers
- - GTK3
+ - Sidebar launcher support
+ - GTK3 + CSS styling options
  - Fully correct `X11` WM integration (grab policy and window types)
  - Not Python.
 
@@ -48,10 +51,9 @@ Currently, very lacking! Remember, it's still in early development.
 
 Some items that are currently known to be definite options in the roadmap:
 
- - Persistent storage of settings ✓
- - Option to disable category icons for modern look
- - Configurable menu button icon + label on applet
- - 'Favourite' item capability
+ - Settings UI to control further visual aspects (labels/icons/options)
+ - "Pin to" support (Favourites, desktop, docks..)
+ - Enhanced vertical panel support (i.e. dash-style menu mode)
  - Improved styling for the window edge + search entry.
 
 More will be added in time as we go along.
