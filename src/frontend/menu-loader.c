@@ -42,8 +42,6 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
         GtkWidget *sep = NULL;
         autofree(gstrv) *shortcuts = NULL;
 
-        g_message("debug: menu reloaded");
-
         /* Nuke the current mapping */
         g_hash_table_remove_all(self->item_store);
 
@@ -93,8 +91,6 @@ static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
                 return;
         }
 
-        g_message("Item: %s", item_id);
-
         button = brisk_menu_entry_button_new(self->launcher, item);
         gtk_container_add(GTK_CONTAINER(self->apps), button);
         gtk_widget_show_all(button);
@@ -108,8 +104,25 @@ static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
 static void brisk_menu_window_add_section(BriskMenuWindow *self, BriskSection *section,
                                           __brisk_unused__ BriskBackend *backend)
 {
-        /* TODO: Add buttons to the section box */
-        g_message("Section: %s", brisk_section_get_id(section));
+        GtkWidget *button = NULL;
+        const gchar *section_id = brisk_section_get_id(section);
+        GtkWidget *box_target = NULL;
+
+        /* Skip dupes. Sections are uniquely namespaced */
+        if (g_hash_table_lookup(self->item_store, section_id) != NULL) {
+                return;
+        }
+
+        box_target = brisk_menu_window_get_section_box(self, backend);
+
+        button = brisk_menu_category_button_new(section);
+        gtk_radio_button_join_group(GTK_RADIO_BUTTON(button), GTK_RADIO_BUTTON(self->all_button));
+        gtk_box_pack_start(GTK_BOX(box_target), button, FALSE, FALSE, 0);
+        brisk_menu_window_associate_category(self, button);
+        gtk_widget_show_all(button);
+
+        /* Avoid new dupes */
+        g_hash_table_insert(self->item_store, (gchar *)section_id, button);
 }
 
 /**
@@ -142,10 +155,6 @@ static void brisk_menu_window_load_backend(BriskMenuWindow *self, const gchar *b
  */
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self)
 {
-        g_message("Menu loading not yet implemented!");
-
-        /* TODO: Move this somewhere not fucking stupid. */
-        brisk_menu_window_build(self);
         static const gchar *backends[] = {
                 "apps",
         };
@@ -213,6 +222,8 @@ static inline void brisk_menu_window_insert_backend(BriskMenuWindow *self, Brisk
  */
 void brisk_menu_window_init_backends(BriskMenuWindow *self)
 {
+        /* TODO: Move this somewhere not fucking stupid. */
+        brisk_menu_window_build(self);
         brisk_menu_window_insert_backend(self, brisk_apps_backend_new());
 }
 
