@@ -61,7 +61,7 @@ static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const
 static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                                             MateMenuTreeDirectory *directory);
 static void brisk_apps_backend_changed(BriskAppsBackend *backend, gpointer v);
-static gboolean brisk_apps_backend_reload(BriskAppsBackend *backend, gpointer v);
+static gboolean brisk_apps_backend_reload(BriskAppsBackend *backend);
 
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
@@ -171,17 +171,13 @@ static void brisk_apps_backend_changed(BriskAppsBackend *self, __brisk_unused__ 
 }
 
 /**
- * brisk_apps_backend_reload:
+ *
+ * brisk_apps_backend_init_menus:
+ *
+ * Handle menu loading, also a handy idle callback function.
  */
-static gboolean brisk_apps_backend_reload(BriskAppsBackend *self, __brisk_unused__ gpointer v)
+static gboolean brisk_apps_backend_init_menus(BriskAppsBackend *self)
 {
-        if (self->monitor_source_id < 1) {
-                return FALSE;
-        }
-
-        /* First things first, reset everything we own */
-        brisk_backend_reset(BRISK_BACKEND(self));
-
         /* Now load them again */
         if (!brisk_apps_backend_build_from_tree(self, APPS_MENU_ID)) {
                 g_warning("Failed to load required apps menu id: %s", APPS_MENU_ID);
@@ -191,10 +187,31 @@ static gboolean brisk_apps_backend_reload(BriskAppsBackend *self, __brisk_unused
                 g_warning("Failed to load settings menu id: %s", SETTINGS_MENU_ID);
         }
 
+        /* Prevent further runs */
+        return G_SOURCE_REMOVE;
+}
+
+/**
+ * brisk_apps_backend_reload:
+ *
+ * Timeout callback initiated from a changed event, in which we reset our
+ * backend controller and re-init the menus once more.
+ */
+static gboolean brisk_apps_backend_reload(BriskAppsBackend *self)
+{
+        if (self->monitor_source_id < 1) {
+                return G_SOURCE_REMOVE;
+        }
+
+        /* First things first, reset everything we own */
+        brisk_backend_reset(BRISK_BACKEND(self));
+
+        brisk_apps_backend_init_menus(self);
+
         /* Reset ourselves for the next time */
         self->monitor_source_id = 0;
         brisk_apps_backend_reset_monitor();
-        return FALSE;
+        return G_SOURCE_REMOVE;
 }
 /**
  * brisk_apps_backend_load:
@@ -212,7 +229,7 @@ static gboolean brisk_apps_backend_load(BriskBackend *backend)
         self->loaded = TRUE;
 
         /* Load ourselves a bit later */
-        brisk_apps_backend_changed(self, NULL);
+        g_idle_add_full(G_PRIORITY_LOW, (GSourceFunc)brisk_apps_backend_init_menus, self, NULL);
 
         /* Allow the monitor to now work */
         brisk_apps_backend_reset_monitor();
