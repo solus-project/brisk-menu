@@ -109,6 +109,19 @@ const GIcon *brisk_item_get_icon(BriskItem *item)
 }
 
 /**
+ * brisk_item_get_backend_id:
+ *
+ * Return the ID of the owning backend
+ */
+const gchar *brisk_item_get_backend_id(BriskItem *item)
+{
+        g_assert(item != NULL);
+        BriskItemClass *klazz = BRISK_ITEM_GET_CLASS(item);
+        g_assert(klazz->get_backend_id != NULL);
+        return klazz->get_backend_id(item);
+}
+
+/**
  * brisk_item_matches_search:
  *
  * Returns true if the item matches the given search term

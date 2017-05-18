@@ -95,6 +95,19 @@ const GIcon *brisk_section_get_icon(BriskSection *section)
 }
 
 /**
+ * brisk_section_get_backend_id:
+ *
+ * Return the ID for the backend that owns this section
+ */
+const gchar *brisk_section_get_backend_id(BriskSection *section)
+{
+        g_assert(section != NULL);
+        BriskSectionClass *klazz = BRISK_SECTION_GET_CLASS(section);
+        g_assert(klazz->get_backend_id != NULL);
+        return klazz->get_backend_id(section);
+}
+
+/**
  * brisk_section_can_show_item:
  *
  * Returns true if the items can be shown under this section

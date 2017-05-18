@@ -51,6 +51,7 @@ DEF_AUTOFREE(GFile, g_object_unref)
 static const gchar *brisk_apps_section_get_id(BriskSection *item);
 static const gchar *brisk_apps_section_get_name(BriskSection *item);
 static const GIcon *brisk_apps_section_get_icon(BriskSection *item);
+static const gchar *brisk_apps_section_get_backend_id(BriskSection *item);
 
 /**
  * Create a GIcon for the given path
@@ -157,6 +158,7 @@ static void brisk_apps_section_class_init(BriskAppsSectionClass *klazz)
         s_class->get_id = brisk_apps_section_get_id;
         s_class->get_name = brisk_apps_section_get_name;
         s_class->get_icon = brisk_apps_section_get_icon;
+        s_class->get_backend_id = brisk_apps_section_get_backend_id;
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_apps_section_dispose;
@@ -196,6 +198,11 @@ static const GIcon *brisk_apps_section_get_icon(BriskSection *item)
 {
         BriskAppsSection *self = BRISK_APPS_SECTION(item);
         return (const GIcon *)self->icon;
+}
+
+static const gchar *brisk_apps_section_get_backend_id(__brisk_unused__ BriskSection *item)
+{
+        return "apps";
 }
 
 /**

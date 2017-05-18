@@ -45,6 +45,7 @@ static const gchar *brisk_apps_item_get_id(BriskItem *item);
 static const gchar *brisk_apps_item_get_name(BriskItem *item);
 static const gchar *brisk_apps_item_get_summary(BriskItem *item);
 static const GIcon *brisk_apps_item_get_icon(BriskItem *item);
+static const char *brisk_apps_item_get_backend_id(BriskItem *item);
 static gboolean brisk_apps_item_matches_search(BriskItem *item, gchar *term);
 static gboolean brisk_apps_item_launch(BriskItem *item);
 
@@ -106,6 +107,7 @@ static void brisk_apps_item_class_init(BriskAppsItemClass *klazz)
         i_class->get_name = brisk_apps_item_get_name;
         i_class->get_summary = brisk_apps_item_get_summary;
         i_class->get_icon = brisk_apps_item_get_icon;
+        i_class->get_backend_id = brisk_apps_item_get_backend_id;
         i_class->matches_search = brisk_apps_item_matches_search;
         i_class->launch = brisk_apps_item_launch;
 
@@ -154,6 +156,11 @@ static const GIcon *brisk_apps_item_get_icon(BriskItem *item)
 {
         BriskAppsItem *self = BRISK_APPS_ITEM(item);
         return g_app_info_get_icon(G_APP_INFO(self->info));
+}
+
+static const char *brisk_apps_item_get_backend_id(__brisk_unused__ BriskItem *item)
+{
+        return "apps";
 }
 
 /**
