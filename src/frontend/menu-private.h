@@ -117,6 +117,7 @@ struct _BriskMenuWindow {
 
 /* Split the implementation across multiple files for ease of maintenance */
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self);
+void brisk_menu_window_init_backends(BriskMenuWindow *self);
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button);
 
 /* Search */

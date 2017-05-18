@@ -213,6 +213,8 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                          G_CALLBACK(brisk_menu_window_key_release),
                          NULL);
 
+        brisk_menu_window_init_backends(self);
+
         /* Hook up dbus later on */
         g_idle_add((GSourceFunc)brisk_menu_window_setup_session, self);
         /* Start with all content parts "shown" */

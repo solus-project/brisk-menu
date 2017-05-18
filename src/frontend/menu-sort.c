@@ -16,20 +16,19 @@
 BRISK_BEGIN_PEDANTIC
 #include "entry-button.h"
 #include "menu-private.h"
-#include <matemenu-tree.h>
 #include <string.h>
 BRISK_END_PEDANTIC
 
 /**
  * Compute a score for the given entry based on the input term.
  */
-__brisk_pure__ static gint brisk_get_entry_score(GAppInfo *info, const gchar *term)
+__brisk_pure__ static gint brisk_get_entry_score(BriskItem *item, const gchar *term)
 {
         gint score = 0;
         autofree(gchar) *name = NULL;
         char *find = NULL;
 
-        name = g_ascii_strdown(g_app_info_get_name(info), -1);
+        name = g_ascii_strdown(brisk_item_get_name(item), -1);
         if (g_str_equal(name, term)) {
                 score += 100;
         } else if (g_str_has_prefix(name, term)) {
@@ -49,7 +48,7 @@ __brisk_pure__ static gint brisk_get_entry_score(GAppInfo *info, const gchar *te
 __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v)
 {
         GtkWidget *child1, *child2 = NULL;
-        GAppInfo *infoA, *infoB = NULL;
+        BriskItem *itemA, *itemB = NULL;
         autofree(gchar) *nameA = NULL;
         autofree(gchar) *nameB = NULL;
         BriskMenuWindow *self = NULL;
@@ -59,18 +58,24 @@ __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *r
         child1 = gtk_bin_get_child(GTK_BIN(row1));
         child2 = gtk_bin_get_child(GTK_BIN(row2));
 
-        g_object_get(child1, "info", &infoA, NULL);
-        g_object_get(child2, "info", &infoB, NULL);
+        g_object_get(child1, "item", &itemA, NULL);
+        g_object_get(child2, "item", &itemB, NULL);
 
         if (self->search_term) {
-                gint sc1 = brisk_get_entry_score(infoA, self->search_term);
-                gint sc2 = brisk_get_entry_score(infoB, self->search_term);
+                gint sc1 = brisk_get_entry_score(itemA, self->search_term);
+                gint sc2 = brisk_get_entry_score(itemB, self->search_term);
                 return (sc1 > sc2) - (sc1 - sc2);
         }
 
-        /* Ensure we compare lower case only */
-        nameA = g_ascii_strdown(g_app_info_get_display_name(infoA), -1);
-        nameB = g_ascii_strdown(g_app_info_get_display_name(infoB), -1);
+        /* Ensure we compare lower case only:
+         * TODO: Add _get_display_name
+         */
+        nameA = g_ascii_strdown(brisk_item_get_name(itemA), -1);
+        nameB = g_ascii_strdown(brisk_item_get_name(itemB), -1);
+
+        g_object_unref(itemA);
+        g_object_unref(itemB);
+
         return g_strcmp0(nameA, nameB);
 }
 

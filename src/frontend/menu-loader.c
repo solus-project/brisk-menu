@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 BRISK_BEGIN_PEDANTIC
+#include "backend/apps/apps-backend.h"
 #include "category-button.h"
 #include "desktop-button.h"
 #include "entry-button.h"
@@ -71,12 +72,66 @@ static void brisk_menu_window_build(BriskMenuWindow *self)
 }
 
 /**
+ * Backend has new items for us, add to the global store
+ */
+static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
+                                       __brisk_unused__ BriskBackend *backend)
+{
+        GtkWidget *button = NULL;
+
+        g_message("Item: %s", brisk_item_get_id(item));
+
+        button = brisk_menu_entry_button_new(self->launcher, item);
+        gtk_container_add(GTK_CONTAINER(self->apps), button);
+        gtk_widget_show_all(button);
+
+        g_hash_table_insert(self->item_store, g_strdup(brisk_item_get_id(item)), button);
+}
+
+/**
+ * Backend has a new sidebar section for us
+ */
+static void brisk_menu_window_add_section(BriskMenuWindow *self, BriskSection *section,
+                                          __brisk_unused__ BriskBackend *backend)
+{
+        g_message("Section: %s", brisk_section_get_id(section));
+}
+
+/**
+ * A backend needs us to purge any data we have for it
+ */
+static void brisk_menu_window_reset(BriskMenuWindow *self, BriskBackend *backend)
+{
+        g_message("Backend requests reset: %s", brisk_backend_get_id(backend));
+}
+
+/**
  * Load the menus and place them into the window regions
  */
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self)
 {
         g_message("Menu loading not yet implemented!");
+        brisk_backend_load(self->apps_backend);
         brisk_menu_window_build(self);
+        return G_SOURCE_REMOVE;
+}
+
+void brisk_menu_window_init_backends(BriskMenuWindow *self)
+{
+        /* Hook up the primary data source */
+        self->apps_backend = brisk_apps_backend_new();
+        g_signal_connect_swapped(self->apps_backend,
+                                 "item-added",
+                                 G_CALLBACK(brisk_menu_window_add_item),
+                                 self);
+        g_signal_connect_swapped(self->apps_backend,
+                                 "section-added",
+                                 G_CALLBACK(brisk_menu_window_add_section),
+                                 self);
+        g_signal_connect_swapped(self->apps_backend,
+                                 "reset",
+                                 G_CALLBACK(brisk_menu_window_reset),
+                                 self);
 }
 
 /**
