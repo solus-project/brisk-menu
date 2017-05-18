@@ -1,4 +1,5 @@
 src/mate-applet/applet.c
 src/frontend/category-button.c
 src/frontend/menu-session.c
+src/frontend/menu-window.c
 src/backend/apps/apps-backend.c
