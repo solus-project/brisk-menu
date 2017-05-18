@@ -67,11 +67,9 @@ __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *r
                 return (sc1 > sc2) - (sc1 - sc2);
         }
 
-        /* Ensure we compare lower case only:
-         * TODO: Add _get_display_name
-         */
-        nameA = g_ascii_strdown(brisk_item_get_name(itemA), -1);
-        nameB = g_ascii_strdown(brisk_item_get_name(itemB), -1);
+        /* Ensure we compare lower case only */
+        nameA = g_ascii_strdown(brisk_item_get_display_name(itemA), -1);
+        nameB = g_ascii_strdown(brisk_item_get_display_name(itemB), -1);
 
         return g_strcmp0(nameA, nameB);
 }

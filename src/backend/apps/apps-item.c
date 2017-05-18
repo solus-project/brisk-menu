@@ -47,6 +47,7 @@ G_DEFINE_TYPE(BriskAppsItem, brisk_apps_item, BRISK_TYPE_ITEM)
  */
 static const gchar *brisk_apps_item_get_id(BriskItem *item);
 static const gchar *brisk_apps_item_get_name(BriskItem *item);
+static const gchar *brisk_apps_item_get_display_name(BriskItem *item);
 static const gchar *brisk_apps_item_get_summary(BriskItem *item);
 static const GIcon *brisk_apps_item_get_icon(BriskItem *item);
 static const char *brisk_apps_item_get_backend_id(BriskItem *item);
@@ -118,6 +119,7 @@ static void brisk_apps_item_class_init(BriskAppsItemClass *klazz)
         /* item vtable hookup */
         i_class->get_id = brisk_apps_item_get_id;
         i_class->get_name = brisk_apps_item_get_name;
+        i_class->get_display_name = brisk_apps_item_get_display_name;
         i_class->get_summary = brisk_apps_item_get_summary;
         i_class->get_icon = brisk_apps_item_get_icon;
         i_class->get_backend_id = brisk_apps_item_get_backend_id;
@@ -163,6 +165,12 @@ static const gchar *brisk_apps_item_get_name(BriskItem *item)
 {
         BriskAppsItem *self = BRISK_APPS_ITEM(item);
         return g_app_info_get_name(G_APP_INFO(self->info));
+}
+
+static const gchar *brisk_apps_item_get_display_name(BriskItem *item)
+{
+        BriskAppsItem *self = BRISK_APPS_ITEM(item);
+        return g_app_info_get_display_name(G_APP_INFO(self->info));
 }
 
 static const gchar *brisk_apps_item_get_summary(BriskItem *item)

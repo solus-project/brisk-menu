@@ -80,6 +80,20 @@ const gchar *brisk_item_get_name(BriskItem *item)
 }
 
 /**
+ * brisk_item_get_display_name:
+ *
+ * Returns the so-called "display name" (alternative name) for the entry
+ * @note This string belongs to the item, and must not be freed by the caller
+ */
+const gchar *brisk_item_get_display_name(BriskItem *item)
+{
+        g_assert(item != NULL);
+        BriskItemClass *klazz = BRISK_ITEM_GET_CLASS(item);
+        g_assert(klazz->get_display_name != NULL);
+        return klazz->get_display_name(item);
+}
+
+/**
  * brisk_item_get_summary:
  *
  * Returns the summary used when display the item in the menu

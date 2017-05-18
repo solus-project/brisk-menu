@@ -24,6 +24,7 @@ struct _BriskItemClass {
 
         /* These must be implemented by subclasses */
         const gchar *(*get_id)(BriskItem *);
+        const gchar *(*get_display_name)(BriskItem *);
         const gchar *(*get_name)(BriskItem *);
         const gchar *(*get_summary)(BriskItem *);
         const GIcon *(*get_icon)(BriskItem *);
@@ -63,6 +64,7 @@ GType brisk_item_get_type(void);
 /* Core vfuncs required by everyone */
 const gchar *brisk_item_get_id(BriskItem *item);
 const gchar *brisk_item_get_name(BriskItem *item);
+const gchar *brisk_item_get_display_name(BriskItem *item);
 const gchar *brisk_item_get_summary(BriskItem *item);
 const GIcon *brisk_item_get_icon(BriskItem *item);
 const gchar *brisk_item_get_backend_id(BriskItem *item);
