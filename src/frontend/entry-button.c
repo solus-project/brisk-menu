@@ -58,7 +58,7 @@ static void brisk_menu_entry_button_set_property(GObject *object, guint id, cons
 
         switch (id) {
         case PROP_ITEM:
-                self->item = g_value_get_object(value);
+                self->item = g_value_get_pointer(value);
                 break;
         case PROP_LAUNCHER:
                 self->launcher = g_value_get_pointer(value);
@@ -76,7 +76,7 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
 
         switch (id) {
         case PROP_ITEM:
-                g_value_set_object(value, self->item);
+                g_value_set_pointer(value, self->item);
                 break;
         case PROP_LAUNCHER:
                 g_value_set_pointer(value, self->launcher);
@@ -167,11 +167,10 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
         /* button vtable hookup */
         but_class->clicked = brisk_menu_entry_clicked;
 
-        obj_properties[PROP_ITEM] = g_param_spec_object("item",
-                                                        "The BriskItem",
-                                                        "Corresponding BriskItem",
-                                                        BRISK_TYPE_ITEM,
-                                                        G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_ITEM] = g_param_spec_pointer("item",
+                                                         "The BriskItem",
+                                                         "Corresponding BriskItem",
+                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         obj_properties[PROP_LAUNCHER] = g_param_spec_pointer("launcher",
                                                              "The Brisk Launcher",
                                                              "Launcher used for starting apps",

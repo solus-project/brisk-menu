@@ -49,7 +49,7 @@ static void brisk_menu_category_button_set_property(GObject *object, guint id, c
 
         switch (id) {
         case PROP_SECTION:
-                self->section = g_value_dup_object(value);
+                self->section = g_value_get_pointer(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -64,7 +64,7 @@ static void brisk_menu_category_button_get_property(GObject *object, guint id, G
 
         switch (id) {
         case PROP_SECTION:
-                g_value_set_object(value, self->section);
+                g_value_set_pointer(value, self->section);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -89,6 +89,10 @@ GtkWidget *brisk_menu_category_button_new(BriskSection *section)
  */
 static void brisk_menu_category_button_dispose(GObject *obj)
 {
+        BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(obj);
+
+        g_clear_object(&self->section);
+
         G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->dispose(obj);
 }
 
@@ -134,11 +138,10 @@ static void brisk_menu_category_button_class_init(BriskMenuCategoryButtonClass *
         obj_class->get_property = brisk_menu_category_button_get_property;
         obj_class->constructed = brisk_menu_category_button_constructed;
 
-        obj_properties[PROP_SECTION] = g_param_spec_object("section",
-                                                           "The BriskSection",
-                                                           "Section that this category represents",
-                                                           BRISK_TYPE_SECTION,
-                                                           G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_SECTION] = g_param_spec_pointer("section",
+                                                            "The BriskSection",
+                                                            "Section that this category represents",
+                                                            G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 

@@ -21,7 +21,7 @@ typedef struct _BriskSection BriskSection;
 typedef struct _BriskSectionClass BriskSectionClass;
 
 struct _BriskSectionClass {
-        GObjectClass parent_class;
+        GInitiallyUnownedClass parent_class;
 
         /* These must be implemented by subclasses */
         const gchar *(*get_id)(BriskSection *);
@@ -39,7 +39,7 @@ struct _BriskSectionClass {
  * the Brisk Menu
  */
 struct _BriskSection {
-        GObject parent;
+        GInitiallyUnowned parent;
 };
 
 #define BRISK_TYPE_SECTION brisk_section_get_type()

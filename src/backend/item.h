@@ -20,7 +20,7 @@ typedef struct _BriskItem BriskItem;
 typedef struct _BriskItemClass BriskItemClass;
 
 struct _BriskItemClass {
-        GObjectClass parent_class;
+        GInitiallyUnownedClass parent_class;
 
         /* These must be implemented by subclasses */
         const gchar *(*get_id)(BriskItem *);
@@ -43,7 +43,7 @@ struct _BriskItemClass {
  * launcher or file.
  */
 struct _BriskItem {
-        GObject parent;
+        GInitiallyUnowned parent;
 };
 
 #define BRISK_TYPE_ITEM brisk_item_get_type()

@@ -286,7 +286,6 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         /* If signal subscribers wish to keep it, they can ref it */
                         section = brisk_apps_section_new(dir);
                         brisk_backend_section_added(BRISK_BACKEND(self), section);
-                        g_object_unref(section);
 
                         /* Descend into the section */
                         brisk_apps_backend_recurse_root(self, dir);
@@ -313,7 +312,6 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         /* If signal subscribers wish to keep it, they can ref it */
                         app_item = brisk_apps_item_new(info);
                         brisk_backend_item_added(BRISK_BACKEND(self), app_item);
-                        g_object_unref(app_item);
                 } break;
                 default:
                         break;

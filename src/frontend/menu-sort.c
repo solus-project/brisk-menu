@@ -73,9 +73,6 @@ __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *r
         nameA = g_ascii_strdown(brisk_item_get_name(itemA), -1);
         nameB = g_ascii_strdown(brisk_item_get_name(itemB), -1);
 
-        g_object_unref(itemA);
-        g_object_unref(itemB);
-
         return g_strcmp0(nameA, nameB);
 }
 

@@ -75,7 +75,30 @@ static void brisk_menu_window_add_section(BriskMenuWindow *self, BriskSection *s
         gtk_widget_show_all(button);
 
         /* Avoid new dupes */
-        g_hash_table_insert(self->item_store, (gchar *)section_id, button);
+        g_hash_table_insert(self->item_store, g_strdup(section_id), button);
+}
+
+/**
+ * Handle deletion for children in the sidebar
+ */
+static void brisk_menu_window_remove_category(GtkWidget *widget, BriskMenuWindow *self)
+{
+        BriskSection *section = NULL;
+        const gchar *section_id = NULL;
+
+        if (!BRISK_IS_MENU_CATEGORY_BUTTON(widget)) {
+                return;
+        }
+
+        g_object_get(widget, "section", &section, NULL);
+        if (!section) {
+                g_warning("missing section for category button");
+        }
+
+        section_id = brisk_section_get_id(section);
+
+        g_hash_table_remove(self->item_store, section_id);
+        gtk_widget_destroy(widget);
 }
 
 /**
@@ -83,7 +106,50 @@ static void brisk_menu_window_add_section(BriskMenuWindow *self, BriskSection *s
  */
 static void brisk_menu_window_reset(BriskMenuWindow *self, BriskBackend *backend)
 {
-        g_message("Backend requests reset: %s", brisk_backend_get_id(backend));
+        GtkWidget *box_target = NULL;
+        GList *kids = NULL, *elem = NULL;
+        const gchar *backend_id = NULL;
+
+        backend_id = brisk_backend_get_id(backend);
+
+        box_target = brisk_menu_window_get_section_box(self, backend);
+        gtk_container_foreach(GTK_CONTAINER(box_target),
+                              (GtkCallback)brisk_menu_window_remove_category,
+                              self);
+
+        /* Manual work for the items */
+        kids = gtk_container_get_children(GTK_CONTAINER(self->apps));
+        for (elem = kids; elem; elem = elem->next) {
+                GtkWidget *row = elem->data;
+                GtkWidget *child = NULL;
+                BriskItem *item = NULL;
+                const gchar *local_backend_id = NULL;
+                const gchar *local_id = NULL;
+
+                if (!GTK_IS_BIN(GTK_BIN(row))) {
+                        continue;
+                }
+
+                child = gtk_bin_get_child(GTK_BIN(row));
+                if (!BRISK_IS_MENU_ENTRY_BUTTON(child)) {
+                        continue;
+                }
+
+                g_object_get(child, "item", &item, NULL);
+                if (!item) {
+                        g_warning("missing item for entry in backend '%s'", backend_id);
+                        continue;
+                }
+
+                local_backend_id = brisk_item_get_backend_id(item);
+                if (!g_str_equal(backend_id, local_backend_id)) {
+                        continue;
+                }
+                local_id = brisk_item_get_id(item);
+                g_hash_table_remove(self->item_store, local_id);
+                gtk_widget_destroy(row);
+        }
+        g_list_free(kids);
 }
 
 /**

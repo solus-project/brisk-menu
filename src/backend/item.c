@@ -17,7 +17,7 @@ BRISK_BEGIN_PEDANTIC
 #include "item.h"
 BRISK_END_PEDANTIC
 
-G_DEFINE_TYPE(BriskItem, brisk_item, G_TYPE_OBJECT)
+G_DEFINE_TYPE(BriskItem, brisk_item, G_TYPE_INITIALLY_UNOWNED)
 
 /**
  * brisk_item_dispose:

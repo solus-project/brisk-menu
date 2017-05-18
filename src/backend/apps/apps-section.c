@@ -34,7 +34,6 @@ struct _BriskAppsSectionClass {
  */
 struct _BriskAppsSection {
         BriskSection parent;
-        MateMenuTreeDirectory *directory;
 
         gchar *id;
         gchar *name;

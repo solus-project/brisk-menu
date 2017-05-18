@@ -17,7 +17,7 @@ BRISK_BEGIN_PEDANTIC
 #include "section.h"
 BRISK_END_PEDANTIC
 
-G_DEFINE_TYPE(BriskSection, brisk_section, G_TYPE_OBJECT)
+G_DEFINE_TYPE(BriskSection, brisk_section, G_TYPE_INITIALLY_UNOWNED)
 
 /**
  * brisk_section_dispose:
