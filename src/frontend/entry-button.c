@@ -279,15 +279,10 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
                                        __brisk_unused__ guint time)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
-
         const gchar *uris[2];
-
-        const gchar *desktop_path = NULL;
         autofree(gchar) *uri = NULL;
 
-        /* TODO: ADD ITEM API !
-        desktop_path = g_desktop_app_info_get_filename(self->info);
-        uri = g_filename_to_uri(desktop_path, NULL, NULL); */
+        uri = brisk_item_get_uri(self->item);
         if (!uri) {
                 return;
         }

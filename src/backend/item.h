@@ -35,6 +35,9 @@ struct _BriskItemClass {
         /* Support launching through primary click action */
         gboolean (*launch)(BriskItem *);
 
+        /* For drag & drop */
+        gchar *(*get_uri)(BriskItem *);
+
         gpointer padding[12];
 };
 
@@ -67,6 +70,8 @@ gboolean brisk_item_matches_search(BriskItem *item, gchar *term);
 
 /* Attempt to launch this item */
 gboolean brisk_item_launch(BriskItem *item);
+
+gchar *brisk_item_get_uri(BriskItem *item);
 
 G_END_DECLS
 

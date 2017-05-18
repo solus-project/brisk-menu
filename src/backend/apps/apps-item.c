@@ -52,6 +52,7 @@ static const GIcon *brisk_apps_item_get_icon(BriskItem *item);
 static const char *brisk_apps_item_get_backend_id(BriskItem *item);
 static gboolean brisk_apps_item_matches_search(BriskItem *item, gchar *term);
 static gboolean brisk_apps_item_launch(BriskItem *item);
+static gchar *brisk_apps_item_get_uri(BriskItem *item);
 
 static void brisk_apps_item_set_property(GObject *object, guint id, const GValue *value,
                                          GParamSpec *spec)
@@ -122,6 +123,7 @@ static void brisk_apps_item_class_init(BriskAppsItemClass *klazz)
         i_class->get_backend_id = brisk_apps_item_get_backend_id;
         i_class->matches_search = brisk_apps_item_matches_search;
         i_class->launch = brisk_apps_item_launch;
+        i_class->get_uri = brisk_apps_item_get_uri;
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_apps_item_dispose;
@@ -246,6 +248,18 @@ __brisk_pure__ static gboolean brisk_apps_item_matches_search(BriskItem *item, g
 static gboolean brisk_apps_item_launch(__brisk_unused__ BriskItem *item)
 {
         return FALSE;
+}
+
+/**
+ * Simply return the full URL for our .desktop file.
+ */
+static gchar *brisk_apps_item_get_uri(BriskItem *item)
+{
+        BriskAppsItem *self = BRISK_APPS_ITEM(item);
+        const gchar *desktop_fpath = NULL;
+
+        desktop_fpath = g_desktop_app_info_get_filename(self->info);
+        return g_filename_to_uri(desktop_fpath, NULL, NULL);
 }
 
 /**

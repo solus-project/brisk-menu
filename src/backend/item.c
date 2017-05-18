@@ -147,6 +147,21 @@ gboolean brisk_item_launch(BriskItem *item)
         return klazz->launch(item);
 }
 
+/**
+ * brisk_item_get_uri:
+ *
+ * Return the URI for this item, useful for dnd operations
+ *
+ * @note This returns newly allocated memory
+ */
+gchar *brisk_item_get_uri(BriskItem *item)
+{
+        g_assert(item != NULL);
+        BriskItemClass *klazz = BRISK_ITEM_GET_CLASS(item);
+        g_return_val_if_fail(klazz->launch != NULL, NULL);
+        return klazz->get_uri(item);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
