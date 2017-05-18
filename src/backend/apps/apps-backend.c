@@ -338,11 +338,24 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
                         autofree(MateMenuTreeDirectory) *parent = NULL;
                         BriskSection *section = NULL;
+                        GSList *children = NULL;
+                        guint n_children = 0;
 
                         parent = matemenu_tree_item_get_parent(item);
                         /* Nested menus basically only happen in mate-settings.menu */
                         if (parent != root) {
                                 goto recurse_root;
+                        }
+
+                        children = matemenu_tree_directory_get_contents(dir);
+                        if (children) {
+                                n_children = g_slist_length(children);
+                                g_slist_free_full(children, matemenu_tree_item_unref);
+                        }
+
+                        /* Skip empty sections entirely */
+                        if (n_children < 1) {
+                                continue;
                         }
 
                         /* If signal subscribers wish to keep it, they can ref it
