@@ -21,6 +21,7 @@ BRISK_BEGIN_PEDANTIC
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gio/gdesktopappinfo.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
@@ -98,6 +99,8 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         GtkWidget *content = NULL;
         GtkWidget *scroll = NULL;
         GtkStyleContext *style = NULL;
+        autofree(gchar) *txt_holder = NULL;
+        autofree(gchar) *place_holder = NULL;
 
         self->launcher = brisk_menu_launcher_new();
         brisk_menu_window_load_css(self);
@@ -133,7 +136,9 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                                           "edit-clear-symbolic");
 
         gtk_box_pack_start(GTK_BOX(layout), widget, FALSE, FALSE, 0);
-        gtk_entry_set_placeholder_text(GTK_ENTRY(widget), "Type to search\u2026");
+        /* Translators: This is the text shown in the "search box" with no content */
+        txt_holder = g_strdup_printf("%s\u2026", _("Type to search"));
+        gtk_entry_set_placeholder_text(GTK_ENTRY(widget), txt_holder);
         self->search = widget;
         g_signal_connect_swapped(widget, "changed", G_CALLBACK(brisk_menu_window_search), self);
         g_signal_connect_swapped(widget,
@@ -193,8 +198,10 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         gtk_style_context_add_class(style, "content-view");
         gtk_style_context_remove_class(style, "background");
 
+        /* Translators: This message is shown when the search results are empty */
+        place_holder = g_strdup_printf("<big>%s</big>", _("Sorry, no items found"));
+        widget = gtk_label_new(place_holder);
         /* Add a placeholder when there are no apps for current search term */
-        widget = gtk_label_new("<big>Sorry, no items found</big>");
         gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
         g_object_set(widget,
                      "halign",
