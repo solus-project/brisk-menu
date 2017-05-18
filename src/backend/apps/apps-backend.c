@@ -52,6 +52,7 @@ struct _BriskAppsBackend {
         GAppInfoMonitor *monitor;
         guint monitor_source_id;
         gboolean loaded;
+        GSList *pending_sections;
 };
 
 G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
@@ -77,6 +78,19 @@ DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
 static inline void brisk_apps_backend_reset_monitor(void)
 {
         g_list_free_full(g_app_info_get_all(), g_object_unref);
+}
+
+/**
+ * Reset the pending sections
+ */
+static inline void brisk_apps_backend_reset_pending(BriskAppsBackend *self)
+{
+        if (!self->pending_sections) {
+                return;
+        }
+        /* We use floating references, don't unref them */
+        g_slist_free(self->pending_sections);
+        self->pending_sections = NULL;
 }
 
 /**
@@ -107,6 +121,7 @@ static void brisk_apps_backend_dispose(GObject *obj)
         BriskAppsBackend *self = BRISK_APPS_BACKEND(obj);
 
         g_clear_object(&self->monitor);
+        brisk_apps_backend_reset_pending(self);
 
         G_OBJECT_CLASS(brisk_apps_backend_parent_class)->dispose(obj);
 }
@@ -173,6 +188,15 @@ static void brisk_apps_backend_changed(BriskAppsBackend *self, __brisk_unused__ 
 }
 
 /**
+ * Alphabetically sort the section list once it has been populated
+ */
+static gint brisk_apps_backend_sort_section(gconstpointer a, gconstpointer b)
+{
+        return g_ascii_strcasecmp(brisk_section_get_name((BriskSection *)a),
+                                  brisk_section_get_name((BriskSection *)b));
+}
+
+/**
  *
  * brisk_apps_backend_init_menus:
  *
@@ -180,6 +204,8 @@ static void brisk_apps_backend_changed(BriskAppsBackend *self, __brisk_unused__ 
  */
 static gboolean brisk_apps_backend_init_menus(BriskAppsBackend *self)
 {
+        brisk_apps_backend_reset_pending(self);
+
         /* Now load them again */
         if (!brisk_apps_backend_build_from_tree(self, APPS_MENU_ID)) {
                 g_warning("Failed to load required apps menu id: %s", APPS_MENU_ID);
@@ -188,6 +214,17 @@ static gboolean brisk_apps_backend_init_menus(BriskAppsBackend *self)
         if (!brisk_apps_backend_build_from_tree(self, SETTINGS_MENU_ID)) {
                 g_warning("Failed to load settings menu id: %s", SETTINGS_MENU_ID);
         }
+
+        /* Sort before display */
+        self->pending_sections =
+            g_slist_sort(self->pending_sections, brisk_apps_backend_sort_section);
+
+        for (GSList *elem = self->pending_sections; elem; elem = elem->next) {
+                BriskSection *section = elem->data;
+                brisk_backend_section_added(BRISK_BACKEND(self), section);
+        }
+
+        brisk_apps_backend_reset_pending(self);
 
         /* Prevent further runs */
         return G_SOURCE_REMOVE;
@@ -309,9 +346,11 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                                 goto recurse_root;
                         }
 
-                        /* If signal subscribers wish to keep it, they can ref it */
+                        /* If signal subscribers wish to keep it, they can ref it
+                         * We won't emit this until we're done building the section
+                         * list */
                         section = brisk_apps_section_new(dir);
-                        brisk_backend_section_added(BRISK_BACKEND(self), section);
+                        self->pending_sections = g_slist_append(self->pending_sections, section);
 
                 recurse_root:
                         /* Descend into the section */
