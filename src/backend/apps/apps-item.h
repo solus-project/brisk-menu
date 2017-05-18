@@ -33,7 +33,9 @@ typedef struct _BriskAppsItemClass BriskAppsItemClass;
 
 GType brisk_apps_item_get_type(void);
 
-BriskItem *brisk_apps_item_new(GDesktopAppInfo *info);
+BriskItem *brisk_apps_item_new(GDesktopAppInfo *info, gchar *section_id);
+
+const gchar *brisk_apps_item_get_section_id(BriskAppsItem *item);
 
 G_END_DECLS
 

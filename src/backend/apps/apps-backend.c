@@ -64,6 +64,7 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
 static void brisk_apps_backend_changed(BriskAppsBackend *backend, gpointer v);
 static gboolean brisk_apps_backend_reload(BriskAppsBackend *backend);
 
+DEF_AUTOFREE(gchar, g_free)
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
 DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
@@ -262,6 +263,22 @@ static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const
 }
 
 /**
+ * Return a section ID to help with matching.
+ *
+ * In all cases we only use the root level section name, as we forbid
+ * nested sections
+ */
+static gchar *brisk_apps_backend_get_entry_section(MateMenuTreeDirectory *parent,
+                                                   MateMenuTreeEntry *entry)
+{
+        autofree(gchar) *root_id = matemenu_tree_directory_make_path(parent, entry);
+        gchar **split = g_strsplit(root_id, "/", 5);
+        gchar *ret = g_strdup_printf("%s.mate-directory", split[1]);
+        g_strfreev(split);
+        return ret;
+}
+
+/**
  * brisk_apps_backend_recurse_root:
  *
  * Walk the directory and construct sections/items for every directory/entry
@@ -287,7 +304,6 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         BriskSection *section = NULL;
 
                         parent = matemenu_tree_item_get_parent(item);
-
                         /* Nested menus basically only happen in mate-settings.menu */
                         if (parent != root) {
                                 goto recurse_root;
@@ -307,6 +323,7 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         autofree(GDesktopAppInfo) *info = NULL;
                         const gchar *desktop_file = NULL;
                         BriskItem *app_item = NULL;
+                        autofree(gchar) *section_id = NULL;
 
                         desktop_file = matemenu_tree_entry_get_desktop_file_path(entry);
 
@@ -315,13 +332,15 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                                 break;
                         }
 
+                        section_id = brisk_apps_backend_get_entry_section(directory, entry);
+
                         /* Must have a desktop file */
                         info = g_desktop_app_info_new_from_filename(desktop_file);
                         if (!info) {
                                 break;
                         }
                         /* If signal subscribers wish to keep it, they can ref it */
-                        app_item = brisk_apps_item_new(info);
+                        app_item = brisk_apps_item_new(info, section_id);
                         brisk_backend_item_added(BRISK_BACKEND(self), app_item);
                 } break;
                 default:

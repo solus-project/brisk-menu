@@ -14,6 +14,7 @@
 #include "util.h"
 
 BRISK_BEGIN_PEDANTIC
+#include "apps-item.h"
 #include "apps-section.h"
 #include <gio/gdesktopappinfo.h>
 BRISK_END_PEDANTIC
@@ -51,6 +52,7 @@ static const gchar *brisk_apps_section_get_id(BriskSection *item);
 static const gchar *brisk_apps_section_get_name(BriskSection *item);
 static const GIcon *brisk_apps_section_get_icon(BriskSection *item);
 static const gchar *brisk_apps_section_get_backend_id(BriskSection *item);
+static gboolean brisk_apps_section_can_show_item(BriskSection *section, BriskItem *item);
 
 /**
  * Create a GIcon for the given path
@@ -158,6 +160,7 @@ static void brisk_apps_section_class_init(BriskAppsSectionClass *klazz)
         s_class->get_name = brisk_apps_section_get_name;
         s_class->get_icon = brisk_apps_section_get_icon;
         s_class->get_backend_id = brisk_apps_section_get_backend_id;
+        s_class->can_show_item = brisk_apps_section_can_show_item;
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_apps_section_dispose;
@@ -181,27 +184,49 @@ static void brisk_apps_section_init(__brisk_unused__ BriskAppsSection *self)
 {
 }
 
-static const gchar *brisk_apps_section_get_id(BriskSection *item)
+static const gchar *brisk_apps_section_get_id(BriskSection *section)
 {
-        BriskAppsSection *self = BRISK_APPS_SECTION(item);
+        BriskAppsSection *self = BRISK_APPS_SECTION(section);
         return (const gchar *)self->id;
 }
 
-static const gchar *brisk_apps_section_get_name(BriskSection *item)
+static const gchar *brisk_apps_section_get_name(BriskSection *section)
 {
-        BriskAppsSection *self = BRISK_APPS_SECTION(item);
+        BriskAppsSection *self = BRISK_APPS_SECTION(section);
         return (const gchar *)self->name;
 }
 
-static const GIcon *brisk_apps_section_get_icon(BriskSection *item)
+static const GIcon *brisk_apps_section_get_icon(BriskSection *section)
 {
-        BriskAppsSection *self = BRISK_APPS_SECTION(item);
+        BriskAppsSection *self = BRISK_APPS_SECTION(section);
         return (const GIcon *)self->icon;
 }
 
 static const gchar *brisk_apps_section_get_backend_id(__brisk_unused__ BriskSection *item)
 {
         return "apps";
+}
+
+/**
+ * Long story short, if the section ID matches, we can show it.
+ */
+static gboolean brisk_apps_section_can_show_item(BriskSection *section, BriskItem *item)
+{
+        /* We only know how to handle our items */
+        BriskAppsItem *apps_item = NULL;
+        const gchar *section_id = NULL;
+        BriskAppsSection *self = BRISK_APPS_SECTION(section);
+
+        if (G_UNLIKELY(item == NULL) || G_UNLIKELY(!BRISK_IS_APPS_ITEM(item))) {
+                return FALSE;
+        }
+
+        apps_item = BRISK_APPS_ITEM(item);
+        section_id = brisk_apps_item_get_section_id(apps_item);
+        if (section_id && g_str_equal(section_id, self->id)) {
+                return TRUE;
+        }
+        return FALSE;
 }
 
 /**

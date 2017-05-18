@@ -18,7 +18,7 @@ BRISK_BEGIN_PEDANTIC
 #include "apps-item.h"
 BRISK_END_PEDANTIC
 
-enum { PROP_INFO = 1, N_PROPS };
+enum { PROP_INFO = 1, PROP_SECTION_ID, N_PROPS };
 
 DEF_AUTOFREE(gchar, g_free)
 
@@ -37,6 +37,7 @@ struct _BriskAppsItemClass {
 struct _BriskAppsItem {
         BriskItem parent;
         GDesktopAppInfo *info;
+        gchar *section_id;
 };
 
 G_DEFINE_TYPE(BriskAppsItem, brisk_apps_item, BRISK_TYPE_ITEM)
@@ -61,6 +62,10 @@ static void brisk_apps_item_set_property(GObject *object, guint id, const GValue
         case PROP_INFO:
                 self->info = g_value_dup_object(value);
                 break;
+        case PROP_SECTION_ID:
+                g_clear_pointer(&self->section_id, g_free);
+                self->section_id = g_value_dup_string(value);
+                break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
                 break;
@@ -74,6 +79,9 @@ static void brisk_apps_item_get_property(GObject *object, guint id, GValue *valu
         switch (id) {
         case PROP_INFO:
                 g_value_set_pointer(value, self->info);
+                break;
+        case PROP_SECTION_ID:
+                g_value_set_string(value, self->section_id);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -91,6 +99,7 @@ static void brisk_apps_item_dispose(GObject *obj)
         BriskAppsItem *self = BRISK_APPS_ITEM(obj);
 
         g_clear_object(&self->info);
+        g_clear_pointer(&self->section_id, g_free);
 
         G_OBJECT_CLASS(brisk_apps_item_parent_class)->dispose(obj);
 }
@@ -124,6 +133,12 @@ static void brisk_apps_item_class_init(BriskAppsItemClass *klazz)
                                                         "Corresponding .desktop file",
                                                         G_TYPE_DESKTOP_APP_INFO,
                                                         G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        obj_properties[PROP_SECTION_ID] =
+            g_param_spec_string("section-id",
+                                "The section ID",
+                                "Parent section ID",
+                                NULL,
+                                G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -238,9 +253,20 @@ static gboolean brisk_apps_item_launch(__brisk_unused__ BriskItem *item)
  *
  * Return a new BriskAppsItem for the given desktop file
  */
-BriskItem *brisk_apps_item_new(GDesktopAppInfo *info)
+BriskItem *brisk_apps_item_new(GDesktopAppInfo *info, gchar *section_id)
 {
-        return g_object_new(BRISK_TYPE_APPS_ITEM, "info", info, NULL);
+        return g_object_new(BRISK_TYPE_APPS_ITEM, "info", info, "section-id", section_id, NULL);
+}
+
+/**
+ * brisk_apps_item_get_section_id:
+ *
+ * Private API for the AppsSection to determine if a child belongs to
+ * it or not.
+ */
+const gchar *brisk_apps_item_get_section_id(BriskAppsItem *self)
+{
+        return (const gchar *)self->section_id;
 }
 
 /*
