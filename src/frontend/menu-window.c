@@ -51,8 +51,6 @@ static void brisk_menu_window_dispose(GObject *obj)
         BriskMenuWindow *self = BRISK_MENU_WINDOW(obj);
         GdkScreen *screen = NULL;
 
-        g_message("debug: cleaning up");
-
         if (self->css) {
                 screen = gtk_widget_get_screen(GTK_WIDGET(self));
                 gtk_style_context_remove_provider_for_screen(screen, GTK_STYLE_PROVIDER(self->css));

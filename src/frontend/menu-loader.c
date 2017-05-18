@@ -220,8 +220,6 @@ static void brisk_menu_window_init_backend(BriskMenuWindow *self, BriskBackend *
         gtk_box_reorder_child(GTK_BOX(self->sidebar), box, (gint)g_hash_table_size(self->backends));
 
         g_hash_table_insert(self->section_boxes, (gchar *)backend_id, box);
-
-        g_message("debug: activated backend '%s'", backend_id);
 }
 
 /**

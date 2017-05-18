@@ -168,7 +168,6 @@ static void brisk_apps_backend_init(BriskAppsBackend *self)
  */
 static void brisk_apps_backend_changed(BriskAppsBackend *self, __brisk_unused__ gpointer v)
 {
-        g_message("debug: menu reload scheduled");
         /* Not interested until we're loaded. */
         if (!self->loaded) {
                 return;

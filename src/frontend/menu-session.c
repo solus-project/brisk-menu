@@ -176,8 +176,6 @@ gboolean brisk_menu_window_setup_session(BriskMenuWindow *self)
         gboolean can_shutdown = FALSE;
         __brisk_unused__ gboolean is_active = FALSE;
 
-        return FALSE;
-
         /* Sort out gnome-session dbus */
         self->session = gnome_session_manager_proxy_new_for_bus_sync(
             G_BUS_TYPE_SESSION,
