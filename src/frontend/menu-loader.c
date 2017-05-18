@@ -39,11 +39,6 @@ static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
         GtkWidget *button = NULL;
         const gchar *item_id = brisk_item_get_id(item);
 
-        /* Skip dupes */
-        if (g_hash_table_lookup(self->item_store, item_id) != NULL) {
-                return;
-        }
-
         button = brisk_menu_entry_button_new(self->launcher, item);
         gtk_container_add(GTK_CONTAINER(self->apps), button);
         gtk_widget_show_all(button);
