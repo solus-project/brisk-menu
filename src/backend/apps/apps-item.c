@@ -51,7 +51,7 @@ static const gchar *brisk_apps_item_get_summary(BriskItem *item);
 static const GIcon *brisk_apps_item_get_icon(BriskItem *item);
 static const char *brisk_apps_item_get_backend_id(BriskItem *item);
 static gboolean brisk_apps_item_matches_search(BriskItem *item, gchar *term);
-static gboolean brisk_apps_item_launch(BriskItem *item);
+static gboolean brisk_apps_item_launch(BriskItem *item, GAppLaunchContext *context);
 static gchar *brisk_apps_item_get_uri(BriskItem *item);
 
 static void brisk_apps_item_set_property(GObject *object, guint id, const GValue *value,
@@ -245,9 +245,11 @@ __brisk_pure__ static gboolean brisk_apps_item_matches_search(BriskItem *item, g
 /**
  * Not yet implemented
  */
-static gboolean brisk_apps_item_launch(__brisk_unused__ BriskItem *item)
+static gboolean brisk_apps_item_launch(BriskItem *item, GAppLaunchContext *context)
 {
-        return FALSE;
+        BriskAppsItem *self = BRISK_APPS_ITEM(item);
+
+        return g_app_info_launch(G_APP_INFO(self->info), NULL, context, NULL);
 }
 
 /**

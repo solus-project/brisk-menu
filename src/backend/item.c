@@ -139,12 +139,12 @@ gboolean brisk_item_matches_search(BriskItem *item, gchar *term)
  *
  * Attempt to launch the item
  */
-gboolean brisk_item_launch(BriskItem *item)
+gboolean brisk_item_launch(BriskItem *item, GAppLaunchContext *context)
 {
         g_assert(item != NULL);
         BriskItemClass *klazz = BRISK_ITEM_GET_CLASS(item);
         g_return_val_if_fail(klazz->launch != NULL, FALSE);
-        return klazz->launch(item);
+        return klazz->launch(item, context);
 }
 
 /**

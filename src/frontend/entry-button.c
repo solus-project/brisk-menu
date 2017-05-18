@@ -300,8 +300,7 @@ static void brisk_menu_entry_clicked(GtkButton *widget)
 
 void brisk_menu_entry_button_launch(BriskMenuEntryButton *self)
 {
-        /* TODO: Expose launcher to the item */
-        brisk_item_launch(self->item);
+        brisk_menu_launcher_start_item(self->launcher, GTK_WIDGET(self), self->item);
 }
 
 /*

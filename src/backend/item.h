@@ -33,7 +33,7 @@ struct _BriskItemClass {
         gboolean (*matches_search)(BriskItem *, gchar *);
 
         /* Support launching through primary click action */
-        gboolean (*launch)(BriskItem *);
+        gboolean (*launch)(BriskItem *, GAppLaunchContext *);
 
         /* For drag & drop */
         gchar *(*get_uri)(BriskItem *);
@@ -69,7 +69,7 @@ const gchar *brisk_item_get_backend_id(BriskItem *item);
 gboolean brisk_item_matches_search(BriskItem *item, gchar *term);
 
 /* Attempt to launch this item */
-gboolean brisk_item_launch(BriskItem *item);
+gboolean brisk_item_launch(BriskItem *item, GAppLaunchContext *context);
 
 gchar *brisk_item_get_uri(BriskItem *item);
 

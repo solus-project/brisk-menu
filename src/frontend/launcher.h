@@ -14,6 +14,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "backend/item.h"
+
 G_BEGIN_DECLS
 
 typedef struct _BriskMenuLauncher BriskMenuLauncher;
@@ -41,6 +43,12 @@ GType brisk_menu_launcher_get_type(void);
  * for it.
  */
 void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppInfo *app_info);
+
+/**
+ * Start a given Brisk item in the same context as _start, but ask the item to
+ * launch itself after our context is prepared.
+ */
+void brisk_menu_launcher_start_item(BriskMenuLauncher *self, GtkWidget *parent, BriskItem *item);
 
 G_END_DECLS
 

@@ -99,10 +99,10 @@ static void brisk_menu_launcher_init(BriskMenuLauncher *self)
                                  self);
 }
 
-void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppInfo *app_info)
+static void brisk_menu_launcher_init_context(BriskMenuLauncher *self, GtkWidget *parent,
+                                             GIcon *icon)
 {
         GdkScreen *screen = NULL;
-        GIcon *icon = NULL;
         GtkWidget *toplevel = NULL;
 
         if (parent) {
@@ -110,8 +110,6 @@ void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppI
         } else {
                 screen = gdk_screen_get_default();
         }
-
-        icon = g_app_info_get_icon(app_info);
 
         gdk_app_launch_context_set_screen(self->context, screen);
         if (icon) {
@@ -125,6 +123,21 @@ void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppI
         if (!PANEL_IS_APPLET(parent)) {
                 gtk_widget_hide(toplevel);
         }
+}
+
+void brisk_menu_launcher_start_item(BriskMenuLauncher *self, GtkWidget *parent, BriskItem *item)
+{
+        brisk_menu_launcher_init_context(self, parent, (GIcon *)brisk_item_get_icon(item));
+
+        /* The item itself will basically do similar to g_app_info_launch using our
+         * context now it's prepared.
+         */
+        brisk_item_launch(item, G_APP_LAUNCH_CONTEXT(self->context));
+}
+
+void brisk_menu_launcher_start(BriskMenuLauncher *self, GtkWidget *parent, GAppInfo *app_info)
+{
+        brisk_menu_launcher_init_context(self, parent, g_app_info_get_icon(app_info));
 
         /* We may support DnD URIs onto the icons at some point, not for now. */
         g_app_info_launch(app_info, NULL, G_APP_LAUNCH_CONTEXT(self->context), NULL);
