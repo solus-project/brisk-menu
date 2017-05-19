@@ -136,6 +136,7 @@ libbriskresources_la_LIBADD = \
 libbriskutil_la_SOURCES = \
 	src/lib/key-binder.h \
 	src/lib/key-binder.c \
+	src/lib/styles.h \
 	src/lib/util.h
 
 libbriskutil_la_CFLAGS = \

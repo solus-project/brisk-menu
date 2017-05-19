@@ -18,6 +18,7 @@ BRISK_BEGIN_PEDANTIC
 #include "applet.h"
 #include "frontend/menu-private.h"
 #include "frontend/menu-window.h"
+#include "lib/styles.h"
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>

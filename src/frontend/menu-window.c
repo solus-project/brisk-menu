@@ -18,6 +18,7 @@ BRISK_BEGIN_PEDANTIC
 #include "desktop-button.h"
 #include "entry-button.h"
 #include "launcher.h"
+#include "lib/styles.h"
 #include "menu-private.h"
 #include "menu-window.h"
 #include <gio/gdesktopappinfo.h>

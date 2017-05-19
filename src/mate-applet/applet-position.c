@@ -15,12 +15,8 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
+#include "lib/styles.h"
 BRISK_END_PEDANTIC
-
-/**
- * We're in a vertical layout
- */
-#define BRISK_STYLE_BUTTON_VERTICAL "brisk-button-vertical"
 
 /**
  * brisk_menu_applet_update_position:

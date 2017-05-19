@@ -33,26 +33,6 @@ struct _BriskMenuWindowClass {
 };
 
 /**
- * Style for the main window itself
- */
-#define BRISK_STYLE_MAIN "brisk-menu"
-
-/**
- * Right hand side application list
- */
-#define BRISK_STYLE_APPS_LIST "apps-list"
-
-/**
- * Left hand side category list
- */
-#define BRISK_STYLE_SIDEBAR "categories-list"
-
-/**
- * Main toggle button
- */
-#define BRISK_STYLE_BUTTON "brisk-button"
-
-/**
  * BriskMenuWindow is the toplevel window type used within the applet.
  */
 struct _BriskMenuWindow {
