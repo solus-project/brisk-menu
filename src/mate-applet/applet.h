@@ -39,13 +39,14 @@ struct _BriskMenuAppletClass {
 struct _BriskMenuApplet {
         MatePanelApplet parent;
 
-        GtkWidget *toggle;      /**<Main display button, bulk of the applet */
-        GtkWidget *label;       /**<Display label "Menu" */
-        GtkWidget *image;       /**<Icon display beside label */
-        GtkWidget *menu;        /**<BriskMenuWindow instance */
-        GSettings *settings;    /**<Our settings store */
-        gchar *shortcut;        /**<Currently bound hotkey */
-        BriskKeyBinder *binder; /**<Binder mechanism */
+        GtkWidget *toggle;            /**<Main display button, bulk of the applet */
+        GtkWidget *label;             /**<Display label "Menu" */
+        GtkWidget *image;             /**<Icon display beside label */
+        GtkWidget *menu;              /**<BriskMenuWindow instance */
+        GSettings *settings;          /**<Our settings store */
+        gchar *shortcut;              /**<Currently bound hotkey */
+        BriskKeyBinder *binder;       /**<Binder mechanism */
+        MatePanelAppletOrient orient; /**<Current position for the panel */
 };
 
 #define BRISK_TYPE_MENU_APPLET brisk_menu_applet_get_type()
@@ -62,7 +63,7 @@ GType brisk_menu_applet_get_type(void);
 
 void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
 void brisk_menu_applet_update_position(BriskMenuApplet *applet);
-void brisk_menu_applet_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrient orient);
+void brisk_menu_applet_adapt_layout(BriskMenuApplet *applet);
 
 G_END_DECLS
 

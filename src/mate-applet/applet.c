@@ -197,12 +197,9 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Load initially in the idle loop, prevent lagging panel on startup */
         g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
 
-        /* Fix the orient now we're up */
-        brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu),
-                                     mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
-
-        brisk_menu_applet_adapt_layout(MATE_PANEL_APPLET(self),
-                                       mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
+        /* Ensure we fire off the initial layout adaptation code */
+        brisk_menu_applet_change_orient(MATE_PANEL_APPLET(self),
+                                        mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
 
         /* Pump the settings */
         brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
@@ -294,9 +291,13 @@ void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key)
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient)
 {
         BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
+        self->orient = orient;
 
+        /* Let the main menu window know about our orientation */
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu), orient);
-        brisk_menu_applet_adapt_layout(applet, orient);
+
+        /* Now adjust our own display to deal with the orientation */
+        brisk_menu_applet_adapt_layout(BRISK_MENU_APPLET(applet));
 }
 
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size)
