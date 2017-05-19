@@ -13,11 +13,40 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <mate-panel-applet.h>
+
+#include "lib/key-binder.h"
 
 G_BEGIN_DECLS
 
 typedef struct _BriskMenuApplet BriskMenuApplet;
 typedef struct _BriskMenuAppletClass BriskMenuAppletClass;
+
+struct _BriskMenuAppletClass {
+        MatePanelAppletClass parent_class;
+};
+
+/**
+ * BriskMenuApplet is the passive portion of the Brisk Menu, in that it
+ * provides merely an access path to the main Brisk Menu Window itself.
+ * It also adds some special sauce around it to make it properly integrate
+ * within the MATE Desktop, such as hotkeys and panel integration.
+ *
+ * TODO: Remove the key binder from the applet and make it private to the
+ * main window itself. It's conceptually absurd that the window and the
+ * applet both handle the hotkey callbacks right now.
+ */
+struct _BriskMenuApplet {
+        MatePanelApplet parent;
+
+        GtkWidget *toggle;      /**<Main display button, bulk of the applet */
+        GtkWidget *label;       /**<Display label "Menu" */
+        GtkWidget *image;       /**<Icon display beside label */
+        GtkWidget *menu;        /**<BriskMenuWindow instance */
+        GSettings *settings;    /**<Our settings store */
+        gchar *shortcut;        /**<Currently bound hotkey */
+        BriskKeyBinder *binder; /**<Binder mechanism */
+};
 
 #define BRISK_TYPE_MENU_APPLET brisk_menu_applet_get_type()
 #define BRISK_MENU_APPLET(o)                                                                       \
@@ -32,6 +61,8 @@ typedef struct _BriskMenuAppletClass BriskMenuAppletClass;
 GType brisk_menu_applet_get_type(void);
 
 void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
+void brisk_menu_applet_update_position(BriskMenuApplet *applet);
+void brisk_menu_applet_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrient orient);
 
 G_END_DECLS
 

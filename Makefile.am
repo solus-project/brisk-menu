@@ -208,6 +208,7 @@ libbriskui_la_LIBADD = \
 brisk_menu_SOURCES = \
 	src/mate-applet/applet.h \
 	src/mate-applet/applet.c \
+	src/mate-applet/applet-position.c \
 	src/mate-applet/main.c
 
 brisk_menu_CFLAGS = \

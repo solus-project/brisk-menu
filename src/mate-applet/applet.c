@@ -18,27 +18,10 @@ BRISK_BEGIN_PEDANTIC
 #include "applet.h"
 #include "frontend/menu-private.h"
 #include "frontend/menu-window.h"
-#include "lib/key-binder.h"
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <mate-panel-applet.h>
 BRISK_END_PEDANTIC
-
-struct _BriskMenuAppletClass {
-        MatePanelAppletClass parent_class;
-};
-
-struct _BriskMenuApplet {
-        MatePanelApplet parent;
-        GtkWidget *toggle;
-        GtkWidget *label;
-        GtkWidget *image;
-        GtkWidget *menu;
-        GSettings *settings;
-        gchar *shortcut;
-        BriskKeyBinder *binder;
-};
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
 
@@ -51,59 +34,11 @@ static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer
 static void hotkey_cb(GdkEvent *event, gpointer v);
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient);
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size);
-static void brisk_menu_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrient orient);
 
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
 void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key);
-
-/**
- * Update the position for the menu.
- */
-static void place_menu(BriskMenuApplet *self)
-{
-        GdkScreen *screen = NULL;
-        GtkAllocation alloc = { 0 };
-        GdkWindow *window = NULL;
-        GdkRectangle geom = { 0 };
-        gint rx, ry = 0;
-        gint ww, wh = 0;
-        gint mon = 0;
-        gint tx, ty = 0;
-
-        gtk_widget_get_allocation(GTK_WIDGET(self), &alloc);
-        gtk_window_get_size(GTK_WINDOW(self->menu), &ww, &wh);
-
-        if (!gtk_widget_get_realized(GTK_WIDGET(self))) {
-                gtk_widget_realize(GTK_WIDGET(self));
-        }
-        window = gtk_widget_get_window(GTK_WIDGET(self));
-        gdk_window_get_origin(window, &rx, &ry);
-
-        screen = gtk_widget_get_screen(GTK_WIDGET(self));
-        mon = gdk_screen_get_monitor_at_point(screen, rx, ry);
-        gdk_screen_get_monitor_geometry(screen, mon, &geom);
-
-        /** We must be at the bottom of the screen. One hopes. */
-        if (ry + wh > geom.y + geom.height) {
-                ty = (geom.y + geom.height) - (alloc.height + wh);
-        } else {
-                /* Go to the bottom */
-                ty = ry + alloc.height;
-        }
-
-        tx = rx;
-        /* Bound the right side */
-        if (tx + ww > (geom.x + geom.width)) {
-                tx = (geom.x + geom.width) - (ww);
-        }
-        /* Bound the left side */
-        if (tx < geom.x) {
-                tx = geom.x;
-        }
-        gtk_window_move(GTK_WINDOW(self->menu), tx, ty);
-}
 
 /**
  * Handle hiding the menu when it comes to the shortcut key only.
@@ -265,8 +200,8 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu),
                                      mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
 
-        brisk_menu_adapt_layout(MATE_PANEL_APPLET(self),
-                                mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
+        brisk_menu_applet_adapt_layout(MATE_PANEL_APPLET(self),
+                                       mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
 
         /* Pump the settings */
         brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
@@ -283,7 +218,7 @@ static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, __brisk_
 
         gboolean vis = !gtk_widget_get_visible(self->menu);
         if (vis) {
-                place_menu(self);
+                brisk_menu_applet_update_position(self);
         }
 
         gtk_widget_set_visible(self->menu, vis);
@@ -298,7 +233,7 @@ static gboolean toggle_menu(BriskMenuApplet *self)
 {
         gboolean vis = !gtk_widget_get_visible(self->menu);
         if (vis) {
-                place_menu(self);
+                brisk_menu_applet_update_position(self);
         }
 
         gtk_widget_set_visible(self->menu, vis);
@@ -360,7 +295,7 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
         BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
 
         brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu), orient);
-        brisk_menu_adapt_layout(applet, orient);
+        brisk_menu_applet_adapt_layout(applet, orient);
 }
 
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size)
@@ -377,29 +312,6 @@ static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size)
         }
 
         gtk_image_set_pixel_size(GTK_IMAGE(self->image), final_size);
-}
-
-static void brisk_menu_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrient orient)
-{
-        BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
-        GtkStyleContext *style = NULL;
-
-        style = gtk_widget_get_style_context(self->toggle);
-
-        if (orient == MATE_PANEL_APPLET_ORIENT_LEFT || orient == MATE_PANEL_APPLET_ORIENT_RIGHT) {
-                gtk_widget_hide(self->label);
-                gtk_widget_set_halign(self->image, GTK_ALIGN_CENTER);
-                gtk_style_context_add_class(style, BRISK_STYLE_BUTTON_VERTICAL);
-                gtk_widget_set_margin_end(self->image, 0);
-                return;
-        }
-
-        if (g_settings_get_boolean(self->settings, "label-visible")) {
-                gtk_widget_show(GTK_WIDGET(self->label));
-        }
-        gtk_widget_set_halign(GTK_WIDGET(self->image), GTK_ALIGN_START);
-        gtk_style_context_remove_class(style, BRISK_STYLE_BUTTON_VERTICAL);
-        gtk_widget_set_margin_end(self->image, 4);
 }
 
 void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuApplet *self)

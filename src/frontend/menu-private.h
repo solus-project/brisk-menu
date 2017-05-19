@@ -51,7 +51,6 @@ struct _BriskMenuWindowClass {
  * Main toggle button
  */
 #define BRISK_STYLE_BUTTON "brisk-button"
-#define BRISK_STYLE_BUTTON_VERTICAL "brisk-button-vertical"
 
 /**
  * BriskMenuWindow is the toplevel window type used within the applet.
