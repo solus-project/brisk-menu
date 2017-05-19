@@ -33,42 +33,76 @@ void brisk_menu_applet_update_position(BriskMenuApplet *self)
         GtkAllocation alloc = { 0 };
         GdkWindow *window = NULL;
         GdkRectangle geom = { 0 };
-        gint rx, ry = 0;
-        gint ww, wh = 0;
-        gint mon = 0;
-        gint tx, ty = 0;
+        gint applet_x, applet_y = 0;          /* Real X, Y of this applet, on screen */
+        gint window_width, window_height = 0; /* Window width & height */
+        gint mon = 0;                         /* Monitor to display on */
+        gint window_x, window_y = 0;          /* Target X, Y */
 
-        gtk_widget_get_allocation(GTK_WIDGET(self), &alloc);
-        gtk_window_get_size(GTK_WINDOW(self->menu), &ww, &wh);
-
+        /* Forcibly realize ourselves */
         if (!gtk_widget_get_realized(GTK_WIDGET(self))) {
                 gtk_widget_realize(GTK_WIDGET(self));
         }
-        window = gtk_widget_get_window(GTK_WIDGET(self));
-        gdk_window_get_origin(window, &rx, &ry);
 
+        /* Forcibly realize the window */
+        if (!gtk_widget_get_realized(self->menu)) {
+                gtk_widget_realize(self->menu);
+        }
+
+        gtk_widget_get_allocation(GTK_WIDGET(self), &alloc);
+
+        /* Find out where we are on screen */
+        window = gtk_widget_get_window(GTK_WIDGET(self));
+        gdk_window_get_origin(window, &applet_x, &applet_y);
+
+        /* Find out the window size */
+        gtk_window_get_size(GTK_WINDOW(self->menu), &window_width, &window_height);
+
+        /* Grab the geometry for the monitor we're currently on */
         screen = gtk_widget_get_screen(GTK_WIDGET(self));
-        mon = gdk_screen_get_monitor_at_point(screen, rx, ry);
+        mon = gdk_screen_get_monitor_at_point(screen, applet_x, applet_y);
         gdk_screen_get_monitor_geometry(screen, mon, &geom);
 
-        /** We must be at the bottom of the screen. One hopes. */
-        if (ry + wh > geom.y + geom.height) {
-                ty = (geom.y + geom.height) - (alloc.height + wh);
-        } else {
-                /* Go to the bottom */
-                ty = ry + alloc.height;
+        switch (self->orient) {
+        case MATE_PANEL_APPLET_ORIENT_RIGHT:
+                /* Left vertical panel, appear to the RHS of it */
+                window_x = applet_x + alloc.width;
+                window_y = applet_y;
+                break;
+        case MATE_PANEL_APPLET_ORIENT_LEFT:
+                /* Right vertical panel, appear to the LHS of it */
+                window_x = applet_x - window_width;
+                window_y = applet_y;
+                break;
+        case MATE_PANEL_APPLET_ORIENT_DOWN:
+                /* Top panel, appear below it */
+                window_x = applet_x;
+                window_y = applet_y + alloc.height;
+                break;
+        case MATE_PANEL_APPLET_ORIENT_UP:
+        default:
+                /* Bottom panel, appear above it */
+                window_x = applet_x;
+                window_y = applet_y - window_height;
+                break;
         }
 
-        tx = rx;
         /* Bound the right side */
-        if (tx + ww > (geom.x + geom.width)) {
-                tx = (geom.x + geom.width) - (ww);
+        if (window_x + window_width > (geom.x + geom.width)) {
+                window_x = (geom.x + geom.width) - window_width;
+                if (self->orient == MATE_PANEL_APPLET_ORIENT_LEFT) {
+                        window_x -= alloc.width;
+                }
         }
+
         /* Bound the left side */
-        if (tx < geom.x) {
-                tx = geom.x;
+        if (window_x < geom.x) {
+                window_x = geom.x;
+                if (self->orient == MATE_PANEL_APPLET_ORIENT_RIGHT) {
+                        window_x -= alloc.width;
+                }
         }
-        gtk_window_move(GTK_WINDOW(self->menu), tx, ty);
+
+        gtk_window_move(GTK_WINDOW(self->menu), window_x, window_y);
 }
 
 /**
