@@ -159,7 +159,6 @@ DEF_AUTOFREE(GIcon, g_object_unref)
 DEF_AUTOFREE(gchar, g_free)
 DEF_AUTOFREE(GdkAppLaunchContext, g_object_unref)
 DEF_AUTOFREE(GError, g_error_free)
-DEF_AUTOFREE(GtkActionGroup, g_object_unref)
 DEF_AUTOFREE(GAppInfo, g_object_unref)
 
 /* Helper for gsettings */

@@ -207,7 +207,8 @@ libbriskui_la_LIBADD = \
 # Helper to let us develop the window portion first
 brisk_menu_SOURCES = \
 	src/mate-applet/applet.h \
-	src/mate-applet/applet.c
+	src/mate-applet/applet.c \
+	src/mate-applet/main.c
 
 brisk_menu_CFLAGS = \
 	$(GTK_CFLAGS) \

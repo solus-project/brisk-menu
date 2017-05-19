@@ -16,7 +16,6 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
-#include "brisk-resources.h"
 #include "frontend/menu-private.h"
 #include "frontend/menu-window.h"
 #include "lib/key-binder.h"
@@ -25,11 +24,6 @@ BRISK_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
 BRISK_END_PEDANTIC
-
-/**
- * UI definition for our right click menu
- */
-#define BRISK_MENU_XML "<menuitem name=\"Edit Menus\" action=\"EditMenus\" />"
 
 struct _BriskMenuAppletClass {
         MatePanelAppletClass parent_class;
@@ -48,39 +42,7 @@ struct _BriskMenuApplet {
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
 
-/**
- * We have no .ctor in the .a file - so it doesn't link
- */
-__attribute__((constructor)) static void brisk_resource_init(void)
-{
-        brisk_resources_register_resource();
-}
-
-/**
- * Again, no .dtor due to link issues, so we do it here
- */
-__attribute__((destructor)) static void brisk_resource_deinit(void)
-{
-        brisk_resources_unregister_resource();
-}
-
-gint icon_sizes[] = { 16, 24, 32, 48, 64, 96, 128, 256 };
-
-/**
- * GtkAction callbacks
- */
-static void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
-
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-static const GtkActionEntry brisk_actions[] = { {
-    "EditMenus",
-    GTK_STOCK_EDIT,
-    N_("_Edit Menus"),
-    NULL,
-    NULL,
-    G_CALLBACK(brisk_menu_applet_edit_menus),
-} };
-G_GNUC_END_IGNORE_DEPRECATIONS
+static gint icon_sizes[] = { 16, 24, 32, 48, 64, 96, 128, 256 };
 
 /**
  * Handle showing of the menu
@@ -440,7 +402,7 @@ static void brisk_menu_adapt_layout(MatePanelApplet *applet, MatePanelAppletOrie
         gtk_widget_set_margin_end(self->image, 4);
 }
 
-static void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuApplet *self)
+void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuApplet *self)
 {
         static const char *editors[] = {
                 "menulibre.desktop", "mozo.desktop",
@@ -477,37 +439,6 @@ static void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, Bri
         }
         g_message("Failed to launch menu editor");
 }
-
-static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id,
-                                          __brisk_unused__ gpointer v)
-{
-        if (!g_str_has_prefix(id, "BriskMenu")) {
-                return FALSE;
-        }
-        const char *home = NULL;
-        __attribute__((unused)) int ret = 0;
-        autofree(GtkActionGroup) *group = NULL;
-
-        home = g_get_home_dir();
-        if (home) {
-                ret = chdir(home);
-        }
-
-        /* Setup the action group and hand it to the mate panel */
-        G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-        group = gtk_action_group_new("Brisk Menu Actions");
-        gtk_action_group_set_translation_domain(group, GETTEXT_PACKAGE);
-        gtk_action_group_add_actions(group, brisk_actions, G_N_ELEMENTS(brisk_actions), applet);
-        mate_panel_applet_setup_menu(applet, BRISK_MENU_XML, group);
-        G_GNUC_END_IGNORE_DEPRECATIONS
-
-        g_set_application_name(_("Brisk Menu Launcher"));
-        gtk_widget_show(GTK_WIDGET(applet));
-        return TRUE;
-}
-
-MATE_PANEL_APPLET_OUT_PROCESS_FACTORY("BriskMenuFactory", BRISK_TYPE_MENU_APPLET, "BriskMenu",
-                                      brisk_menu_applet_factory, NULL)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

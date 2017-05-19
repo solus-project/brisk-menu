@@ -31,6 +31,8 @@ typedef struct _BriskMenuAppletClass BriskMenuAppletClass;
 
 GType brisk_menu_applet_get_type(void);
 
+void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
+
 G_END_DECLS
 
 /*
