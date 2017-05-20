@@ -21,6 +21,7 @@ BRISK_BEGIN_PEDANTIC
 #include "lib/styles.h"
 #include "menu-private.h"
 #include "menu-window.h"
+#include "sidebar-scroller.h"
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
@@ -154,11 +155,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
 
         /* Sidebar for categories */
         widget = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-        scroll = gtk_scrolled_window_new(NULL, NULL);
-        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
-                                       GTK_POLICY_NEVER,
-                                       GTK_POLICY_AUTOMATIC);
-        gtk_scrolled_window_set_overlay_scrolling(GTK_SCROLLED_WINDOW(scroll), FALSE);
+        scroll = brisk_menu_sidebar_scroller_new();
         self->sidebar = widget;
         style = gtk_widget_get_style_context(self->sidebar);
         gtk_style_context_add_class(style, BRISK_STYLE_SIDEBAR);

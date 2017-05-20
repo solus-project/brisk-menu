@@ -194,7 +194,9 @@ libbriskui_la_SOURCES = \
 	src/frontend/menu-settings.c \
 	src/frontend/menu-sort.c \
 	src/frontend/menu-window.h \
-	src/frontend/menu-window.c
+	src/frontend/menu-window.c \
+	src/frontend/sidebar-scroller.h \
+	src/frontend/sidebar-scroller.c
 
 libbriskui_la_CFLAGS = \
 	$(GTK_CFLAGS) \
