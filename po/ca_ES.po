@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:56+0000\n"
+"POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Davidmp <medipas@gmail.com>, 2017\n"
 "Language-Team: Catalan (Spain) (https://www.transifex.com/solus-project/teams/68407/ca_ES/)\n"
@@ -18,27 +18,44 @@ msgstr ""
 "Language: ca_ES\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. Now add the label
-#: ../src/applet.c:177
+#: ../src/mate-applet/applet.c:78
+msgid "_Edit Menus"
+msgstr "_Edita els menús"
+
+#: ../src/mate-applet/applet.c:368
 msgid "Menu"
 msgstr "Menú"
 
-#: ../src/applet.c:265
+#: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
 msgstr "Llançador del menú Brisk"
 
-#: ../src/category-button.c:130
+#: ../src/frontend/category-button.c:115
 msgid "All"
 msgstr "Tot"
 
-#: ../src/menu-session.c:144
+#: ../src/frontend/menu-session.c:144
 msgid "End the current session"
 msgstr "Acaba la sessió actual"
 
-#: ../src/menu-session.c:155
+#: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
 msgstr "Bloqueja la pantalla"
 
-#: ../src/menu-session.c:166
+#: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
 msgstr "Atura el dispositiu"
+
+#. Translators: This is the text shown in the "search box" with no content
+#: ../src/frontend/menu-window.c:140
+msgid "Type to search"
+msgstr "Teclegeu per cercar"
+
+#. Translators: This message is shown when the search results are empty
+#: ../src/frontend/menu-window.c:202
+msgid "Sorry, no items found"
+msgstr "Perdoneu, no s'ha trobat res."
+
+#: ../src/backend/apps/apps-backend.c:111
+msgid "Applications"
+msgstr "Aplicacions"
