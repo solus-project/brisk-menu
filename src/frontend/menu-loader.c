@@ -65,13 +65,16 @@ static void brisk_menu_window_add_section(BriskMenuWindow *self, BriskSection *s
         box_target = brisk_menu_window_get_section_box(self, backend);
 
         button = brisk_menu_category_button_new(section);
-        gtk_radio_button_join_group(GTK_RADIO_BUTTON(button), GTK_RADIO_BUTTON(self->all_button));
+        gtk_radio_button_join_group(GTK_RADIO_BUTTON(button),
+                                    GTK_RADIO_BUTTON(self->sidebar_leader));
         gtk_box_pack_start(GTK_BOX(box_target), button, FALSE, FALSE, 0);
         brisk_menu_window_associate_category(self, button);
         gtk_widget_show_all(button);
 
         /* Avoid new dupes */
         g_hash_table_insert(self->item_store, g_strdup(section_id), button);
+
+        brisk_menu_window_select_sidebar(self);
 }
 
 /**

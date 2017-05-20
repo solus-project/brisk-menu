@@ -52,6 +52,7 @@ struct _BriskMenuWindow {
 
         /* VBox for the sidebar container */
         GtkWidget *sidebar_wrap;
+        GtkWidget *sidebar_leader;
 
         /* Top search entry */
         GtkWidget *search;
@@ -59,9 +60,6 @@ struct _BriskMenuWindow {
         /* Actual applications */
         GtkWidget *apps;
         GtkWidget *apps_scroll;
-
-        /* The All categories button */
-        GtkWidget *all_button;
 
         /* The current section used in filtering */
         BriskSection *active_section;
@@ -101,6 +99,7 @@ struct _BriskMenuWindow {
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self);
 void brisk_menu_window_init_backends(BriskMenuWindow *self);
 void brisk_menu_window_associate_category(BriskMenuWindow *self, GtkWidget *button);
+void brisk_menu_window_select_sidebar(BriskMenuWindow *self);
 
 /* Search */
 void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry);

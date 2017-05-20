@@ -325,6 +325,44 @@ static void brisk_menu_window_load_css(BriskMenuWindow *self)
         }
 }
 
+static GtkWidget *brisk_menu_window_find_first_visible_radio(BriskMenuWindow *self)
+{
+        autofree(GList) *box_kids = NULL;
+        autofree(GList) *box_kids2 = NULL;
+        GtkWidget *main_box = NULL;
+        GList *elem = NULL;
+
+        box_kids = gtk_container_get_children(GTK_CONTAINER(self->sidebar));
+        for (elem = box_kids; elem; elem = elem->next) {
+                if (!GTK_IS_BOX(elem->data)) {
+                        continue;
+                }
+                main_box = elem->data;
+                break;
+        }
+        if (!main_box) {
+                return NULL;
+        }
+        box_kids2 = gtk_container_get_children(GTK_CONTAINER(main_box));
+        return g_list_nth_data(box_kids2, 0);
+}
+
+/**
+ * brisk_menu_window_select_sidebar:
+ *
+ * Select the first child in the sidebar prior to any kind of display
+ */
+void brisk_menu_window_select_sidebar(BriskMenuWindow *self)
+{
+        GtkWidget *next_child = NULL;
+
+        /* Activate the first child in the group after the dummy widget */
+        next_child = brisk_menu_window_find_first_visible_radio(self);
+        if (next_child) {
+                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(next_child), TRUE);
+        }
+}
+
 /**
  * Override hiding so that we can invalidate all filters
  */
@@ -341,10 +379,7 @@ static void brisk_menu_window_hide(GtkWidget *widget)
         /* Remove search filter */
         gtk_entry_set_text(GTK_ENTRY(self->search), "");
 
-        /* Force activate the All button */
-        if (self->all_button) {
-                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(self->all_button), TRUE);
-        }
+        brisk_menu_window_select_sidebar(self);
 
         /* Reset scrollbars */
         adjustment = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(self->apps_scroll));
@@ -410,11 +445,11 @@ static void brisk_menu_window_build_sidebar(BriskMenuWindow *self)
 
         brisk_menu_window_set_filters_enabled(self, FALSE);
 
-        /* Special meaning for NULL group */
-        self->all_button = brisk_menu_category_button_new(NULL);
-        gtk_box_pack_start(GTK_BOX(self->sidebar), self->all_button, FALSE, FALSE, 0);
-        gtk_widget_show_all(self->all_button);
-        brisk_menu_window_associate_category(self, self->all_button);
+        /* Special leader to control group association, hidden from view */
+        self->sidebar_leader = gtk_radio_button_new(NULL);
+        gtk_box_pack_start(GTK_BOX(self->sidebar), self->sidebar_leader, FALSE, FALSE, 0);
+        gtk_widget_set_no_show_all(self->sidebar_leader, TRUE);
+        gtk_widget_hide(self->sidebar_leader);
 
         /* Separate the things */
         sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
