@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-19 00:31+0100\n"
+"POT-Creation-Date: 2017-05-20 04:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/mate-applet/applet.c:78
-msgid "_Edit Menus"
-msgstr ""
-
-#: ../src/mate-applet/applet.c:368
+#: ../src/mate-applet/applet.c:263
 msgid "Menu"
 msgstr ""
 
-#: ../src/mate-applet/applet.c:504
+#: ../src/mate-applet/main.c:49
+msgid "_Edit Menus"
+msgstr ""
+
+#: ../src/mate-applet/main.c:84
 msgid "Brisk Menu Launcher"
 msgstr ""
 
 #: ../src/frontend/category-button.c:115
+#: ../src/backend/all-items/all-section.c:102
 msgid "All"
 msgstr ""
 
@@ -46,13 +47,17 @@ msgid "Turn off the device"
 msgstr ""
 
 #. Translators: This is the text shown in the "search box" with no content
-#: ../src/frontend/menu-window.c:140
+#: ../src/frontend/menu-window.c:141
 msgid "Type to search"
 msgstr ""
 
 #. Translators: This message is shown when the search results are empty
-#: ../src/frontend/menu-window.c:202
+#: ../src/frontend/menu-window.c:203
 msgid "Sorry, no items found"
+msgstr ""
+
+#: ../src/backend/all-items/all-backend.c:52
+msgid "All Items"
 msgstr ""
 
 #: ../src/backend/apps/apps-backend.c:111
