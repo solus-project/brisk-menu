@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 BRISK_BEGIN_PEDANTIC
+#include "backend/all-items/all-backend.h"
 #include "backend/apps/apps-backend.h"
 #include "category-button.h"
 #include "entry-button.h"
@@ -148,34 +149,24 @@ static void brisk_menu_window_reset(BriskMenuWindow *self, BriskBackend *backend
 }
 
 /**
- * Load a single backend as stored in the map
- */
-static void brisk_menu_window_load_backend(BriskMenuWindow *self, const gchar *backend_id)
-{
-        BriskBackend *backend = NULL;
-
-        backend = g_hash_table_lookup(self->backends, backend_id);
-        if (G_UNLIKELY(backend == NULL)) {
-                g_warning("Tried to load invalid backend: '%s'", backend_id);
-                return;
-        }
-        if (!brisk_backend_load(backend)) {
-                g_warning("Failed to load backend: '%s'", backend_id);
-        }
-}
-
-/**
  * Load the menus and place them into the window regions
  */
 gboolean brisk_menu_window_load_menus(BriskMenuWindow *self)
 {
-        static const gchar *backends[] = {
-                "apps",
-        };
+        GHashTableIter iter;
+        gchar *backend_id = NULL;
+        BriskBackend *backend = NULL;
 
-        /* Now init all backends */
-        for (guint i = 0; i < G_N_ELEMENTS(backends); i++) {
-                brisk_menu_window_load_backend(self, backends[i]);
+        /* We only call load() on backends exposing BRISK_BACKEND_SOURCE */
+        g_hash_table_iter_init(&iter, self->backends);
+        while (g_hash_table_iter_next(&iter, (void **)&backend_id, (void **)&backend)) {
+                guint flags = brisk_backend_get_flags(backend);
+                if ((flags & BRISK_BACKEND_SOURCE) != BRISK_BACKEND_SOURCE) {
+                        continue;
+                }
+                if (!brisk_backend_load(backend)) {
+                        g_warning("Failed to load source backend: '%s'", backend_id);
+                }
         }
 
         return G_SOURCE_REMOVE;
@@ -234,6 +225,7 @@ static inline void brisk_menu_window_insert_backend(BriskMenuWindow *self, Brisk
  */
 void brisk_menu_window_init_backends(BriskMenuWindow *self)
 {
+        brisk_menu_window_insert_backend(self, brisk_all_items_backend_new());
         brisk_menu_window_insert_backend(self, brisk_apps_backend_new());
 }
 
