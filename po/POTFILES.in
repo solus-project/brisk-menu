@@ -3,4 +3,6 @@ src/mate-applet/main.c
 src/frontend/category-button.c
 src/frontend/menu-session.c
 src/frontend/menu-window.c
+src/backend/all-items/all-backend.c
+src/backend/all-items/all-section.c
 src/backend/apps/apps-backend.c

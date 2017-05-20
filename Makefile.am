@@ -156,6 +156,10 @@ libbriskbackend_la_SOURCES = \
 	src/backend/item.c \
 	src/backend/section.h \
 	src/backend/section.c \
+	src/backend/all-items/all-backend.h \
+	src/backend/all-items/all-backend.c \
+	src/backend/all-items/all-section.h \
+	src/backend/all-items/all-section.c \
 	src/backend/apps/apps-backend.h \
 	src/backend/apps/apps-backend.c \
 	src/backend/apps/apps-item.h \
