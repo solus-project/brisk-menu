@@ -16,6 +16,7 @@ AM_CPPFLAGS = \
 
 EXTRA_DIST = \
 	autogen.sh \
+	AUTHORS \
 	LICENSE \
 	LICENSE.CC-BY-SA-4.0 \
 	data/brisk.gresource.xml \
