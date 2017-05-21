@@ -61,7 +61,7 @@ More will be added in time as we go along.
 License
 --------
 
-Copyright © 2016-2017 Ikey Doherty, Solus Project.
+Copyright © 2016-2017 Brisk Menu Developers
 
 `brisk-menu` is available under the terms of the `GPL-2.0` license.
 

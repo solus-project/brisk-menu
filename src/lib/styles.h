@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Ikey Doherty <ikey@solus-project.com>
+ * Copyright © 2016-2017 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
