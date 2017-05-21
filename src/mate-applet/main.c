@@ -44,19 +44,31 @@ __attribute__((destructor)) static void brisk_resource_deinit(void)
  */
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 static const GtkActionEntry brisk_actions[] = { {
-    "EditMenus",
-    GTK_STOCK_EDIT,
-    N_("_Edit Menus"),
-    NULL,
-    NULL,
-    G_CALLBACK(brisk_menu_applet_edit_menus),
-} };
+                                                    "EditMenus",
+                                                    GTK_STOCK_EDIT,
+                                                    N_("_Edit Menus"),
+                                                    NULL,
+                                                    NULL,
+                                                    G_CALLBACK(brisk_menu_applet_edit_menus),
+                                                },
+                                                {
+                                                    "ShowAbout",
+                                                    GTK_STOCK_ABOUT,
+                                                    N_("_About"),
+                                                    NULL,
+                                                    NULL,
+                                                    G_CALLBACK(brisk_menu_applet_show_about),
+                                                }
+
+};
 G_GNUC_END_IGNORE_DEPRECATIONS
 
 /**
  * UI definition for our right click menu
  */
-#define BRISK_MENU_XML "<menuitem name=\"Edit Menus\" action=\"EditMenus\" />"
+#define BRISK_MENU_XML                                                                             \
+        "<menuitem name=\"Edit Menus\" action=\"EditMenus\" />"                                    \
+        "<menuitem name=\"About\" action=\"ShowAbout\" />"
 
 static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *id,
                                           __brisk_unused__ gpointer v)

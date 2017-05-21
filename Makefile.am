@@ -134,6 +134,7 @@ libbriskresources_la_LIBADD = \
 	$(GIO_LIBS)
 
 libbriskutil_la_SOURCES = \
+	src/lib/authors.h \
 	src/lib/key-binder.h \
 	src/lib/key-binder.c \
 	src/lib/styles.h \

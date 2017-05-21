@@ -18,6 +18,7 @@ BRISK_BEGIN_PEDANTIC
 #include "applet.h"
 #include "frontend/menu-private.h"
 #include "frontend/menu-window.h"
+#include "lib/authors.h"
 #include "lib/styles.h"
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
@@ -352,6 +353,28 @@ void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuA
                 return;
         }
         g_message("Failed to launch menu editor");
+}
+
+void brisk_menu_applet_show_about(__brisk_unused__ GtkAction *action,
+                                  __brisk_unused__ BriskMenuApplet *applet)
+{
+        static const gchar *copyright_string = "Copyright © 2016-2017 Brisk Menu Developers";
+        gtk_show_about_dialog(NULL,
+                              "authors",
+                              brisk_developers,
+                              "copyright",
+                              copyright_string,
+                              "license-type",
+                              GTK_LICENSE_GPL_2_0,
+                              "logo-icon-name",
+                              "start-here",
+                              "version",
+                              PACKAGE_VERSION,
+                              "website",
+                              PACKAGE_URL,
+                              "website-label",
+                              "Solus Project",
+                              NULL);
 }
 
 /*

@@ -62,6 +62,7 @@ struct _BriskMenuApplet {
 GType brisk_menu_applet_get_type(void);
 
 void brisk_menu_applet_edit_menus(GtkAction *action, BriskMenuApplet *applet);
+void brisk_menu_applet_show_about(GtkAction *action, BriskMenuApplet *applet);
 void brisk_menu_applet_update_position(BriskMenuApplet *applet);
 void brisk_menu_applet_adapt_layout(BriskMenuApplet *applet);
 
