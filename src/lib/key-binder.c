@@ -173,6 +173,7 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                     !self->wait_for_release) {
                         if (mods == binding->mods) {
                                 self->wait_for_release = TRUE;
+                                XAllowEvents(display, AsyncKeyboard, xev->xkey.time);
                         }
                 } else if (xev->xkey.keycode == binding->keycode && self->wait_for_release) {
                         /* capture release within same shortcut sequence */
@@ -180,11 +181,13 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                                 self->wait_for_release = FALSE;
                                 binding->func(event, binding->udata);
                         }
+                        XAllowEvents(display, AsyncKeyboard, xev->xkey.time);
                 } else {
                         /* when breaking the shortcut sequence, send the event up the window
-                         * hierarchy
-                         * in case it's part of a different shortcut sequence (e.g. <Mod4>a) */
-                        XSendEvent(display, (Window)NULL, TRUE, KeyPressMask | KeyReleaseMask, xev);
+                         * hierarchy in case it's part of a different shortcut sequence
+                         * (e.g. <Mod4>a) */
+                        XSendEvent(display, GDK_WINDOW_XID(self->root_window), TRUE, KeyPressMask | KeyReleaseMask, xev);
+                        XAllowEvents(display, ReplayKeyboard, xev->xkey.time);
                         self->wait_for_release = FALSE;
                 }
         }
