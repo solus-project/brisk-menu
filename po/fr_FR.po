@@ -18,6 +18,10 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: ../src/mate-applet/applet.c:76
+msgid "_Edit Menus"
+msgstr "Édit_er les menus"
+
 #. Now add the label
 #: ../src/applet.c:177
 msgid "Menu"
