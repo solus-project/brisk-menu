@@ -1,4 +1,4 @@
-AC_INIT([Brisk Menu], 0.4.0, [ikey@solus-project.com], [brisk-menu], [https://solus-project.com/])
+AC_INIT([Brisk Menu], 0.4.5, [ikey@solus-project.com], [brisk-menu], [https://solus-project.com/])
 AM_INIT_AUTOMAKE([-Wno-portability no-dist-gzip dist-xz foreign subdir-objects 1.9 tar-ustar])
 AC_PROG_CC
 AC_PROG_CC_STDC
