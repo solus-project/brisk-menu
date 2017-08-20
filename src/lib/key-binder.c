@@ -186,7 +186,11 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                         /* when breaking the shortcut sequence, send the event up the window
                          * hierarchy in case it's part of a different shortcut sequence
                          * (e.g. <Mod4>a) */
-                        XSendEvent(display, GDK_WINDOW_XID(self->root_window), TRUE, KeyPressMask | KeyReleaseMask, xev);
+                        XSendEvent(display,
+                                   GDK_WINDOW_XID(self->root_window),
+                                   TRUE,
+                                   KeyPressMask | KeyReleaseMask,
+                                   xev);
                         XAllowEvents(display, ReplayKeyboard, xev->xkey.time);
                         self->wait_for_release = FALSE;
                 }
