@@ -39,7 +39,6 @@ typedef gchar *gstrv;
 DEF_AUTOFREE(gstrv, g_strfreev)
 
 static gboolean brisk_favourites_backend_load(BriskBackend *backend);
-static gboolean brisk_favourites_backend_get_item_pinned(BriskBackend *backend, BriskItem *item);
 static void brisk_favourites_backend_pin_item(GSimpleAction *action, GVariant *parameter,
                                               BriskFavouritesBackend *self);
 static void brisk_favourites_backend_unpin_item(GSimpleAction *action, GVariant *parameter,
@@ -71,7 +70,7 @@ static GSList *brisk_favourites_backend_get_item_actions(BriskBackend *backend, 
         BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(backend);
 
         GSimpleAction *action;
-        if (brisk_favourites_backend_get_item_pinned(backend, item)) {
+        if (brisk_favourites_backend_is_pinned(self, item)) {
                 action = g_simple_action_new(_("Remove from favourites"), NULL);
                 g_signal_connect(action,
                                  "activate",
@@ -166,9 +165,17 @@ static void brisk_favourites_backend_init(__brisk_unused__ BriskFavouritesBacken
         brisk_favourites_backend_changed(self->settings, "favourites", self);
 }
 
-static gboolean brisk_favourites_backend_get_item_pinned(BriskBackend *backend, BriskItem *item)
+/**
+ * brisk_favourites_backend_is_pinned:
+ *
+ * Determine whether the BriskItem is registered as pinned
+ */
+gboolean brisk_favourites_backend_is_pinned(BriskFavouritesBackend *self, BriskItem *item)
 {
-        BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(backend);
+        if (!item || !self) {
+                return FALSE;
+        }
+
         const gchar *id = brisk_item_get_id(item);
         return g_hash_table_contains(self->favourites, id);
 }
