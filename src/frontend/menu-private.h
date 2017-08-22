@@ -94,6 +94,7 @@ struct _BriskMenuWindow {
 
         /* Right-click on entry items */
         GtkWidget *context_menu;
+        GActionGroup *context_group;
 
         /* Current orientation */
         MatePanelAppletOrient orient;

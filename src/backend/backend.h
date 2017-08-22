@@ -37,7 +37,7 @@ struct _BriskBackendClass {
         const gchar *(*get_display_name)(BriskBackend *);
 
         /* Optional method for providing context menu items */
-        GSList *(*get_item_actions)(BriskBackend *, BriskItem *);
+        GMenu *(*get_item_actions)(BriskBackend *, BriskItem *, GActionGroup *);
 
         /* All plugins given an opportunity to load later in life */
         gboolean (*load)(BriskBackend *);
@@ -78,7 +78,7 @@ GType brisk_backend_get_type(void);
 unsigned int brisk_backend_get_flags(BriskBackend *backend);
 const gchar *brisk_backend_get_id(BriskBackend *backend);
 const gchar *brisk_backend_get_display_name(BriskBackend *backend);
-GSList *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item);
+GMenu *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item, GActionGroup *group);
 
 /* Attempt to load for the first time */
 gboolean brisk_backend_load(BriskBackend *backend);

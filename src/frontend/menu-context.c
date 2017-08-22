@@ -19,9 +19,25 @@ BRISK_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
-static void brisk_menu_entry_menu_item_activated(GAction *action, __brisk_unused__ gpointer v)
+#define BRISK_ACTION_GROUP "brisk-context-items"
+
+DEF_AUTOFREE(GMenu, g_object_unref)
+
+/**
+ * brisk_menu_window_context_hide:
+ *
+ * Existing menu has gone bye-bye, so clear it up. Typically this only happens
+ * when the new menu is about to be inserted, and not when the menu is actually
+ * closed.
+ */
+static void brisk_menu_window_context_hide(GtkWidget *attached, GtkMenu *menu)
 {
-        g_action_activate(action, NULL);
+        BriskMenuWindow *self = BRISK_MENU_WINDOW(attached);
+
+        /* Pop any existing action group */
+        gtk_widget_insert_action_group(attached, BRISK_ACTION_GROUP, NULL);
+        g_clear_object(&self->context_group);
+        gtk_widget_destroy(GTK_WIDGET(menu));
 }
 
 /**
@@ -37,41 +53,44 @@ void brisk_menu_window_show_context(BriskMenuWindow *self, BriskItem *item,
         GHashTableIter iter = { 0 };
         __brisk_unused__ gpointer key;
         BriskBackend *backend = NULL;
-        gboolean had_add = FALSE;
+        GSimpleActionGroup *group = NULL;
+        autofree(GMenu) *simple_menu = NULL;
 
-        /* TODO: consider GMenu + action groups ... */
         g_clear_pointer(&self->context_menu, gtk_widget_destroy);
-        self->context_menu = gtk_menu_new();
+
+        group = g_simple_action_group_new();
+        self->context_group = G_ACTION_GROUP(group);
 
         /* For now, iterate all the backends and stick the actions in */
         g_hash_table_iter_init(&iter, self->backends);
         while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&backend)) {
-                autofree(GSList) *actions = brisk_backend_get_item_actions(backend, item);
+                autofree(GMenu) *section = NULL;
 
-                if (!actions) {
+                section = brisk_backend_get_item_actions(backend, item, G_ACTION_GROUP(group));
+                if (!section) {
                         continue;
                 }
 
-                /* Whack a separator in */
-                if (!had_add) {
-                        GtkWidget *separator = gtk_separator_menu_item_new();
-                        gtk_menu_shell_append(GTK_MENU_SHELL(self->context_menu), separator);
-                        gtk_widget_show(GTK_WIDGET(separator));
+                if (!simple_menu) {
+                        simple_menu = g_menu_new();
                 }
 
-                for (GSList *node = actions; node; node = node->next) {
-                        const gchar *name = g_action_get_name(G_ACTION(node->data));
-                        GtkWidget *menu_item = gtk_menu_item_new_with_label(name);
-                        gtk_menu_shell_append(GTK_MENU_SHELL(self->context_menu), menu_item);
-                        gtk_widget_show(GTK_WIDGET(menu_item));
-                        g_signal_connect_swapped(menu_item,
-                                                 "activate",
-                                                 G_CALLBACK(brisk_menu_entry_menu_item_activated),
-                                                 node->data);
-                }
-
-                had_add = TRUE;
+                /* Automatically separated, no titles */
+                g_menu_append_section(simple_menu, NULL, G_MENU_MODEL(section));
         }
+
+        /* No sense displaying an empty menu */
+        if (!simple_menu) {
+                return;
+        }
+
+        /* Push in the action group for invokables */
+        gtk_widget_insert_action_group(GTK_WIDGET(self), BRISK_ACTION_GROUP, G_ACTION_GROUP(group));
+
+        self->context_menu = gtk_menu_new_from_model(G_MENU_MODEL(simple_menu));
+        gtk_menu_attach_to_widget(GTK_MENU(self->context_menu),
+                                  GTK_WIDGET(self),
+                                  brisk_menu_window_context_hide);
 
         /* Show it now */
         gtk_menu_popup(GTK_MENU(self->context_menu),

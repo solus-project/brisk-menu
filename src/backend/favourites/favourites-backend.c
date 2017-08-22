@@ -30,6 +30,11 @@ struct _BriskFavouritesBackend {
         BriskBackend parent;
         GSettings *settings;
         GHashTable *favourites;
+
+        /* Action management */
+        BriskItem *active_item;
+        GSimpleAction *action_remove;
+        GSimpleAction *action_add;
 };
 
 G_DEFINE_TYPE(BriskFavouritesBackend, brisk_favourites_backend, BRISK_TYPE_BACKEND)
@@ -63,32 +68,28 @@ static const gchar *brisk_favourites_backend_get_display_name(
         return _("Favourites");
 }
 
-static GSList *brisk_favourites_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
+static GMenu *brisk_favourites_backend_get_item_actions(BriskBackend *backend, BriskItem *item,
+                                                        GActionGroup *group)
 {
-        GSList *list = NULL;
-
+        GMenu *ret = NULL;
         BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(backend);
 
-        GSimpleAction *action;
+        g_action_map_add_action(G_ACTION_MAP(group), G_ACTION(self->action_add));
+        g_action_map_add_action(G_ACTION_MAP(group), G_ACTION(self->action_remove));
+
+        self->active_item = item;
+
+        ret = g_menu_new();
+
         if (brisk_favourites_backend_is_pinned(self, item)) {
-                action = g_simple_action_new(_("Remove from favourites"), NULL);
-                g_signal_connect(action,
-                                 "activate",
-                                 G_CALLBACK(brisk_favourites_backend_unpin_item),
-                                 self);
+                g_menu_append(ret,
+                              _("Remove from favourites"),
+                              "brisk-context-items.favourites.unpin");
         } else {
-                action = g_simple_action_new(_("Add to favourites"), NULL);
-                g_signal_connect(action,
-                                 "activate",
-                                 G_CALLBACK(brisk_favourites_backend_pin_item),
-                                 self);
+                g_menu_append(ret, _("Add to favourites"), "brisk-context-items.favourites.pin");
         }
 
-        g_object_set_data(G_OBJECT(action), "__brisk_item_id", (gpointer)brisk_item_get_id(item));
-
-        list = g_slist_append(list, action);
-
-        return list;
+        return ret;
 }
 
 /**
@@ -99,6 +100,8 @@ static GSList *brisk_favourites_backend_get_item_actions(BriskBackend *backend, 
 static void brisk_favourites_backend_dispose(GObject *obj)
 {
         BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(obj);
+        g_clear_object(&self->action_add);
+        g_clear_object(&self->action_remove);
         g_clear_object(&self->settings);
         g_clear_pointer(&self->favourites, g_hash_table_unref);
         G_OBJECT_CLASS(brisk_favourites_backend_parent_class)->dispose(obj);
@@ -158,6 +161,17 @@ static void brisk_favourites_backend_init(__brisk_unused__ BriskFavouritesBacken
                          G_CALLBACK(brisk_favourites_backend_changed),
                          self);
 
+        self->action_add = g_simple_action_new("favourites.pin", NULL);
+        g_signal_connect(self->action_add,
+                         "activate",
+                         G_CALLBACK(brisk_favourites_backend_pin_item),
+                         self);
+        self->action_remove = g_simple_action_new("favourites.unpin", NULL);
+        g_signal_connect(self->action_remove,
+                         "activate",
+                         G_CALLBACK(brisk_favourites_backend_unpin_item),
+                         self);
+
         /* Allow O(1) lookup for the "is pinned" logic */
         self->favourites = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 
@@ -192,7 +206,7 @@ static gboolean brisk_favourites_backend_load(BriskBackend *backend)
         return TRUE;
 }
 
-static void brisk_favourites_backend_pin_item(GSimpleAction *action,
+static void brisk_favourites_backend_pin_item(__brisk_unused__ GSimpleAction *action,
                                               __brisk_unused__ GVariant *parameter,
                                               BriskFavouritesBackend *self)
 {
@@ -200,7 +214,12 @@ static void brisk_favourites_backend_pin_item(GSimpleAction *action,
         autofree(gstrv) *new = NULL;
         guint size;
 
-        const gchar *item_id = g_object_get_data(G_OBJECT(action), "__brisk_item_id");
+        if (!self->active_item) {
+                return;
+        }
+
+        const gchar *item_id = brisk_item_get_id(self->active_item);
+        self->active_item = NULL;
 
         old = g_settings_get_strv(self->settings, "favourites");
         /* Increase l+2 for new item and NULL terminator */
@@ -214,7 +233,7 @@ static void brisk_favourites_backend_pin_item(GSimpleAction *action,
         g_settings_set_strv(self->settings, "favourites", (const gchar **)new);
 }
 
-static void brisk_favourites_backend_unpin_item(GSimpleAction *action,
+static void brisk_favourites_backend_unpin_item(__brisk_unused__ GSimpleAction *action,
                                                 __brisk_unused__ GVariant *parameter,
                                                 BriskFavouritesBackend *self)
 {
@@ -222,7 +241,12 @@ static void brisk_favourites_backend_unpin_item(GSimpleAction *action,
         autofree(gstrv) *old = NULL;
         gint i;
 
-        const gchar *item_id = g_object_get_data(G_OBJECT(action), "__brisk_item_id");
+        if (!self->active_item) {
+                return;
+        }
+
+        const gchar *item_id = brisk_item_get_id(self->active_item);
+        self->active_item = NULL;
 
         old = g_settings_get_strv(self->settings, "favourites");
         array = g_array_new(TRUE, TRUE, sizeof(gchar *));

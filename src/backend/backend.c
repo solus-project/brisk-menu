@@ -310,7 +310,7 @@ const gchar *brisk_backend_get_display_name(BriskBackend *backend)
         return klazz->get_display_name(backend);
 }
 
-GSList *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
+GMenu *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item, GActionGroup *group)
 {
         g_assert(backend != NULL);
         g_assert(item != NULL);
@@ -318,7 +318,7 @@ GSList *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
         if (!klazz->get_item_actions) {
                 return NULL;
         }
-        return klazz->get_item_actions(backend, item);
+        return klazz->get_item_actions(backend, item, group);
 }
 
 /**

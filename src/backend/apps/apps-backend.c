@@ -57,6 +57,7 @@ G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 
 typedef gchar *gstrv;
 DEF_AUTOFREE(gstrv, g_strfreev)
+DEF_AUTOFREE(GSimpleAction, g_object_unref)
 
 static gboolean brisk_apps_backend_load(BriskBackend *backend);
 static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const gchar *id);
@@ -115,17 +116,35 @@ static const gchar *brisk_apps_backend_get_display_name(__brisk_unused__ BriskBa
         return _("Applications");
 }
 
-static GSList *brisk_apps_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
+static GMenu *brisk_apps_backend_get_item_actions(BriskBackend *backend, BriskItem *item,
+                                                  GActionGroup *group)
 {
-        GSList *list = NULL;
+        GMenu *ret = NULL;
+        GDesktopAppInfo *info = NULL;
 
-        GDesktopAppInfo *info = g_desktop_app_info_new(brisk_item_get_id(item));
+        ret = g_menu_new();
+
+        info = g_desktop_app_info_new(brisk_item_get_id(item));
         const gchar *const *actions = g_desktop_app_info_list_actions(info);
 
         for (guint i = 0; i < g_strv_length((gstrv *)actions); i++) {
-                GSimpleAction *action =
-                    g_simple_action_new(g_desktop_app_info_get_action_name(info, actions[i]), NULL);
-                g_object_set_data_full(G_OBJECT(action), "__aname", (gpointer)actions[i], g_free);
+                autofree(gchar) *action_id = NULL;
+                autofree(gchar) *menu_id = NULL;
+                const gchar *action_name = NULL;
+                autofree(GSimpleAction) *action = NULL;
+
+                action_id = g_strdup_printf("apps.action-%d", i);
+                menu_id = g_strdup_printf("brisk-context-items.%s", action_id);
+                action_name = g_desktop_app_info_get_action_name(info, actions[i]);
+
+                /* Make the action now */
+                action = g_simple_action_new(action_id, NULL);
+                g_action_map_add_action(G_ACTION_MAP(group), G_ACTION(action));
+
+                g_object_set_data_full(G_OBJECT(action),
+                                       "__aname",
+                                       (gpointer)g_strdup(actions[i]),
+                                       g_free);
                 g_object_set_data_full(G_OBJECT(action),
                                        "__appinfo",
                                        (gpointer)info,
@@ -134,10 +153,12 @@ static GSList *brisk_apps_backend_get_item_actions(BriskBackend *backend, BriskI
                                  "activate",
                                  G_CALLBACK(brisk_apps_backend_launch_action),
                                  backend);
-                list = g_slist_append(list, action);
+
+                /* whack it in the menu */
+                g_menu_append(ret, action_name, menu_id);
         }
 
-        return list;
+        return ret;
 }
 
 /**
