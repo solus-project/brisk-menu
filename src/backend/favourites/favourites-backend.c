@@ -206,8 +206,7 @@ static void brisk_favourites_backend_pin_item(GSimpleAction *action,
         /* Increase l+2 for new item and NULL terminator */
         size = g_strv_length(old) + 2;
 
-        /* space for existing NULL included already */
-        new = g_realloc_n(old, size - 1, sizeof(gchar *));
+        new = g_realloc_n(old, size, sizeof(gchar *));
 
         new[size - 2] = g_strdup(item_id);
         new[size - 1] = NULL;
