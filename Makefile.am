@@ -191,6 +191,7 @@ libbriskui_la_SOURCES = \
 	src/frontend/entry-button.c \
 	src/frontend/launcher.h \
 	src/frontend/launcher.c \
+	src/frontend/menu-context.c \
 	src/frontend/menu-grabs.c \
 	src/frontend/menu-keyboard.c \
 	src/frontend/menu-loader.c \

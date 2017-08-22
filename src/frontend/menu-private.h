@@ -12,6 +12,7 @@
 #pragma once
 
 #include "backend/backend.h"
+#include "entry-button.h"
 #include "launcher.h"
 #include "libsaver-glue.h"
 #include "libsession-glue.h"
@@ -128,6 +129,11 @@ gboolean brisk_menu_window_setup_session(BriskMenuWindow *self);
 void brisk_menu_window_init_settings(BriskMenuWindow *self);
 void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos);
 void brisk_menu_window_pump_settings(BriskMenuWindow *self);
+
+/* Context menu */
+void brisk_menu_window_show_context(BriskMenuWindow *self, BriskItem *item,
+                                    BriskMenuEntryButton *button);
+void brisk_menu_window_configure_context(BriskMenuWindow *self);
 
 DEF_AUTOFREE(GtkWidget, gtk_widget_destroy)
 DEF_AUTOFREE(GSList, g_slist_free)

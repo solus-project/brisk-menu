@@ -41,6 +41,10 @@ static void brisk_menu_window_add_item(BriskMenuWindow *self, BriskItem *item,
         const gchar *item_id = brisk_item_get_id(item);
 
         button = brisk_menu_entry_button_new(self->launcher, item);
+        g_signal_connect_swapped(button,
+                                 "show-context-menu",
+                                 G_CALLBACK(brisk_menu_window_show_context),
+                                 self);
         gtk_container_add(GTK_CONTAINER(self->apps), button);
         gtk_widget_show_all(button);
 
