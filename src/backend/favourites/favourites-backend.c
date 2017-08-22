@@ -29,6 +29,7 @@ struct _BriskFavouritesBackendClass {
 struct _BriskFavouritesBackend {
         BriskBackend parent;
         GSettings *settings;
+        GHashTable *favourites;
 };
 
 G_DEFINE_TYPE(BriskFavouritesBackend, brisk_favourites_backend, BRISK_TYPE_BACKEND)
@@ -100,6 +101,7 @@ static void brisk_favourites_backend_dispose(GObject *obj)
 {
         BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(obj);
         g_clear_object(&self->settings);
+        g_clear_pointer(&self->favourites, g_hash_table_unref);
         G_OBJECT_CLASS(brisk_favourites_backend_parent_class)->dispose(obj);
 }
 
@@ -125,6 +127,26 @@ static void brisk_favourites_backend_class_init(BriskFavouritesBackendClass *kla
 }
 
 /**
+ * Handle changes to the favourites schema. We'll reset our table and restore the
+ * entries and retain the order within the list, which will come in useful in
+ * future when we want to enable reordering of entries.
+ */
+static void brisk_favourites_backend_changed(GSettings *settings, const gchar *key,
+                                             BriskFavouritesBackend *self)
+{
+        autofree(gstrv) *favs = g_settings_get_strv(settings, key);
+        g_hash_table_remove_all(self->favourites);
+
+        if (!favs) {
+                return;
+        }
+
+        for (guint i = 0; i < g_strv_length(favs); i++) {
+                g_hash_table_insert(self->favourites, g_strdup(favs[i]), GUINT_TO_POINTER(i));
+        }
+}
+
+/**
  * brisk_favourites_backend_init:
  *
  * Handle construction of the BriskFavouritesBackend
@@ -132,20 +154,23 @@ static void brisk_favourites_backend_class_init(BriskFavouritesBackendClass *kla
 static void brisk_favourites_backend_init(__brisk_unused__ BriskFavouritesBackend *self)
 {
         self->settings = g_settings_new("com.solus-project.brisk-menu");
+        g_signal_connect(self->settings,
+                         "changed::favourites",
+                         G_CALLBACK(brisk_favourites_backend_changed),
+                         self);
+
+        /* Allow O(1) lookup for the "is pinned" logic */
+        self->favourites = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
+
+        /* Force load of the backend pinned items */
+        brisk_favourites_backend_changed(self->settings, "favourites", self);
 }
 
 static gboolean brisk_favourites_backend_get_item_pinned(BriskBackend *backend, BriskItem *item)
 {
-        autofree(gstrv) *favourites = NULL;
-
         BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(backend);
-        favourites = g_settings_get_strv(self->settings, "favourites");
-
-        if (!favourites) {
-                return FALSE;
-        }
-
-        return g_strv_contains((const gchar *const *)favourites, brisk_item_get_id(item));
+        const gchar *id = brisk_item_get_id(item);
+        return g_hash_table_contains(self->favourites, id);
 }
 
 /**
@@ -170,12 +195,11 @@ static void brisk_favourites_backend_pin_item(GSimpleAction *action,
         const gchar *item_id = g_object_get_data(G_OBJECT(action), "__brisk_item_id");
 
         old = g_settings_get_strv(self->settings, "favourites");
-        size = g_strv_length(old);
+        /* Increase l+2 for new item and NULL terminator */
+        size = g_strv_length(old) + 2;
 
-        size += 1; /* appended value */
-        size += 1; /* NULL */
-
-        new = g_realloc_n(old, size, sizeof(gchar *));
+        /* space for existing NULL included already */
+        new = g_realloc_n(old, size - 1, sizeof(gchar *));
 
         new[size - 2] = g_strdup(item_id);
         new[size - 1] = NULL;
