@@ -26,7 +26,6 @@ static void brisk_menu_entry_drag_end(GtkWidget *widget, GdkDragContext *context
 static void brisk_menu_entry_drag_data(GtkWidget *widget, GdkDragContext *context,
                                        GtkSelectionData *data, guint info, guint time);
 static gboolean brisk_menu_entry_button_release_event(GtkWidget *wid, GdkEventButton *event);
-static void brisk_menu_entry_menu_item_activated(GAction *action, __brisk_unused__ gpointer v);
 
 /**
  * BriskMenuEntryButton is the toplevel window type used within the applet.
@@ -37,7 +36,6 @@ struct _BriskMenuEntryButton {
         GtkWidget *image;
         BriskItem *item;
         BriskMenuLauncher *launcher;
-        GtkWidget *menu;
 };
 
 /**
@@ -169,7 +167,7 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
         wid_class->button_release_event = brisk_menu_entry_button_release_event;
 
         /**
-         * BriskMenuEntryButton::show-context-menu
+         * BriskEntryButton::show-context-menu
          * @button: The button that created the ievent
          * @item: The menu to show a menu for
          *
@@ -235,8 +233,6 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
         G_GNUC_BEGIN_IGNORE_DEPRECATIONS
         gtk_misc_set_alignment(GTK_MISC(self->label), 0.0, 0.5);
         G_GNUC_END_IGNORE_DEPRECATIONS
-
-        self->menu = gtk_menu_new();
 
         /* Button specific fixes */
         gtk_button_set_relief(GTK_BUTTON(self), GTK_RELIEF_NONE);
@@ -320,82 +316,29 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, __brisk_unused__ GdkDr
         gtk_selection_data_set_uris(data, (gchar **)uris);
 }
 
-static void build_menu(__brisk_unused__ gpointer key, gpointer value, gpointer user_data)
-{
-        BriskBackend *backend = BRISK_BACKEND(value);
-        BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(user_data);
-        autofree(GSList) *actions = brisk_backend_get_item_actions(backend, self->item);
-
-        if (actions == NULL) {
-                return;
-        }
-
-        if (g_list_length(gtk_container_get_children(GTK_CONTAINER(self->menu))) != 0 &&
-            g_slist_length(actions) != 0) {
-                GtkWidget *separator = gtk_separator_menu_item_new();
-                gtk_menu_shell_append(GTK_MENU_SHELL(self->menu), separator);
-                gtk_widget_show(GTK_WIDGET(separator));
-        }
-
-        GSList *node = NULL;
-
-        for (node = actions; node; node = node->next) {
-                GtkWidget *menu_item =
-                    gtk_menu_item_new_with_label(g_action_get_name(G_ACTION(node->data)));
-                gtk_menu_shell_append(GTK_MENU_SHELL(self->menu), menu_item);
-                gtk_widget_show(GTK_WIDGET(menu_item));
-                g_signal_connect_swapped(menu_item,
-                                         "activate",
-                                         G_CALLBACK(brisk_menu_entry_menu_item_activated),
-                                         node->data);
-        }
-}
-
 static gboolean brisk_menu_entry_button_release_event(GtkWidget *widget,
                                                       GdkEventButton *event_button)
 {
         BriskMenuEntryButton *self = BRISK_MENU_ENTRY_BUTTON(widget);
 
-        if (event_button->button == GDK_BUTTON_PRIMARY) {
+        switch (event_button->button) {
+        case GDK_BUTTON_PRIMARY:
+                /* Left click, primary launch action */
                 brisk_menu_entry_button_launch(self);
-                return GTK_WIDGET_CLASS(brisk_menu_entry_button_parent_class)
-                    ->button_press_event(widget, event_button);
+                break;
+        case GDK_BUTTON_SECONDARY:
+                /* Right click, ask for a context menu */
+                g_signal_emit(self,
+                              entry_button_signals[ENTRY_BUTTON_SIGNAL_CONTEXT_MENU],
+                              0,
+                              self->item);
+                break;
+        default:
+                break;
         }
-
-        if (event_button->button != GDK_BUTTON_SECONDARY) {
-                return GTK_WIDGET_CLASS(brisk_menu_entry_button_parent_class)
-                    ->button_press_event(widget, event_button);
-        }
-
-        GList *kids = NULL, *node = NULL;
-        kids = gtk_container_get_children(GTK_CONTAINER(self->menu));
-        for (node = kids; node; node = node->next) {
-                GtkWidget *row = node->data;
-                gtk_widget_destroy(row);
-        }
-        g_list_free(kids);
-
-        BriskMenuWindow *window = BRISK_MENU_WINDOW(gtk_widget_get_toplevel(widget));
-        g_hash_table_foreach(window->backends, build_menu, widget);
-
-        /* TODO: Move all menu functionality out of this class and just fire signal */
-        g_signal_emit(self, entry_button_signals[ENTRY_BUTTON_SIGNAL_CONTEXT_MENU], 0, self->item);
-
-        gtk_menu_popup(GTK_MENU(self->menu),
-                       NULL,
-                       NULL,
-                       NULL,
-                       NULL,
-                       event_button->button,
-                       event_button->time);
 
         return GTK_WIDGET_CLASS(brisk_menu_entry_button_parent_class)
             ->button_press_event(widget, event_button);
-}
-
-static void brisk_menu_entry_menu_item_activated(GAction *action, __brisk_unused__ gpointer v)
-{
-        g_action_activate(action, NULL);
 }
 
 void brisk_menu_entry_button_launch(BriskMenuEntryButton *self)

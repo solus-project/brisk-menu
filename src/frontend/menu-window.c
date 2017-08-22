@@ -68,6 +68,7 @@ static void brisk_menu_window_dispose(GObject *obj)
         g_clear_pointer(&self->item_store, g_hash_table_unref);
         g_clear_pointer(&self->section_boxes, g_hash_table_unref);
         g_clear_pointer(&self->backends, g_hash_table_unref);
+        g_clear_pointer(&self->context_menu, gtk_widget_destroy);
 
         G_OBJECT_CLASS(brisk_menu_window_parent_class)->dispose(obj);
 }

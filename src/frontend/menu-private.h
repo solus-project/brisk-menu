@@ -92,6 +92,9 @@ struct _BriskMenuWindow {
         /* Acknowledge a single ID "contains" map */
         GHashTable *item_store;
 
+        /* Right-click on entry items */
+        GtkWidget *context_menu;
+
         /* Current orientation */
         MatePanelAppletOrient orient;
 };
