@@ -21,10 +21,6 @@ BRISK_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
-struct _BriskMenuEntryButtonClass {
-        GtkButtonClass parent_class;
-};
-
 static void brisk_menu_entry_drag_begin(GtkWidget *widget, GdkDragContext *context);
 static void brisk_menu_entry_drag_end(GtkWidget *widget, GdkDragContext *context);
 static void brisk_menu_entry_drag_data(GtkWidget *widget, GdkDragContext *context,
@@ -43,6 +39,13 @@ struct _BriskMenuEntryButton {
         BriskMenuLauncher *launcher;
         GtkWidget *menu;
 };
+
+/**
+ * IDs for our signals
+ */
+enum { ENTRY_BUTTON_SIGNAL_CONTEXT_MENU = 0, N_SIGNALS };
+
+static guint entry_button_signals[N_SIGNALS] = { 0 };
 
 G_DEFINE_TYPE(BriskMenuEntryButton, brisk_menu_entry_button, GTK_TYPE_BUTTON)
 
@@ -164,6 +167,25 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
         wid_class->drag_begin = brisk_menu_entry_drag_begin;
         wid_class->drag_end = brisk_menu_entry_drag_end;
         wid_class->button_release_event = brisk_menu_entry_button_release_event;
+
+        /**
+         * BriskMenuEntryButton::show-context-menu
+         * @button: The button that created the ievent
+         * @item: The menu to show a menu for
+         *
+         * Used to notify the frontend that we need an action menu displayed
+         */
+        entry_button_signals[ENTRY_BUTTON_SIGNAL_CONTEXT_MENU] =
+            g_signal_new("show-context-menu",
+                         BRISK_TYPE_MENU_ENTRY_BUTTON,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskMenuEntryButtonClass, show_context_menu),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         BRISK_TYPE_ITEM);
 
         obj_properties[PROP_ITEM] = g_param_spec_pointer("item",
                                                          "The BriskItem",
@@ -355,6 +377,9 @@ static gboolean brisk_menu_entry_button_release_event(GtkWidget *widget,
 
         BriskMenuWindow *window = BRISK_MENU_WINDOW(gtk_widget_get_toplevel(widget));
         g_hash_table_foreach(window->backends, build_menu, widget);
+
+        /* TODO: Move all menu functionality out of this class and just fire signal */
+        g_signal_emit(self, entry_button_signals[ENTRY_BUTTON_SIGNAL_CONTEXT_MENU], 0, self->item);
 
         gtk_menu_popup(GTK_MENU(self->menu),
                        NULL,

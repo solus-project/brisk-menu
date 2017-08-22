@@ -22,6 +22,11 @@ G_BEGIN_DECLS
 typedef struct _BriskMenuEntryButton BriskMenuEntryButton;
 typedef struct _BriskMenuEntryButtonClass BriskMenuEntryButtonClass;
 
+struct _BriskMenuEntryButtonClass {
+        GtkButtonClass parent_class;
+        void (*show_context_menu)(BriskMenuEntryButton *button, BriskItem *item);
+};
+
 #define BRISK_TYPE_MENU_ENTRY_BUTTON brisk_menu_entry_button_get_type()
 #define BRISK_MENU_ENTRY_BUTTON(o)                                                                 \
         (G_TYPE_CHECK_INSTANCE_CAST((o), BRISK_TYPE_MENU_ENTRY_BUTTON, BriskMenuEntryButton))
