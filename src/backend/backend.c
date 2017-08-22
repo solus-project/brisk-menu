@@ -315,7 +315,9 @@ GSList *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
         g_assert(backend != NULL);
         g_assert(item != NULL);
         BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
-        g_return_val_if_fail(klazz->get_item_actions != NULL, NULL);
+        if (!klazz->get_item_actions) {
+                return NULL;
+        }
         return klazz->get_item_actions(backend, item);
 }
 
