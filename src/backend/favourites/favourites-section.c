@@ -27,15 +27,10 @@ struct _BriskFavouritesSectionClass {
 struct _BriskFavouritesSection {
         BriskSection parent;
         GIcon *icon; /**<Display icon */
-        GSettings *settings;
         BriskFavouritesBackend *backend;
 };
 
 G_DEFINE_TYPE(BriskFavouritesSection, brisk_favourites_section, BRISK_TYPE_SECTION)
-
-/* Helper for gsettings */
-typedef gchar *gstrv;
-DEF_AUTOFREE(gstrv, g_strfreev)
 
 enum { PROP_BACKEND = 1, N_PROPS };
 
@@ -92,7 +87,6 @@ static void brisk_favourites_section_dispose(GObject *obj)
         BriskFavouritesSection *self = BRISK_FAVOURITES_SECTION(obj);
 
         g_clear_object(&self->icon);
-        g_clear_object(&self->settings);
 
         G_OBJECT_CLASS(brisk_favourites_section_parent_class)->dispose(obj);
 }
@@ -134,21 +128,12 @@ static void brisk_favourites_section_class_init(BriskFavouritesSectionClass *kla
 static void brisk_favourites_section_init(BriskFavouritesSection *self)
 {
         self->icon = g_themed_icon_new_with_default_fallbacks("emblem-favorite");
-        self->settings = g_settings_new("com.solus-project.brisk-menu");
 }
 
 static gboolean brisk_favourites_section_get_item_is_pinned(BriskSection *section, BriskItem *item)
 {
-        autofree(gstrv) *favourites = NULL;
-
         BriskFavouritesSection *self = BRISK_FAVOURITES_SECTION(section);
-        favourites = g_settings_get_strv(self->settings, "favourites");
-
-        if (!favourites) {
-                return FALSE;
-        }
-
-        return g_strv_contains((const gchar *const *)favourites, brisk_item_get_id(item));
+        return brisk_favourites_backend_is_pinned(self->backend, item);
 }
 
 static const gchar *brisk_favourites_section_get_id(__brisk_unused__ BriskSection *section)
