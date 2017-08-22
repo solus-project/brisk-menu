@@ -23,11 +23,14 @@ BRISK_BEGIN_PEDANTIC
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libnotify/notify.h>
 BRISK_END_PEDANTIC
 
 G_DEFINE_TYPE(BriskMenuApplet, brisk_menu_applet, PANEL_TYPE_APPLET)
 
 static gint icon_sizes[] = { 16, 24, 32, 48, 64, 96, 128, 256 };
+
+DEF_AUTOFREE(NotifyNotification, g_object_unref)
 
 /**
  * Handle showing of the menu
@@ -41,6 +44,7 @@ static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size);
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
 void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key);
+static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body);
 
 /**
  * Handle hiding the menu when it comes to the shortcut key only.
@@ -352,7 +356,27 @@ void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuA
                 brisk_menu_launcher_start(launcher, GTK_WIDGET(self), app);
                 return;
         }
-        g_message("Failed to launch menu editor");
+
+        brisk_menu_applet_notify_fail(_("Failed to launch menu editor"),
+                                      _("Please install 'menulibre' or 'mozo' to edit menus"));
+}
+
+/**
+ * brisk_menu_applet_notify_fail:
+ *
+ * Notify the user that an action has failed via a passive notification
+ */
+static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body)
+{
+        autofree(NotifyNotification) *notif = NULL;
+        autofree(GError) *error = NULL;
+
+        notif = notify_notification_new(title, body, "dialog-error-symbolic");
+        notify_notification_set_timeout(notif, 4000);
+        if (!notify_notification_show(notif, &error)) {
+                g_message("Failed to send notification: %s", error->message);
+                fprintf(stderr, "\tTitle: %s\n\tBody: %s\n", title, body);
+        }
 }
 
 void brisk_menu_applet_show_about(__brisk_unused__ GtkAction *action,

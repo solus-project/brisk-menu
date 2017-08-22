@@ -18,10 +18,13 @@ BRISK_BEGIN_PEDANTIC
 #include "applet.h"
 #include "brisk-resources.h"
 #include <glib/gi18n.h>
+#include <libnotify/notify.h>
 #include <mate-panel-applet.h>
 BRISK_END_PEDANTIC
 
 DEF_AUTOFREE(GtkActionGroup, g_object_unref)
+
+static gboolean notify_had_init = FALSE;
 
 /**
  * We have no .ctor in the .a file - so it doesn't link
@@ -83,6 +86,11 @@ static gboolean brisk_menu_applet_factory(MatePanelApplet *applet, const gchar *
         home = g_get_home_dir();
         if (home) {
                 ret = chdir(home);
+        }
+
+        if (!notify_had_init) {
+                notify_init(_("Brisk Menu Launcher"));
+                notify_had_init = TRUE;
         }
 
         /* Setup the action group and hand it to the mate panel */

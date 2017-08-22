@@ -33,6 +33,7 @@ $2=`(test "x$prefix" = xNONE && prefix="$ac_default_prefix"
 m4_define([gtk_required_version], [3.18.0])
 m4_define([glib_required_version], [2.44.0])
 m4_define([mate_required_version], [1.16.0])
+m4_define([notify_required_version], [0.7.0])
 
 PKG_CHECK_MODULES(GTK,
                  [
@@ -63,6 +64,7 @@ PKG_CHECK_MODULES(MENU,
 PKG_CHECK_MODULES(APPLET,
                  [
                    libmatepanelapplet-4.0 >= mate_required_version
+                   libnotify >= notify_required_version
                  ]
 )
 
