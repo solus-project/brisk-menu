@@ -36,8 +36,8 @@ static void brisk_menu_window_context_hide(GtkWidget *attached, GtkMenu *menu)
 
         /* Pop any existing action group */
         gtk_widget_insert_action_group(attached, BRISK_ACTION_GROUP, NULL);
-        g_clear_object(&self->context_group);
         gtk_widget_destroy(GTK_WIDGET(menu));
+        self->context_group = NULL;
 }
 
 /**
