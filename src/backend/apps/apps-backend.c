@@ -22,8 +22,6 @@ BRISK_BEGIN_PEDANTIC
 #include <matemenu-tree.h>
 BRISK_END_PEDANTIC
 
-DEF_AUTOFREE(GDesktopAppInfo, g_object_unref)
-
 /**
  * Main application menu ID
  */
@@ -57,6 +55,9 @@ struct _BriskAppsBackend {
 
 G_DEFINE_TYPE(BriskAppsBackend, brisk_apps_backend, BRISK_TYPE_BACKEND)
 
+typedef gchar *gstrv;
+DEF_AUTOFREE(gstrv, g_strfreev)
+
 static gboolean brisk_apps_backend_load(BriskBackend *backend);
 static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const gchar *id);
 static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
@@ -64,12 +65,15 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                                             MateMenuTreeDirectory *root);
 static void brisk_apps_backend_changed(BriskAppsBackend *backend, gpointer v);
 static gboolean brisk_apps_backend_reload(BriskAppsBackend *backend);
+static void brisk_apps_backend_launch_action(GSimpleAction *action, GVariant *parameter,
+                                             BriskBackend *backend);
 
 DEF_AUTOFREE(gchar, g_free)
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
 DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
 DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
+DEF_AUTOFREE(GDesktopAppInfo, g_object_unref)
 
 /**
  * Due to a glib weirdness we must fully invalidate the monitor's cache
@@ -111,6 +115,31 @@ static const gchar *brisk_apps_backend_get_display_name(__brisk_unused__ BriskBa
         return _("Applications");
 }
 
+static GSList *brisk_apps_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
+{
+        GSList *list = NULL;
+
+        GDesktopAppInfo *info = g_desktop_app_info_new(brisk_item_get_id(item));
+        const gchar *const *actions = g_desktop_app_info_list_actions(info);
+
+        for (guint i = 0; i < g_strv_length((gstrv *)actions); i++) {
+                GSimpleAction *action =
+                    g_simple_action_new(g_desktop_app_info_get_action_name(info, actions[i]), NULL);
+                g_object_set_data_full(G_OBJECT(action), "__aname", (gpointer)actions[i], g_free);
+                g_object_set_data_full(G_OBJECT(action),
+                                       "__appinfo",
+                                       (gpointer)info,
+                                       g_object_unref);
+                g_signal_connect(action,
+                                 "activate",
+                                 G_CALLBACK(brisk_apps_backend_launch_action),
+                                 backend);
+                list = g_slist_append(list, action);
+        }
+
+        return list;
+}
+
 /**
  * brisk_apps_backend_dispose:
  *
@@ -141,6 +170,7 @@ static void brisk_apps_backend_class_init(BriskAppsBackendClass *klazz)
         b_class->get_id = brisk_apps_backend_get_id;
         b_class->get_display_name = brisk_apps_backend_get_display_name;
         b_class->load = brisk_apps_backend_load;
+        b_class->get_item_actions = brisk_apps_backend_get_item_actions;
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_apps_backend_dispose;
@@ -251,6 +281,23 @@ static gboolean brisk_apps_backend_reload(BriskAppsBackend *self)
         brisk_apps_backend_reset_monitor();
         return G_SOURCE_REMOVE;
 }
+
+/**
+ * brisk_apps_backend_launch_action:
+ *
+ * Launch a GDesktopAppInfo action.
+ */
+static void brisk_apps_backend_launch_action(GSimpleAction *action,
+                                             __brisk_unused__ GVariant *parameter,
+                                             BriskBackend *backend)
+{
+        autofree(GDesktopAppInfo) *app_info = g_object_get_data(G_OBJECT(action), "__appinfo");
+        const gchar *action_name = g_object_get_data(G_OBJECT(action), "__aname");
+        g_assert(app_info != NULL);
+        brisk_backend_hide_menu(backend);
+        g_desktop_app_info_launch_action(app_info, action_name, NULL);
+}
+
 /**
  * brisk_apps_backend_load:
  *

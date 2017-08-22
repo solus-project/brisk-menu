@@ -11,6 +11,11 @@
       <summary>Pinned Shortcuts</summary>
       <description>These shortcuts will appear in the Brisk Menu sidepane.</description>
     </key>
+    <key type="as" name="favourites">
+      <default>['']</default>
+      <summary>Favourites</summary>
+      <description>Favourite items</description>
+    </key>
     <key type="b" name="dark-theme">
       <default>false</default>
       <summary>Use dark theme variant for Brisk Menu</summary>

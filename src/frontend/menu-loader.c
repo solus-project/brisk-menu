@@ -16,11 +16,11 @@
 BRISK_BEGIN_PEDANTIC
 #include "backend/all-items/all-backend.h"
 #include "backend/apps/apps-backend.h"
+#include "backend/favourites/favourites-backend.h"
 #include "category-button.h"
 #include "entry-button.h"
 #include "menu-private.h"
 #include <gtk/gtk.h>
-
 BRISK_END_PEDANTIC
 
 /**
@@ -98,6 +98,23 @@ static void brisk_menu_window_remove_category(GtkWidget *widget, BriskMenuWindow
 
         g_hash_table_remove(self->item_store, section_id);
         gtk_widget_destroy(widget);
+}
+
+/**
+ * A backend needs us to invalidate the filters
+ */
+static void brisk_menu_window_invalidate_filter(BriskMenuWindow *self,
+                                                __brisk_unused__ BriskBackend *backend)
+{
+        gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
+}
+
+/**
+ * A backend needs us to hide the window
+ */
+static void brisk_menu_window_hide(BriskMenuWindow *self, __brisk_unused__ BriskBackend *backend)
+{
+        gtk_widget_hide(GTK_WIDGET(self));
 }
 
 /**
@@ -198,6 +215,11 @@ static void brisk_menu_window_init_backend(BriskMenuWindow *self, BriskBackend *
                                  "section-added",
                                  G_CALLBACK(brisk_menu_window_add_section),
                                  self);
+        g_signal_connect_swapped(backend,
+                                 "invalidate-filter",
+                                 G_CALLBACK(brisk_menu_window_invalidate_filter),
+                                 self);
+        g_signal_connect_swapped(backend, "hide-menu", G_CALLBACK(brisk_menu_window_hide), self);
         g_signal_connect_swapped(backend, "reset", G_CALLBACK(brisk_menu_window_reset), self);
 
         box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -223,12 +245,11 @@ static inline void brisk_menu_window_insert_backend(BriskMenuWindow *self, Brisk
 
 /**
  * Bring up the initial backends
- *
- * @note Currently we only have AppsBackend
  */
 void brisk_menu_window_init_backends(BriskMenuWindow *self)
 {
         brisk_menu_window_insert_backend(self, brisk_all_items_backend_new());
+        brisk_menu_window_insert_backend(self, brisk_favourites_backend_new());
         brisk_menu_window_insert_backend(self, brisk_apps_backend_new());
 }
 

@@ -24,6 +24,8 @@ enum { BACKEND_SIGNAL_ITEM_ADDED = 0,
        BACKEND_SIGNAL_ITEM_REMOVED,
        BACKEND_SIGNAL_SECTION_ADDED,
        BACKEND_SIGNAL_SECTION_REMOVED,
+       BACKEND_SIGNAL_INVALIDATE_FILTER,
+       BACKEND_SIGNAL_HIDE_MENU,
        BACKEND_SIGNAL_RESET,
        N_SIGNALS };
 
@@ -130,6 +132,40 @@ static void brisk_backend_class_init(BriskBackendClass *klazz)
                          G_TYPE_STRING);
 
         /**
+         * BriskBackend::invalidate-filter
+         * @backend: The backend that requested the invalidation
+         *
+         * Used to notify the frontend that the app list filter should be invalidated
+         */
+        backend_signals[BACKEND_SIGNAL_INVALIDATE_FILTER] =
+            g_signal_new("invalidate-filter",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, invalidate_filter),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         0);
+
+        /**
+         * BriskBackend::hide-menu
+         * @backend: The backend that requested the hiding
+         *
+         * Used to notify the frontend that the menu window should be hidden
+         */
+        backend_signals[BACKEND_SIGNAL_HIDE_MENU] =
+            g_signal_new("hide-menu",
+                         BRISK_TYPE_BACKEND,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(BriskBackendClass, invalidate_filter),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         0);
+
+        /**
          * BriskBackend::reset
          * @backend: The backend that was reset
          *
@@ -201,6 +237,28 @@ void brisk_backend_section_removed(BriskBackend *self, const gchar *id)
 }
 
 /**
+ * brisk_backend_invalidate_filter:
+ *
+ * Implementations may use this method to emit the signal invalidate-filter
+ */
+void brisk_backend_invalidate_filter(BriskBackend *self)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_INVALIDATE_FILTER], 0);
+}
+
+/**
+ * brisk_backend_hide_menu:
+ *
+ * Implementations may use this method to emit the signal hide-menu
+ */
+void brisk_backend_hide_menu(BriskBackend *self)
+{
+        g_assert(self != NULL);
+        g_signal_emit(self, backend_signals[BACKEND_SIGNAL_HIDE_MENU], 0);
+}
+
+/**
  * brisk_backend_reset:
  *
  * Implementations may use this method to emit the signal reset
@@ -252,49 +310,13 @@ const gchar *brisk_backend_get_display_name(BriskBackend *backend)
         return klazz->get_display_name(backend);
 }
 
-/* Favourites specific functionality */
-
-/**
- * brisk_backend_pin_item:
- *
- * Attempt to pin the selected item in the backend for prioritising
- * in access and display
- */
-gboolean brisk_backend_pin_item(BriskBackend *backend, BriskItem *item)
+GSList *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item)
 {
         g_assert(backend != NULL);
+        g_assert(item != NULL);
         BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
-
-        g_return_val_if_fail(klazz->pin_item != NULL, FALSE);
-        return klazz->pin_item(backend, item);
-}
-
-/**
- * brisk_backend_is_item_pinned:
- *
- * Determine if the given item was previously pinned or not
- */
-gboolean brisk_backend_is_item_pinned(BriskBackend *backend, BriskItem *item)
-{
-        g_assert(backend != NULL);
-        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
-
-        g_return_val_if_fail(klazz->is_item_pinned != NULL, FALSE);
-        return klazz->is_item_pinned(backend, item);
-}
-
-/**
- * brisk_backend_unpin_item:
- *
- * Unpin a previously pinned item.
- */
-gboolean brisk_backend_unpin_item(BriskBackend *backend, BriskItem *item)
-{
-        g_assert(backend != NULL);
-        BriskBackendClass *klazz = BRISK_BACKEND_GET_CLASS(backend);
-
-        g_return_val_if_fail(klazz->unpin_item != NULL, FALSE);
-        return klazz->unpin_item(backend, item);
+        g_return_val_if_fail(klazz->get_item_actions != NULL, NULL);
+        return klazz->get_item_actions(backend, item);
 }
 
 /**

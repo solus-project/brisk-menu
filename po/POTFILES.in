@@ -6,3 +6,5 @@ src/frontend/menu-window.c
 src/backend/all-items/all-backend.c
 src/backend/all-items/all-section.c
 src/backend/apps/apps-backend.c
+src/backend/favourites/favourites-backend.c
+src/backend/favourites/favourites-section.c

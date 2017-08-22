@@ -24,9 +24,8 @@ typedef struct _BriskBackendClass BriskBackendClass;
  * Flags to indicate the support level of a given backend
  */
 typedef enum {
-        BRISK_BACKEND_FAVOURITES = 1 << 0, /**<Supports "favourites" management */
-        BRISK_BACKEND_KEYBOARD = 1 << 1,   /**<Supports keyboard shortcuts */
-        BRISK_BACKEND_SOURCE = 1 << 2,     /**<Provides data which must be loaded */
+        BRISK_BACKEND_KEYBOARD = 1 << 0, /**<Supports keyboard shortcuts */
+        BRISK_BACKEND_SOURCE = 1 << 1,   /**<Provides data which must be loaded */
 } BriskBackendFlags;
 
 struct _BriskBackendClass {
@@ -37,10 +36,8 @@ struct _BriskBackendClass {
         const gchar *(*get_id)(BriskBackend *);
         const gchar *(*get_display_name)(BriskBackend *);
 
-        /* Favourites functions */
-        gboolean (*pin_item)(BriskBackend *, BriskItem *);
-        gboolean (*is_item_pinned)(BriskBackend *, BriskItem *);
-        gboolean (*unpin_item)(BriskBackend *, BriskItem *);
+        /* Optional method for providing context menu items */
+        GSList *(*get_item_actions)(BriskBackend *, BriskItem *);
 
         /* All plugins given an opportunity to load later in life */
         gboolean (*load)(BriskBackend *);
@@ -50,6 +47,8 @@ struct _BriskBackendClass {
         void (*item_removed)(BriskBackend *backend, const gchar *id);
         void (*section_added)(BriskBackend *backend, BriskSection *section);
         void (*section_removed)(BriskBackend *backend, const gchar *id);
+        void (*invalidate_filter)(BriskBackend *backend);
+        void (*hide_menu)(BriskBackend *backend);
         void (*reset)(BriskBackend *backend);
 
         gpointer padding[12];
@@ -79,11 +78,7 @@ GType brisk_backend_get_type(void);
 unsigned int brisk_backend_get_flags(BriskBackend *backend);
 const gchar *brisk_backend_get_id(BriskBackend *backend);
 const gchar *brisk_backend_get_display_name(BriskBackend *backend);
-
-/* Favourites specific functionality */
-gboolean brisk_backend_pin_item(BriskBackend *backend, BriskItem *item);
-gboolean brisk_backend_is_item_pinned(BriskBackend *backend, BriskItem *item);
-gboolean brisk_backend_unpin_item(BriskBackend *backend, BriskItem *item);
+GSList *brisk_backend_get_item_actions(BriskBackend *backend, BriskItem *item);
 
 /* Attempt to load for the first time */
 gboolean brisk_backend_load(BriskBackend *backend);
@@ -95,6 +90,8 @@ void brisk_backend_item_added(BriskBackend *backend, BriskItem *item);
 void brisk_backend_item_removed(BriskBackend *backend, const gchar *id);
 void brisk_backend_section_added(BriskBackend *backend, BriskSection *section);
 void brisk_backend_section_removed(BriskBackend *backend, const gchar *id);
+void brisk_backend_invalidate_filter(BriskBackend *backend);
+void brisk_backend_hide_menu(BriskBackend *backend);
 void brisk_backend_reset(BriskBackend *backend);
 
 G_END_DECLS
