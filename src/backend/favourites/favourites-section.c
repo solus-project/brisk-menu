@@ -14,6 +14,7 @@
 #include "util.h"
 
 BRISK_BEGIN_PEDANTIC
+#include "favourites-backend.h"
 #include "favourites-section.h"
 #include <gio/gio.h>
 #include <glib/gi18n.h>
@@ -27,6 +28,7 @@ struct _BriskFavouritesSection {
         BriskSection parent;
         GIcon *icon; /**<Display icon */
         GSettings *settings;
+        BriskFavouritesBackend *backend;
 };
 
 G_DEFINE_TYPE(BriskFavouritesSection, brisk_favourites_section, BRISK_TYPE_SECTION)
@@ -34,6 +36,42 @@ G_DEFINE_TYPE(BriskFavouritesSection, brisk_favourites_section, BRISK_TYPE_SECTI
 /* Helper for gsettings */
 typedef gchar *gstrv;
 DEF_AUTOFREE(gstrv, g_strfreev)
+
+enum { PROP_BACKEND = 1, N_PROPS };
+
+static GParamSpec *obj_properties[N_PROPS] = {
+        NULL,
+};
+
+static void brisk_favourites_section_set_property(GObject *object, guint id, const GValue *value,
+                                                  GParamSpec *spec)
+{
+        BriskFavouritesSection *self = BRISK_FAVOURITES_SECTION(object);
+
+        switch (id) {
+        case PROP_BACKEND:
+                self->backend = g_value_get_pointer(value);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
+static void brisk_favourites_section_get_property(GObject *object, guint id, GValue *value,
+                                                  GParamSpec *spec)
+{
+        BriskFavouritesSection *self = BRISK_FAVOURITES_SECTION(object);
+
+        switch (id) {
+        case PROP_BACKEND:
+                g_value_set_pointer(value, self->backend);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
 
 /**
  * Basic subclassing
@@ -77,6 +115,14 @@ static void brisk_favourites_section_class_init(BriskFavouritesSectionClass *kla
         s_class->can_show_item = brisk_favourites_section_can_show_item;
 
         obj_class->dispose = brisk_favourites_section_dispose;
+        obj_class->set_property = brisk_favourites_section_set_property;
+        obj_class->get_property = brisk_favourites_section_get_property;
+
+        obj_properties[PROP_BACKEND] = g_param_spec_pointer("backend",
+                                                            "The BriskBackend",
+                                                            "Owning backend for this section",
+                                                            G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
 /**
@@ -137,9 +183,9 @@ static gboolean brisk_favourites_section_can_show_item(__brisk_unused__ BriskSec
  *
  * Return a new BriskFavouritesSection
  */
-BriskSection *brisk_favourites_section_new()
+BriskSection *brisk_favourites_section_new(BriskFavouritesBackend *backend)
 {
-        return g_object_new(BRISK_TYPE_FAVOURITES_SECTION, NULL);
+        return g_object_new(BRISK_TYPE_FAVOURITES_SECTION, "backend", backend, NULL);
 }
 
 /*

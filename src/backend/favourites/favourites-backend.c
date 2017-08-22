@@ -180,7 +180,8 @@ static gboolean brisk_favourites_backend_get_item_pinned(BriskBackend *backend, 
  */
 static gboolean brisk_favourites_backend_load(BriskBackend *backend)
 {
-        brisk_backend_section_added(backend, brisk_favourites_section_new());
+        BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(backend);
+        brisk_backend_section_added(backend, brisk_favourites_section_new(self));
         return TRUE;
 }
 

@@ -15,6 +15,7 @@
 #include <glib-object.h>
 
 #include "../section.h"
+#include "favourites-backend.h"
 
 G_BEGIN_DECLS
 
@@ -35,7 +36,7 @@ typedef struct _BriskFavouritesSectionClass BriskFavouritesSectionClass;
 
 GType brisk_favourites_section_get_type(void);
 
-BriskSection *brisk_favourites_section_new(void);
+BriskSection *brisk_favourites_section_new(BriskFavouritesBackend *backend);
 
 G_END_DECLS
 
