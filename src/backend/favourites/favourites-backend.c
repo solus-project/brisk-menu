@@ -43,6 +43,12 @@ G_DEFINE_TYPE(BriskFavouritesBackend, brisk_favourites_backend, BRISK_TYPE_BACKE
 typedef gchar *gstrv;
 DEF_AUTOFREE(gstrv, g_strfreev)
 
+static inline void _g_array_clean(GArray *array)
+{
+        g_array_free(array, TRUE);
+}
+DEF_AUTOFREE(GArray, _g_array_clean)
+
 static gboolean brisk_favourites_backend_load(BriskBackend *backend);
 static void brisk_favourites_backend_pin_item(GSimpleAction *action, GVariant *parameter,
                                               BriskFavouritesBackend *self);
@@ -210,9 +216,8 @@ static void brisk_favourites_backend_pin_item(__brisk_unused__ GSimpleAction *ac
                                               __brisk_unused__ GVariant *parameter,
                                               BriskFavouritesBackend *self)
 {
-        gstrv *old = NULL;
-        autofree(gstrv) *new = NULL;
-        guint size;
+        autofree(gstrv) *old = NULL;
+        autofree(GArray) *array = NULL;
 
         if (!self->active_item) {
                 return;
@@ -221,25 +226,31 @@ static void brisk_favourites_backend_pin_item(__brisk_unused__ GSimpleAction *ac
         const gchar *item_id = brisk_item_get_id(self->active_item);
         self->active_item = NULL;
 
+        /* prevent duping.. */
+        if (g_hash_table_contains(self->favourites, item_id)) {
+                return;
+        }
+
         old = g_settings_get_strv(self->settings, "favourites");
-        /* Increase l+2 for new item and NULL terminator */
-        size = g_strv_length(old) + 2;
+        array = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
-        new = g_realloc_n(old, size, sizeof(gchar *));
+        for (guint i = 0; i < g_strv_length(old); i++) {
+                if (!old[i] || g_str_equal(old[i], "")) {
+                        continue;
+                }
+                array = g_array_append_val(array, old[i]);
+        }
 
-        new[size - 2] = g_strdup(item_id);
-        new[size - 1] = NULL;
-
-        g_settings_set_strv(self->settings, "favourites", (const gchar **)new);
+        array = g_array_append_val(array, item_id);
+        g_settings_set_strv(self->settings, "favourites", (const gchar **)array->data);
 }
 
 static void brisk_favourites_backend_unpin_item(__brisk_unused__ GSimpleAction *action,
                                                 __brisk_unused__ GVariant *parameter,
                                                 BriskFavouritesBackend *self)
 {
-        GArray *array;
         autofree(gstrv) *old = NULL;
-        gint i;
+        autofree(GArray) *array = NULL;
 
         if (!self->active_item) {
                 return;
@@ -251,7 +262,10 @@ static void brisk_favourites_backend_unpin_item(__brisk_unused__ GSimpleAction *
         old = g_settings_get_strv(self->settings, "favourites");
         array = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
-        for (i = 0; old[i] != NULL; i++) {
+        for (guint i = 0; i < g_strv_length(old); i++) {
+                if (!old[i] || g_str_equal(old[i], "")) {
+                        continue;
+                }
                 if (!g_str_equal(old[i], item_id)) {
                         array = g_array_append_val(array, old[i]);
                 }
@@ -259,7 +273,6 @@ static void brisk_favourites_backend_unpin_item(__brisk_unused__ GSimpleAction *
 
         g_settings_set_strv(self->settings, "favourites", (const gchar **)array->data);
 
-        g_array_free(array, TRUE);
         brisk_backend_invalidate_filter(BRISK_BACKEND(self));
 }
 
