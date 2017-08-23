@@ -73,11 +73,11 @@ __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *r
                 goto basic_sort;
         }
 
-        sc1 = brisk_section_get_sort_order(self->active_section, itemA);
-        sc2 = brisk_section_get_sort_order(self->active_section, itemB);
+        sc1 = brisk_section_get_sort_order(self->active_section, itemB);
+        sc2 = brisk_section_get_sort_order(self->active_section, itemA);
 
         /* Negative score means the section doesn't support custom ordering */
-        if (sc1 >= 0 && sc2 >= 0) {
+        if (sc1 >= 0 || sc2 >= 0) {
                 /* Sort based on the sections understanding */
                 return (sc1 > sc2) - (sc1 - sc2);
         }

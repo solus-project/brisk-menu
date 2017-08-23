@@ -255,6 +255,7 @@ static void brisk_menu_window_on_toggled(BriskMenuWindow *self, GtkWidget *butto
 
         /* Start the filter. */
         gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
+        gtk_list_box_invalidate_sort(GTK_LIST_BOX(self->apps));
 }
 
 /**
