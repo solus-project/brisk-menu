@@ -71,10 +71,11 @@ static void brisk_favourites_section_get_property(GObject *object, guint id, GVa
 /**
  * Basic subclassing
  */
-static const gchar *brisk_favourites_section_get_id(BriskSection *item);
-static const gchar *brisk_favourites_section_get_name(BriskSection *item);
-static const GIcon *brisk_favourites_section_get_icon(BriskSection *item);
-static const gchar *brisk_favourites_section_get_backend_id(BriskSection *item);
+static const gchar *brisk_favourites_section_get_id(BriskSection *section);
+static const gchar *brisk_favourites_section_get_name(BriskSection *section);
+static const GIcon *brisk_favourites_section_get_icon(BriskSection *section);
+static const gchar *brisk_favourites_section_get_backend_id(BriskSection *section);
+static gint brisk_favourites_section_get_sort_order(BriskSection *section, BriskItem *item);
 static gboolean brisk_favourites_section_can_show_item(BriskSection *section, BriskItem *item);
 
 /**
@@ -107,6 +108,7 @@ static void brisk_favourites_section_class_init(BriskFavouritesSectionClass *kla
         s_class->get_icon = brisk_favourites_section_get_icon;
         s_class->get_backend_id = brisk_favourites_section_get_backend_id;
         s_class->can_show_item = brisk_favourites_section_can_show_item;
+        s_class->get_sort_order = brisk_favourites_section_get_sort_order;
 
         obj_class->dispose = brisk_favourites_section_dispose;
         obj_class->set_property = brisk_favourites_section_set_property;
@@ -161,6 +163,13 @@ static gboolean brisk_favourites_section_can_show_item(__brisk_unused__ BriskSec
                                                        __brisk_unused__ BriskItem *item)
 {
         return brisk_favourites_section_get_item_is_pinned(section, item);
+}
+
+static gint brisk_favourites_section_get_sort_order(BriskSection *section, BriskItem *item)
+{
+        BriskFavouritesSection *self = BRISK_FAVOURITES_SECTION(section);
+
+        return brisk_favourites_backend_get_item_order(self->backend, item);
 }
 
 /**

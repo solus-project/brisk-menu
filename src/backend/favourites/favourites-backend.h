@@ -36,6 +36,7 @@ GType brisk_favourites_backend_get_type(void);
 BriskBackend *brisk_favourites_backend_new(void);
 
 gboolean brisk_favourites_backend_is_pinned(BriskFavouritesBackend *self, BriskItem *item);
+gint brisk_favourites_backend_get_item_order(BriskFavouritesBackend *self, BriskItem *item);
 
 G_END_DECLS
 

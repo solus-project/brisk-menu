@@ -264,6 +264,26 @@ static void brisk_favourites_backend_unpin_item(__brisk_unused__ GSimpleAction *
 }
 
 /**
+ * brisk_favourites_backend_get_item_order:
+ *
+ * Return the pin priority for any given item, if its known as pinned.
+ * We may be storing `0` as a value for a pin priority, which when using glibc,
+ * is equivalent to NULL, so we add checks that there is really something stored.
+ */
+gint brisk_favourites_backend_get_item_order(BriskFavouritesBackend *self, BriskItem *item)
+{
+        const gchar *item_id = brisk_item_get_id(item);
+        __brisk_unused__ void *key = NULL;
+        void *val = NULL;
+
+        if (!g_hash_table_lookup_extended(self->favourites, item_id, &key, &val)) {
+                return -1;
+        }
+
+        return GPOINTER_TO_INT(val);
+}
+
+/**
  * brisk_favourites_backend_new:
  *
  * Return a newly created BriskFavouritesBackend
