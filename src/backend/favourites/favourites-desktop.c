@@ -16,6 +16,7 @@
 BRISK_BEGIN_PEDANTIC
 #include "favourites-backend.h"
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 BRISK_END_PEDANTIC
 
 #include <errno.h>
@@ -91,6 +92,7 @@ static void brisk_favourites_backend_action_desktop_pin(__brisk_unused__ GSimple
         autofree(GFile) *source = NULL;
         autofree(GFile) *dest = NULL;
         autofree(GError) *error = NULL;
+        autofree(gchar) *path = NULL;
 
         source = get_desktop_item_source(self->active_item);
         if (!source) {
@@ -98,6 +100,11 @@ static void brisk_favourites_backend_action_desktop_pin(__brisk_unused__ GSimple
         }
         dest = get_desktop_item_target(source);
         if (!dest) {
+                return;
+        }
+
+        path = g_file_get_path(dest);
+        if (!path) {
                 return;
         }
 
@@ -111,6 +118,12 @@ static void brisk_favourites_backend_action_desktop_pin(__brisk_unused__ GSimple
                          &error)) {
                 /* Consider using libnotify */
                 g_message("Failed to pin desktop item: %s", error->message);
+        }
+
+        /* MATE will sanitize .desktop files that are chmod +x */
+        int r = g_chmod(path, 00755);
+        if (r != 0) {
+                g_message("Failed to chmod desktop item: %s", strerror(errno));
         }
 }
 
