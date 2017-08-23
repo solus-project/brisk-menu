@@ -19,24 +19,6 @@ BRISK_BEGIN_PEDANTIC
 #include <glib/gi18n.h>
 BRISK_END_PEDANTIC
 
-struct _BriskFavouritesBackendClass {
-        BriskBackendClass parent_class;
-};
-
-/**
- * BriskFavouritesBackend implements support for favourites in Brisk
- */
-struct _BriskFavouritesBackend {
-        BriskBackend parent;
-        GSettings *settings;
-        GHashTable *favourites;
-
-        /* Action management */
-        BriskItem *active_item;
-        GSimpleAction *action_remove;
-        GSimpleAction *action_add;
-};
-
 G_DEFINE_TYPE(BriskFavouritesBackend, brisk_favourites_backend, BRISK_TYPE_BACKEND)
 
 /* Helper for gsettings */
@@ -89,11 +71,15 @@ static GMenu *brisk_favourites_backend_get_item_actions(BriskBackend *backend, B
 
         if (brisk_favourites_backend_is_pinned(self, item)) {
                 g_menu_append(ret,
-                              _("Remove from favourites"),
+                              _("Unpin from favourites menu"),
                               "brisk-context-items.favourites.unpin");
         } else {
-                g_menu_append(ret, _("Add to favourites"), "brisk-context-items.favourites.pin");
+                g_menu_append(ret,
+                              _("Pin to favourites menu"),
+                              "brisk-context-items.favourites.pin");
         }
+
+        brisk_favourites_backend_menu_desktop(self, ret, group);
 
         return ret;
 }
@@ -108,6 +94,8 @@ static void brisk_favourites_backend_dispose(GObject *obj)
         BriskFavouritesBackend *self = BRISK_FAVOURITES_BACKEND(obj);
         g_clear_object(&self->action_add);
         g_clear_object(&self->action_remove);
+        g_clear_object(&self->action_add_desktop);
+        g_clear_object(&self->action_remove_desktop);
         g_clear_object(&self->settings);
         g_clear_pointer(&self->favourites, g_hash_table_unref);
         G_OBJECT_CLASS(brisk_favourites_backend_parent_class)->dispose(obj);
@@ -159,7 +147,7 @@ static void brisk_favourites_backend_changed(GSettings *settings, const gchar *k
  *
  * Handle construction of the BriskFavouritesBackend
  */
-static void brisk_favourites_backend_init(__brisk_unused__ BriskFavouritesBackend *self)
+static void brisk_favourites_backend_init(BriskFavouritesBackend *self)
 {
         self->settings = g_settings_new("com.solus-project.brisk-menu");
         g_signal_connect(self->settings,
@@ -177,6 +165,8 @@ static void brisk_favourites_backend_init(__brisk_unused__ BriskFavouritesBacken
                          "activate",
                          G_CALLBACK(brisk_favourites_backend_unpin_item),
                          self);
+
+        brisk_favourites_backend_init_desktop(self);
 
         /* Allow O(1) lookup for the "is pinned" logic */
         self->favourites = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
