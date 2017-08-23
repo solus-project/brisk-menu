@@ -52,6 +52,7 @@ __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *r
         autofree(gchar) *nameA = NULL;
         autofree(gchar) *nameB = NULL;
         BriskMenuWindow *self = NULL;
+        gint sc1 = -1, sc2 = -1;
 
         self = BRISK_MENU_WINDOW(v);
 
@@ -61,12 +62,27 @@ __brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *r
         g_object_get(child1, "item", &itemA, NULL);
         g_object_get(child2, "item", &itemB, NULL);
 
+        /* Handle normal searching */
         if (self->search_term) {
-                gint sc1 = brisk_get_entry_score(itemA, self->search_term);
-                gint sc2 = brisk_get_entry_score(itemB, self->search_term);
+                sc1 = brisk_get_entry_score(itemA, self->search_term);
+                sc2 = brisk_get_entry_score(itemB, self->search_term);
                 return (sc1 > sc2) - (sc1 - sc2);
         }
 
+        if (!self->active_section) {
+                goto basic_sort;
+        }
+
+        sc1 = brisk_section_get_sort_order(self->active_section, itemA);
+        sc2 = brisk_section_get_sort_order(self->active_section, itemB);
+
+        /* Negative score means the section doesn't support custom ordering */
+        if (sc1 >= 0 && sc2 >= 0) {
+                /* Sort based on the sections understanding */
+                return (sc1 > sc2) - (sc1 - sc2);
+        }
+
+basic_sort:
         /* Ensure we compare lower case only */
         nameA = g_ascii_strdown(brisk_item_get_display_name(itemA), -1);
         nameB = g_ascii_strdown(brisk_item_get_display_name(itemB), -1);

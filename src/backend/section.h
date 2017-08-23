@@ -31,6 +31,8 @@ struct _BriskSectionClass {
 
         gboolean (*can_show_item)(BriskSection *, BriskItem *);
 
+        gint (*get_sort_order)(BriskSection *, BriskItem *);
+
         gpointer padding[12];
 };
 
@@ -60,6 +62,7 @@ const gchar *brisk_section_get_name(BriskSection *section);
 const GIcon *brisk_section_get_icon(BriskSection *section);
 const gchar *brisk_section_get_backend_id(BriskSection *section);
 gboolean brisk_section_can_show_item(BriskSection *section, BriskItem *item);
+gint brisk_section_get_sort_order(BriskSection *section, BriskItem *item);
 
 G_END_DECLS
 

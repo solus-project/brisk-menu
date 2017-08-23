@@ -121,6 +121,30 @@ gboolean brisk_section_can_show_item(BriskSection *section, BriskItem *item)
         }
         return klazz->can_show_item(section, item);
 }
+
+/**
+ * brisk_section_get_sort_order:
+ *
+ * Return a custom (override) sort order for a display item when not in
+ * search mode. This is primarily only useful for backends that own
+ * filter sections to show a specific order for another backends items.
+ *
+ * By default this function returns -1, meaning "do not custom sort", which
+ * will force the frontend to use the built-in sorting.
+ *
+ * Backend implementations should take care to only sort items that they
+ * care about or have some reference to, i.e. by type checking or ID checking.
+ */
+gint brisk_section_get_sort_order(BriskSection *section, BriskItem *item)
+{
+        g_assert(section != NULL);
+        BriskSectionClass *klazz = BRISK_SECTION_GET_CLASS(section);
+        if (!klazz->get_sort_order) {
+                return -1;
+        }
+        return klazz->get_sort_order(section, item);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
