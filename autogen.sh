@@ -8,7 +8,15 @@ PKG_NAME="brisk-menu"
 prevdir="$PWD"
 cd "$srcdir"
 
-intltoolize --force
+INTLTOOLIZE=`which intltoolize`
+if test -z $INTLTOOLIZE;
+then
+  echo "*** No intltoolize found, please install it ***"
+  exit 1
+else
+  intltoolize --force
+fi
+
 AUTORECONF=`which autoreconf`
 if test -z $AUTORECONF;
 then
