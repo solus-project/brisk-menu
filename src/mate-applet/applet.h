@@ -27,8 +27,6 @@ struct _BriskMenuAppletClass {
 /**
  * BriskMenuApplet is the passive portion of the Brisk Menu, in that it
  * provides merely an access path to the main Brisk Menu Window itself.
- * It also adds some special sauce around it to make it properly integrate
- * within the MATE Desktop, such as hotkeys and panel integration.
  */
 struct _BriskMenuApplet {
         MatePanelApplet parent;
