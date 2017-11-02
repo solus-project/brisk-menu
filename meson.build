@@ -41,6 +41,9 @@ gtk_version_flags = [
 # Add our main flags
 add_global_arguments(am_cflags, language: 'c')
 
+# Handle glib schemas & icons
+meson.add_install_script('meson_post_install.sh')
+
 # Ensure we limit the GTK version used!
 add_global_arguments(gtk_version_flags, language: 'c')
 
