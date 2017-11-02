@@ -12,9 +12,9 @@ The primary motivation is to provide a very usable menu, as seen in other deskto
 
 brisk-menu is a **collaborative** project between [Solus](https://solus-project.com/) and [Ubuntu MATE](https://ubuntu-mate.org/)
 
-![solus_logo](https://build.solus-project.com/logo.png)
-
 ![ubuntu_logo](https://ubuntu-mate.org/gallery/Artwork/design-guide/Main_Logo.png)
+
+![solus_logo](https://build.solus-project.com/logo.png)
 
 
 Building Brisk Menu
