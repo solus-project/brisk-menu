@@ -13,7 +13,6 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <mate-panel-applet.h>
 
 G_BEGIN_DECLS
 
@@ -35,9 +34,9 @@ GtkWidget *brisk_menu_window_new(void);
 GType brisk_menu_window_get_type(void);
 
 /**
- * Update the orientation knowledge for the menu
+ * Update internal notion of where the parent panel is on screen
  */
-void brisk_menu_window_set_orient(BriskMenuWindow *window, MatePanelAppletOrient orient);
+void brisk_menu_window_set_parent_position(BriskMenuWindow *window, GtkPositionType position);
 
 G_END_DECLS
 

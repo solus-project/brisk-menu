@@ -46,6 +46,9 @@ static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar 
 void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key);
 static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body);
 
+/* Helpers */
+static GtkPositionType convert_mate_position(MatePanelAppletOrient orient);
+
 /**
  * Handle hiding the menu when it comes to the shortcut key only.
  * i.e. the Super_L key.
@@ -296,10 +299,13 @@ void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key)
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient)
 {
         BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
+        GtkPositionType position;
         self->orient = orient;
 
+        position = convert_mate_position(self->orient);
+
         /* Let the main menu window know about our orientation */
-        brisk_menu_window_set_orient(BRISK_MENU_WINDOW(self->menu), orient);
+        brisk_menu_window_set_parent_position(BRISK_MENU_WINDOW(self->menu), position);
 
         /* Now adjust our own display to deal with the orientation */
         brisk_menu_applet_adapt_layout(BRISK_MENU_APPLET(applet));
@@ -401,6 +407,28 @@ void brisk_menu_applet_show_about(__brisk_unused__ GtkAction *action,
                               "website-label",
                               "Solus Project",
                               NULL);
+}
+
+/**
+ * Convert the MatePanelAppletOrient into a more logical GtkPositionType.
+ *
+ * This converts the "orient", i.e. "where is my panel looking", to an actual
+ * position that Brisk can use. Additionally it removes the need to have the
+ * frontend library depend on mate-panel-applet.
+ */
+static GtkPositionType convert_mate_position(MatePanelAppletOrient orient)
+{
+        switch (orient) {
+        case MATE_PANEL_APPLET_ORIENT_LEFT:
+                return GTK_POS_RIGHT;
+        case MATE_PANEL_APPLET_ORIENT_RIGHT:
+                return GTK_POS_LEFT;
+        case MATE_PANEL_APPLET_ORIENT_DOWN:
+                return GTK_POS_TOP;
+        case MATE_PANEL_APPLET_ORIENT_UP:
+        default:
+                return GTK_POS_BOTTOM;
+        }
 }
 
 /*

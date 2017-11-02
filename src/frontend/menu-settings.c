@@ -24,7 +24,7 @@ void brisk_menu_window_init_settings(BriskMenuWindow *self)
         GtkSettings *gtk_settings = NULL;
 
         self->settings = g_settings_new("com.solus-project.brisk-menu");
-        self->orient = MATE_PANEL_APPLET_ORIENT_DOWN;
+        self->position = GTK_POS_TOP;
 
         gtk_settings = gtk_settings_get_default();
 
@@ -52,7 +52,8 @@ static void brisk_menu_window_settings_changed(GSettings *settings, const gchar 
         BriskMenuWindow *self = v;
 
         if (g_str_equal(key, "search-position")) {
-                brisk_menu_window_update_search(self, g_settings_get_enum(settings, key));
+                self->search_position = g_settings_get_enum(settings, key);
+                brisk_menu_window_update_search(self);
                 return;
         } else if (g_str_equal(key, "rollover-activate")) {
                 self->rollover = g_settings_get_boolean(settings, key);
@@ -62,22 +63,22 @@ static void brisk_menu_window_settings_changed(GSettings *settings, const gchar 
 /**
  * Update the position of the search bar in accordance with settings
  */
-void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos)
+void brisk_menu_window_update_search(BriskMenuWindow *self)
 {
-        SearchPosition position = pos;
+        SearchPosition search_position = self->search_position;
         GtkWidget *layout = NULL;
         gint n_pos = 0;
 
         layout = gtk_bin_get_child(GTK_BIN(self));
 
-        if (position < SEARCH_POS_MIN || position >= SEARCH_POS_MAX) {
-                position = SEARCH_POS_AUTOMATIC;
+        if (search_position < SEARCH_POS_MIN || search_position >= SEARCH_POS_MAX) {
+                search_position = SEARCH_POS_AUTOMATIC;
         }
 
-        switch (position) {
+        switch (search_position) {
         case SEARCH_POS_AUTOMATIC: {
-                /* Orient up = bottom panel. Stick search at bottom */
-                if (self->orient == MATE_PANEL_APPLET_ORIENT_UP) {
+                /* Bottom panel = stick search at bottom */
+                if (self->position == GTK_POS_TOP) {
                         n_pos = 1;
                 } else {
                         n_pos = 0;

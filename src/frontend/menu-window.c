@@ -429,10 +429,10 @@ void brisk_menu_window_activated(__brisk_unused__ BriskMenuWindow *self, GtkList
         brisk_menu_entry_button_launch(button);
 }
 
-void brisk_menu_window_set_orient(BriskMenuWindow *self, MatePanelAppletOrient orient)
+void brisk_menu_window_set_parent_position(BriskMenuWindow *self, GtkPositionType position)
 {
-        self->orient = orient;
-        brisk_menu_window_update_search(self, self->orient);
+        self->position = position;
+        brisk_menu_window_update_search(self);
 }
 
 /**

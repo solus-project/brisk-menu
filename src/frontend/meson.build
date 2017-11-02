@@ -15,12 +15,10 @@ libfrontend_sources = [
     'sidebar-scroller.c',
 ]
 
-# TODO: The frontend shouldn't know so much about MATE Applet!
 libfrontend_dependencies = [
     link_libbackend,
     link_libsession_stub,
     dep_gtk3,
-    dep_mate_applet,
 ]
 
 libfrontend_includes = [

@@ -19,7 +19,6 @@
 #include "menu-window.h"
 #include "util.h"
 #include <gtk/gtk.h>
-#include <mate-panel-applet.h>
 
 typedef enum {
         SEARCH_POS_MIN = 0,
@@ -96,8 +95,11 @@ struct _BriskMenuWindow {
         GtkWidget *context_menu;
         GActionGroup *context_group;
 
-        /* Current orientation */
-        MatePanelAppletOrient orient;
+        /* Current panel position */
+        GtkPositionType position;
+
+        /* Current search position */
+        SearchPosition search_position;
 };
 
 /* Split the implementation across multiple files for ease of maintenance */
@@ -131,7 +133,7 @@ gboolean brisk_menu_window_setup_session(BriskMenuWindow *self);
 
 /* Settings */
 void brisk_menu_window_init_settings(BriskMenuWindow *self);
-void brisk_menu_window_update_search(BriskMenuWindow *self, SearchPosition pos);
+void brisk_menu_window_update_search(BriskMenuWindow *self);
 void brisk_menu_window_pump_settings(BriskMenuWindow *self);
 
 /* Context menu */

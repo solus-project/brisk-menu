@@ -120,7 +120,7 @@ static void brisk_menu_launcher_init_context(BriskMenuLauncher *self, GtkWidget 
 
         /* Hide the menu before kicking off the launch */
         toplevel = gtk_widget_get_toplevel(parent);
-        if (!PANEL_IS_APPLET(parent)) {
+        if (!GTK_IS_WINDOW(parent)) {
                 gtk_widget_hide(toplevel);
         }
 }
