@@ -20,11 +20,12 @@ Building Brisk Menu
 
  * Please ensure you have GTK 3.18 *minimum*
  * Please ensure you are using a GTK 3.18 build of MATE 1.16 or newer
+ * Ensure you have a **modern** `meson` (`0.40.x`+) and `ninja` (Ubuntu users, use xenial-backports!)
 
 ```bash
-    ./autogen.sh --prefix=/usr
-    make -j$(($(getconf _NPROCESSORS_ONLN)+1))
-    sudo make install
+    meson --buildtype plain build --prefix=/usr
+    ninja -C build -j$(($(getconf _NPROCESSORS_ONLN)+1))
+    sudo ninja -C build install
 ````
 
 Features
