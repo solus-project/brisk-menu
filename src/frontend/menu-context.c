@@ -103,10 +103,10 @@ void brisk_menu_window_show_context(BriskMenuWindow *self, BriskItem *item,
 }
 
 /**
-* brisk_menu_window_configure_context:
-*
-* Set up the basics for handling context menus
-*/
+ * brisk_menu_window_configure_context:
+ *
+ * Set up the basics for handling context menus
+ */
 void brisk_menu_window_configure_context(__brisk_unused__ BriskMenuWindow *self)
 {
         /* TODO: Init bits */

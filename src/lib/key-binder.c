@@ -226,11 +226,11 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
         }
 
         bind = g_new0(KeyBinding, 1);
-        *bind = (KeyBinding){.accelerator = shortcut,
-                             .keycode = key,
-                             .mods = mod,
-                             .func = func,
-                             .udata = v };
+        *bind = (KeyBinding){ .accelerator = shortcut,
+                              .keycode = key,
+                              .mods = mod,
+                              .func = func,
+                              .udata = v };
 
         g_hash_table_insert(self->bindings, g_strdup(shortcut), bind);
 

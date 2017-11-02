@@ -209,7 +209,8 @@ static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
         GtkWidget *layout = NULL;
 
         static const GtkTargetEntry drag_targets[] = {
-                { "text/uri-list", 0, 0 }, { "application/x-desktop", 0, 0 },
+                { "text/uri-list", 0, 0 },
+                { "application/x-desktop", 0, 0 },
         };
 
         /* Main layout */

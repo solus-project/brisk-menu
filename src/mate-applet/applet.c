@@ -324,10 +324,12 @@ static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size)
 void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuApplet *self)
 {
         static const char *editors[] = {
-                "menulibre.desktop", "mozo.desktop",
+                "menulibre.desktop",
+                "mozo.desktop",
         };
         static const char *binaries[] = {
-                "menulibre", "mozo",
+                "menulibre",
+                "mozo",
         };
         for (size_t i = 0; i < G_N_ELEMENTS(editors); i++) {
                 autofree(gchar) *p = NULL;
