@@ -28,6 +28,14 @@ Building Brisk Menu
     sudo ninja -C build install
 ````
 
+**Development on Solus:**
+
+```bash
+    meson build --buildtype debugoptimized --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib64 --libexecdir=/usr/lib64/brisk-menu
+    ninja -C build -j$(($(getconf _NPROCESSORS_ONLN)+1))
+    sudo ninja -C build install
+```
+
 Features
 --------
 
