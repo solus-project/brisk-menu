@@ -7,13 +7,13 @@ Modern, efficient menu for the MATE Desktop Environment.
 
 ![screenshot](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/Brisk_Menu_0.4.0.png)
 
-This project is currently in very early stages, and as such is under very heavy development. The primary motivation is to provide a very usable menu, as seen in other desktops, but without the bloat and/or performance problems that plague current offerings.
+brisk-menu is a **collaborative** project between [Solus project](https://solus-project.com/) and [Ubuntu MATE](https://ubuntu-mate.org/)
 
-This project is being spearheaded by Solus, as a *collaborative* effort between the various MATE communities (chiefly, Ubuntu MATE) to reinvigorate the MATE Desktop with modern, first-class options. As such, Brisk Menu is a **distro-agnostic** desktop. Please ensure to report any issues of non portability!
+![solus_logo](https://build.solus-project.com/logo.png) ![ubuntu_logo](https://ubuntu-mate.org/gallery/Artwork/design-guide/Main_Logo.png)
 
-brisk-menu is a [Solus project](https://solus-project.com/).
+This project aims to reinvigorate the MATE Desktop with modern, first-class options. As such, Brisk Menu is a **distro-agnostic** desktop. Please ensure to report any issues of non portability!
+The primary motivation is to provide a very usable menu, as seen in other desktops, but without the bloat and/or performance problems that plague current offerings.
 
-![logo](https://build.solus-project.com/logo.png)
 
 Building Brisk Menu
 -------------------
