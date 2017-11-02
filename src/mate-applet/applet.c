@@ -296,7 +296,6 @@ void brisk_menu_applet_edit_menus(__brisk_unused__ GtkAction *action, BriskMenuA
                 if (!app) {
                         continue;
                 }
-                info = G_DESKTOP_APP_INFO(app);
                 brisk_menu_launcher_start(launcher, GTK_WIDGET(self), app);
                 return;
         }
