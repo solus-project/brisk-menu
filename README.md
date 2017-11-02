@@ -8,35 +8,11 @@ Modern, efficient menu for the MATE Desktop Environment.
 This project aims to reinvigorate the MATE Desktop with modern, first-class options. As such, Brisk Menu is a **distro-agnostic** desktop. Please ensure to report any issues of non portability!
 The primary motivation is to provide a very usable menu, as seen in other desktops, but without the bloat and/or performance problems that plague current offerings.
 
-![screenshot](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/Brisk_Menu_0.4.0.png)
+![screenshot](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/main.png)
 
 brisk-menu is a **collaborative** project between [Solus](https://solus-project.com/) and [Ubuntu MATE](https://ubuntu-mate.org/)
 
-![ubuntu_logo](https://ubuntu-mate.org/gallery/Artwork/design-guide/Main_Logo.png)
-
-![solus_logo](https://build.solus-project.com/logo.png)
-
-
-Building Brisk Menu
--------------------
-
- * Please ensure you have GTK 3.18 *minimum*
- * Please ensure you are using a GTK 3.18 build of MATE 1.16 or newer
- * Ensure you have a **modern** `meson` (`0.40.x`+) and `ninja` (Ubuntu users, use xenial-backports!)
-
-```bash
-    meson --buildtype plain build --prefix=/usr
-    ninja -C build -j$(($(getconf _NPROCESSORS_ONLN)+1))
-    sudo ninja -C build install
-````
-
-**Development on Solus:**
-
-```bash
-    meson build --buildtype debugoptimized --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib64 --libexecdir=/usr/lib64/brisk-menu
-    ninja -C build -j$(($(getconf _NPROCESSORS_ONLN)+1))
-    sudo ninja -C build install
-```
+![ubuntu_mate_logo](https://ubuntu-mate.org/gallery/Artwork/design-guide/Main_Logo.png) ![solus_logo](https://build.solus-project.com/logo.png)
 
 Features
 --------
@@ -68,6 +44,29 @@ Some items that are currently known to be definite options in the roadmap:
  - Improved styling for the window edge + search entry.
 
 More will be added in time as we go along.
+
+![screenshot_context](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/context.png)
+
+Building Brisk Menu
+-------------------
+
+ * Please ensure you have GTK 3.18 *minimum*
+ * Please ensure you are using a GTK 3.18 build of MATE 1.16 or newer
+ * Ensure you have a **modern** `meson` (`0.40.x`+) and `ninja` (Ubuntu users, use xenial-backports!)
+
+```bash
+    meson --buildtype plain build --prefix=/usr
+    ninja -C build -j$(($(getconf _NPROCESSORS_ONLN)+1))
+    sudo ninja -C build install
+````
+
+**Development on Solus:**
+
+```bash
+    meson build --buildtype debugoptimized --prefix=/usr --sysconfdir=/etc --libdir=/usr/lib64 --libexecdir=/usr/lib64/brisk-menu
+    ninja -C build -j$(($(getconf _NPROCESSORS_ONLN)+1))
+    sudo ninja -C build install
+```
 
 License
 --------
