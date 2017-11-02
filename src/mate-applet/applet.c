@@ -47,6 +47,7 @@ static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body)
 
 /* Helpers */
 static GtkPositionType convert_mate_position(MatePanelAppletOrient orient);
+static void brisk_menu_applet_adapt_layout(BriskMenuApplet *self);
 
 /**
  * brisk_menu_applet_dispose:
@@ -366,6 +367,38 @@ static GtkPositionType convert_mate_position(MatePanelAppletOrient orient)
         }
 }
 
+/**
+ * brisk_menu_applet_adapt_layout:
+ *
+ * Update our layout in response to an orientation change.
+ * Primarily we're hiding our label automatically here and maximizing the space
+ * available to the icon.
+ */
+static void brisk_menu_applet_adapt_layout(BriskMenuApplet *self)
+{
+        GtkStyleContext *style = NULL;
+
+        style = gtk_widget_get_style_context(self->toggle);
+
+        switch (self->orient) {
+        case MATE_PANEL_APPLET_ORIENT_LEFT:
+        case MATE_PANEL_APPLET_ORIENT_RIGHT:
+                /* Handle vertical panel layout */
+                gtk_widget_hide(self->label);
+                gtk_widget_set_halign(self->image, GTK_ALIGN_CENTER);
+                gtk_style_context_add_class(style, BRISK_STYLE_BUTTON_VERTICAL);
+                gtk_widget_set_margin_end(self->image, 0);
+                break;
+        default:
+                /* We're a horizontal panel */
+                gtk_widget_set_visible(self->label,
+                                       g_settings_get_boolean(self->settings, "label-visible"));
+                gtk_widget_set_halign(self->image, GTK_ALIGN_START);
+                gtk_style_context_remove_class(style, BRISK_STYLE_BUTTON_VERTICAL);
+                gtk_widget_set_margin_end(self->image, 4);
+                break;
+        }
+}
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

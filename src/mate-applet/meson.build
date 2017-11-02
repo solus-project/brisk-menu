@@ -1,6 +1,5 @@
 mate_applet_sources = [
     'applet.c',
-    'applet-position.c',
     'main.c',
 ]
 
