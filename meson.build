@@ -84,7 +84,7 @@ cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 cdata.set_quoted('PACKAGE_URL', 'https://solus-project.com')
 
 # Ensure locales will work
-cdata.set_quoted('GETTEXT_PACKAGE', 'brisk-menu')
+cdata.set_quoted('GETTEXT_PACKAGE', meson.project_name())
 cdata.set_quoted('MATELOCALEDIR', path_localedir)
 cdata.set('ENABLE_NLS', '1')
 
