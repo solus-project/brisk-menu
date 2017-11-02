@@ -163,7 +163,7 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         gtk_widget_show_all(toggle);
 
         /* Construct our menu */
-        menu = brisk_menu_window_new();
+        menu = brisk_menu_window_new(GTK_WIDGET(self));
         self->menu = menu;
 
         /* Render "active" toggle only when the window is open, automatically. */
@@ -195,7 +195,7 @@ static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, __brisk_
 
         gboolean vis = !gtk_widget_get_visible(self->menu);
         if (vis) {
-                brisk_menu_applet_update_position(self);
+                brisk_menu_window_update_screen_position(BRISK_MENU_WINDOW(self->menu));
         }
 
         gtk_widget_set_visible(self->menu, vis);

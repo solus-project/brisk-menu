@@ -29,7 +29,7 @@ typedef struct _BriskMenuWindowClass BriskMenuWindowClass;
 #define BRISK_MENU_WINDOW_GET_CLASS(o)                                                             \
         (G_TYPE_INSTANCE_GET_CLASS((o), BRISK_TYPE_MENU_WINDOW, BriskMenuWindowClass))
 
-GtkWidget *brisk_menu_window_new(void);
+GtkWidget *brisk_menu_window_new(GtkWidget *relative_to);
 
 GType brisk_menu_window_get_type(void);
 
@@ -37,6 +37,11 @@ GType brisk_menu_window_get_type(void);
  * Update internal notion of where the parent panel is on screen
  */
 void brisk_menu_window_set_parent_position(BriskMenuWindow *window, GtkPositionType position);
+
+/**
+ * Ask that the menu window updates it's position on screen
+ */
+void brisk_menu_window_update_screen_position(BriskMenuWindow *window);
 
 G_END_DECLS
 

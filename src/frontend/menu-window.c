@@ -34,14 +34,29 @@ static void brisk_menu_window_hide(GtkWidget *widget);
 static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *id);
 static void brisk_menu_window_build_sidebar(BriskMenuWindow *self);
 
+static void brisk_menu_window_set_property(GObject *object, guint id, const GValue *value,
+                                           GParamSpec *spec);
+static void brisk_menu_window_get_property(GObject *object, guint id, GValue *value,
+                                           GParamSpec *spec);
+enum { PROP_RELATIVE_TO = 1, N_PROPS };
+
+static GParamSpec *obj_properties[N_PROPS] = {
+        NULL,
+};
+
 /**
  * brisk_menu_window_new:
  *
  * Construct a new BriskMenuWindow object
  */
-GtkWidget *brisk_menu_window_new()
+GtkWidget *brisk_menu_window_new(GtkWidget *relative_to)
 {
-        return g_object_new(BRISK_TYPE_MENU_WINDOW, "type", GTK_WINDOW_POPUP, NULL);
+        return g_object_new(BRISK_TYPE_MENU_WINDOW,
+                            "type",
+                            GTK_WINDOW_POPUP,
+                            "relative-to",
+                            relative_to,
+                            NULL);
 }
 
 /**
@@ -88,6 +103,16 @@ static void brisk_menu_window_class_init(BriskMenuWindowClass *klazz)
 
         /* gobject vtable hookup */
         obj_class->dispose = brisk_menu_window_dispose;
+        obj_class->set_property = brisk_menu_window_set_property;
+        obj_class->get_property = brisk_menu_window_get_property;
+
+        /* Set up properties */
+        obj_properties[PROP_RELATIVE_TO] =
+            g_param_spec_pointer("relative-to",
+                                 "GtkWidget we appear near",
+                                 "Owning GtkWidget for this BriskMenuWindow",
+                                 G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+        g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 
         /* widget vtable */
         wid_class->hide = brisk_menu_window_hide;
@@ -494,6 +519,119 @@ static void brisk_menu_window_add_shortcut(BriskMenuWindow *self, const gchar *i
         button = brisk_menu_desktop_button_new(self->launcher, G_APP_INFO(info));
         gtk_widget_show_all(button);
         gtk_box_pack_start(GTK_BOX(self->sidebar), button, FALSE, FALSE, 1);
+}
+
+static void brisk_menu_window_set_property(GObject *object, guint id, const GValue *value,
+                                           GParamSpec *spec)
+{
+        BriskMenuWindow *self = BRISK_MENU_WINDOW(object);
+
+        switch (id) {
+        case PROP_RELATIVE_TO:
+                self->relative_to = g_value_get_pointer(value);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
+static void brisk_menu_window_get_property(GObject *object, guint id, GValue *value,
+                                           GParamSpec *spec)
+{
+        BriskMenuWindow *self = BRISK_MENU_WINDOW(object);
+
+        switch (id) {
+        case PROP_RELATIVE_TO:
+                g_value_set_pointer(value, self->relative_to);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
+void brisk_menu_window_update_screen_position(BriskMenuWindow *self)
+{
+        GdkScreen *screen = NULL;
+        GtkAllocation relative_alloc = { 0 };
+        GdkWindow *window = NULL;
+        GdkRectangle geom = { 0 };
+        gint relative_x, relative_y = 0;      /* Real X, Y of the applet, on screen */
+        gint window_width, window_height = 0; /* Window width & height */
+        gint mon = 0;                         /* Monitor to display on */
+        gint window_x, window_y = 0;          /* Target X, Y */
+
+        if (!self->relative_to) {
+                g_warning("Cannot set relative location without relative widget!");
+                return;
+        }
+
+        /* Forcibly realize the applet window */
+        if (!gtk_widget_get_realized(self->relative_to)) {
+                gtk_widget_realize(self->relative_to);
+        }
+
+        /* Forcibly realize ourselves */
+        if (!gtk_widget_get_realized(GTK_WIDGET(self))) {
+                gtk_widget_realize(GTK_WIDGET(self));
+        }
+
+        gtk_widget_get_allocation(self->relative_to, &relative_alloc);
+
+        /* Find out where we are on screen */
+        window = gtk_widget_get_window(self->relative_to);
+        gdk_window_get_origin(window, &relative_x, &relative_y);
+
+        /* Find out the window size */
+        gtk_window_get_size(GTK_WINDOW(self), &window_width, &window_height);
+
+        /* Grab the geometry for the monitor we're currently on */
+        screen = gtk_widget_get_screen(self->relative_to);
+        mon = gdk_screen_get_monitor_at_point(screen, relative_x, relative_y);
+        gdk_screen_get_monitor_geometry(screen, mon, &geom);
+
+        switch (self->position) {
+        case GTK_POS_LEFT:
+                /* Left vertical panel, appear to the RHS of it */
+                window_x = relative_x + relative_alloc.width;
+                window_y = relative_y;
+                break;
+        case GTK_POS_RIGHT:
+                /* Right vertical panel, appear to the LHS of it */
+                window_x = relative_x - window_width;
+                window_y = relative_y;
+                break;
+        case GTK_POS_TOP:
+                /* Top panel, appear below it */
+                window_x = relative_x;
+                window_y = relative_y + relative_alloc.height;
+                break;
+        case GTK_POS_BOTTOM:
+        default:
+                /* Bottom panel, appear above it */
+                window_x = relative_x;
+                window_y = relative_y - window_height;
+                break;
+        }
+
+        /* Bound the right side */
+        if (window_x + window_width > (geom.x + geom.width)) {
+                window_x = (geom.x + geom.width) - window_width;
+                if (self->position == GTK_POS_RIGHT) {
+                        window_x -= relative_alloc.width;
+                }
+        }
+
+        /* Bound the left side */
+        if (window_x < geom.x) {
+                window_x = geom.x;
+                if (self->position == GTK_POS_LEFT) {
+                        window_x -= relative_alloc.width;
+                }
+        }
+
+        gtk_window_move(GTK_WINDOW(self), window_x, window_y);
 }
 
 /*

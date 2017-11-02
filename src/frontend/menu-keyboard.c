@@ -84,6 +84,8 @@ static gboolean toggle_menu(BriskMenuWindow *self)
         if (vis) {
                 /* Cheap trick to ensure we reset our active position */
                 brisk_menu_window_set_parent_position(self, self->position);
+                /* Ensure we're in the appropriate place */
+                brisk_menu_window_update_screen_position(self);
         }
 
         gtk_widget_set_visible(GTK_WIDGET(self), vis);

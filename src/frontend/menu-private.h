@@ -39,6 +39,9 @@ struct _BriskMenuWindowClass {
 struct _BriskMenuWindow {
         GtkWindow parent;
 
+        /* Who "owns" us */
+        GtkWidget *relative_to;
+
         /* Control launches */
         BriskMenuLauncher *launcher;
 
