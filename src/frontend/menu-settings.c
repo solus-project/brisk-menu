@@ -45,11 +45,13 @@ void brisk_menu_window_pump_settings(BriskMenuWindow *self)
 {
         brisk_menu_window_settings_changed(self->settings, "search-position", self);
         brisk_menu_window_settings_changed(self->settings, "rollover-activate", self);
+        brisk_menu_window_settings_changed(self->settings, "hot-key", self);
 }
 
 static void brisk_menu_window_settings_changed(GSettings *settings, const gchar *key, gpointer v)
 {
         BriskMenuWindow *self = v;
+        autofree(gchar) *value = NULL;
 
         if (g_str_equal(key, "search-position")) {
                 self->search_position = g_settings_get_enum(settings, key);
@@ -57,6 +59,9 @@ static void brisk_menu_window_settings_changed(GSettings *settings, const gchar 
                 return;
         } else if (g_str_equal(key, "rollover-activate")) {
                 self->rollover = g_settings_get_boolean(settings, key);
+        } else if (g_str_equal(key, "hot-key")) {
+                value = g_settings_get_string(settings, key);
+                brisk_menu_window_update_hotkey(self, value);
         }
 }
 

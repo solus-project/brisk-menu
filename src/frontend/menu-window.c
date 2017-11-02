@@ -60,6 +60,8 @@ static void brisk_menu_window_dispose(GObject *obj)
                 g_clear_object(&self->css);
         }
 
+        g_clear_object(&self->binder);
+        g_clear_pointer(&self->shortcut, g_free);
         g_clear_pointer(&self->search_term, g_free);
         g_clear_object(&self->launcher);
         g_clear_object(&self->session);
@@ -106,6 +108,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
         autofree(gchar) *txt_holder = NULL;
         autofree(gchar) *place_holder = NULL;
 
+        self->binder = brisk_key_binder_new();
         self->launcher = brisk_menu_launcher_new();
         brisk_menu_window_load_css(self);
         brisk_menu_window_init_settings(self);
@@ -227,6 +230,7 @@ static void brisk_menu_window_init(BriskMenuWindow *self)
                          "key-release-event",
                          G_CALLBACK(brisk_menu_window_key_release),
                          NULL);
+        g_signal_connect(self, "key-press-event", G_CALLBACK(brisk_menu_window_key_press), NULL);
 
         brisk_menu_window_build_sidebar(self);
 

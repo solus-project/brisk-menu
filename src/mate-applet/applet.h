@@ -15,8 +15,6 @@
 #include <gtk/gtk.h>
 #include <mate-panel-applet.h>
 
-#include "lib/key-binder.h"
-
 G_BEGIN_DECLS
 
 typedef struct _BriskMenuApplet BriskMenuApplet;
@@ -31,10 +29,6 @@ struct _BriskMenuAppletClass {
  * provides merely an access path to the main Brisk Menu Window itself.
  * It also adds some special sauce around it to make it properly integrate
  * within the MATE Desktop, such as hotkeys and panel integration.
- *
- * TODO: Remove the key binder from the applet and make it private to the
- * main window itself. It's conceptually absurd that the window and the
- * applet both handle the hotkey callbacks right now.
  */
 struct _BriskMenuApplet {
         MatePanelApplet parent;
@@ -44,8 +38,6 @@ struct _BriskMenuApplet {
         GtkWidget *image;             /**<Icon display beside label */
         GtkWidget *menu;              /**<BriskMenuWindow instance */
         GSettings *settings;          /**<Our settings store */
-        gchar *shortcut;              /**<Currently bound hotkey */
-        BriskKeyBinder *binder;       /**<Binder mechanism */
         MatePanelAppletOrient orient; /**<Current position for the panel */
 };
 

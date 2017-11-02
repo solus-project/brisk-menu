@@ -36,7 +36,6 @@ DEF_AUTOFREE(NotifyNotification, g_object_unref)
  * Handle showing of the menu
  */
 static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer v);
-static void hotkey_cb(GdkEvent *event, gpointer v);
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient);
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size);
 static void brisk_menu_applet_change_menu_orient(BriskMenuApplet *self);
@@ -44,32 +43,10 @@ static void brisk_menu_applet_change_menu_orient(BriskMenuApplet *self);
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
-void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key);
 static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body);
 
 /* Helpers */
 static GtkPositionType convert_mate_position(MatePanelAppletOrient orient);
-
-/**
- * Handle hiding the menu when it comes to the shortcut key only.
- * i.e. the Super_L key.
- */
-static gboolean brisk_menu_applet_key_press(BriskMenuApplet *self, GdkEvent *event, GtkWidget *menu)
-{
-        autofree(gchar) *accel_name = NULL;
-
-        if (!self->shortcut) {
-                return GDK_EVENT_PROPAGATE;
-        }
-
-        accel_name = gtk_accelerator_name(event->key.keyval, event->key.state);
-        if (!accel_name || g_ascii_strcasecmp(self->shortcut, accel_name) != 0) {
-                return GDK_EVENT_PROPAGATE;
-        }
-
-        gtk_widget_hide(menu);
-        return GDK_EVENT_STOP;
-}
 
 /**
  * brisk_menu_applet_dispose:
@@ -88,9 +65,7 @@ static void brisk_menu_applet_dispose(GObject *obj)
                 g_clear_pointer(&self->menu, gtk_widget_destroy);
         }
 
-        g_clear_object(&self->binder);
         g_clear_object(&self->settings);
-        g_clear_pointer(&self->shortcut, g_free);
 
         G_OBJECT_CLASS(brisk_menu_applet_parent_class)->dispose(obj);
 }
@@ -119,12 +94,9 @@ void brisk_menu_applet_init_settings(BriskMenuApplet *self)
 
         /* capture changes in settings that affect the menu applet */
         g_signal_connect(self->settings,
-                         "changed",
+                         "changed::label-text",
                          G_CALLBACK(brisk_menu_applet_settings_changed),
                          self);
-
-        /* Pump applet settings */
-        brisk_menu_applet_settings_changed(self->settings, "hot-key", self);
 }
 
 /**
@@ -137,7 +109,6 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         GtkWidget *toggle, *layout, *image, *label, *menu = NULL;
         GtkStyleContext *style = NULL;
 
-        self->binder = brisk_key_binder_new();
         brisk_menu_applet_init_settings(self);
 
         /* Create the toggle button */
@@ -194,11 +165,6 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         /* Construct our menu */
         menu = brisk_menu_window_new();
         self->menu = menu;
-        /* We handle the shortcut side of the events, not the escape key */
-        g_signal_connect_swapped(self->menu,
-                                 "key-press-event",
-                                 G_CALLBACK(brisk_menu_applet_key_press),
-                                 self);
 
         /* Render "active" toggle only when the window is open, automatically. */
         g_object_bind_property(menu, "visible", toggle, "active", G_BINDING_DEFAULT);
@@ -238,28 +204,6 @@ static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, __brisk_
 }
 
 /**
- * Called in idle once back out of the event
- */
-static gboolean toggle_menu(BriskMenuApplet *self)
-{
-        gboolean vis = !gtk_widget_get_visible(self->menu);
-        if (vis) {
-                brisk_menu_applet_update_position(self);
-        }
-
-        gtk_widget_set_visible(self->menu, vis);
-        return FALSE;
-}
-
-/**
- * Handle global hotkey press
- */
-static void hotkey_cb(__brisk_unused__ GdkEvent *event, gpointer v)
-{
-        g_idle_add((GSourceFunc)toggle_menu, v);
-}
-
-/**
  * Callback for changing applet settings
  */
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v)
@@ -267,35 +211,13 @@ static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar 
         BriskMenuApplet *self = v;
         autofree(gchar) *value = NULL;
 
-        if (g_str_equal(key, "hot-key")) {
-                value = g_settings_get_string(settings, key);
-                brisk_menu_applet_update_hotkey(self, value);
-        } else if (g_str_equal(key, "label-text")) {
-                value = g_settings_get_string(settings, key);
-                if (g_str_equal(value, "")) {
-                        gtk_label_set_text(GTK_LABEL(self->label), _("Menu"));
-                } else {
-                        gtk_label_set_text(GTK_LABEL(self->label), value);
-                }
-        }
-}
+        value = g_settings_get_string(settings, key);
 
-/**
- * Update the applet hotkey in accordance with settings
- */
-void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key)
-{
-        if (self->shortcut) {
-                brisk_key_binder_unbind(self->binder, self->shortcut);
-                g_clear_pointer(&self->shortcut, g_free);
+        if (g_str_equal(value, "")) {
+                gtk_label_set_text(GTK_LABEL(self->label), _("Menu"));
+        } else {
+                gtk_label_set_text(GTK_LABEL(self->label), value);
         }
-
-        if (!brisk_key_binder_bind(self->binder, key, hotkey_cb, self)) {
-                g_message("Failed to bind keyboard shortcut");
-                return;
-        }
-
-        self->shortcut = g_strdup(key);
 }
 
 /**

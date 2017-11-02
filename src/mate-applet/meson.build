@@ -8,7 +8,6 @@ mate_applet_dependencies = [
     link_libbackend,
     link_libfrontend,
     link_libresources,
-    link_libutil,
     dep_mate_applet,
     dep_notify,
 ]

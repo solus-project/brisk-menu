@@ -13,6 +13,7 @@
 
 #include "backend/backend.h"
 #include "entry-button.h"
+#include "key-binder.h"
 #include "launcher.h"
 #include "libsaver-glue.h"
 #include "libsession-glue.h"
@@ -40,6 +41,10 @@ struct _BriskMenuWindow {
 
         /* Control launches */
         BriskMenuLauncher *launcher;
+
+        /* Control hotkeys */
+        BriskKeyBinder *binder;
+        gchar *shortcut;
 
         /* Categories */
         GtkWidget *sidebar;
@@ -119,7 +124,9 @@ void brisk_menu_window_clear_search(GtkEntry *entry, GtkEntryIconPosition pos, G
 gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v);
 
 /* Keyboard */
+gboolean brisk_menu_window_key_press(BriskMenuWindow *self, GdkEvent *event, gpointer v);
 gboolean brisk_menu_window_key_release(BriskMenuWindow *self, GdkEvent *event, gpointer v);
+void brisk_menu_window_update_hotkey(BriskMenuWindow *self, gchar *key);
 void brisk_menu_window_key_activate(BriskMenuWindow *self, gpointer v);
 
 void brisk_menu_window_set_filters_enabled(BriskMenuWindow *self, gboolean enabled);

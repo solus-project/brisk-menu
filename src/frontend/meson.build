@@ -18,11 +18,11 @@ libfrontend_sources = [
 libfrontend_dependencies = [
     link_libbackend,
     link_libsession_stub,
+    link_libutil,
     dep_gtk3,
 ]
 
 libfrontend_includes = [
-    lib_h_dir,
     include_directories('.'),
 ]
 
