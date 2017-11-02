@@ -346,7 +346,7 @@ static void brisk_menu_window_load_css(BriskMenuWindow *self)
         screen = gtk_widget_get_screen(GTK_WIDGET(self));
         gtk_style_context_add_provider_for_screen(screen,
                                                   GTK_STYLE_PROVIDER(css),
-                                                  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+                                                  GTK_STYLE_PROVIDER_PRIORITY_FALLBACK);
 
         if (!gtk_css_provider_load_from_file(css, file, &err)) {
                 g_warning("Failed to load CSS: %s\n", err->message);

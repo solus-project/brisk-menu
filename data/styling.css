@@ -1,3 +1,9 @@
 .brisk-button-vertical {
-    padding: 0;
+    padding: 0px;
+    margin: 0px;
+}
+
+.brisk-button {
+    padding: 0px;
+    margin: 0px;
 }
