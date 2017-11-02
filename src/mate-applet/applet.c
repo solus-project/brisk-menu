@@ -39,6 +39,7 @@ static gboolean button_press_cb(BriskMenuApplet *self, GdkEvent *event, gpointer
 static void hotkey_cb(GdkEvent *event, gpointer v);
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient);
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size);
+static void brisk_menu_applet_change_menu_orient(BriskMenuApplet *self);
 
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
@@ -211,6 +212,10 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
 
         /* Pump the settings */
         brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
+
+        /* Now that the menu is initialised, we can tell it to update to our current
+         * orientation, so that automatic position is correct on first start */
+        brisk_menu_applet_change_menu_orient(self);
 }
 
 /**
@@ -294,18 +299,26 @@ void brisk_menu_applet_update_hotkey(BriskMenuApplet *self, gchar *key)
 }
 
 /**
+ * Internal helper to ensure the orient is correct for the menu
+ */
+static void brisk_menu_applet_change_menu_orient(BriskMenuApplet *self)
+{
+        GtkPositionType position;
+        position = convert_mate_position(self->orient);
+
+        /* Let the main menu window know about our orientation */
+        brisk_menu_window_set_parent_position(BRISK_MENU_WINDOW(self->menu), position);
+}
+
+/**
  * Panel orientation changed, tell the menu
  */
 static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAppletOrient orient)
 {
         BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
-        GtkPositionType position;
         self->orient = orient;
 
-        position = convert_mate_position(self->orient);
-
-        /* Let the main menu window know about our orientation */
-        brisk_menu_window_set_parent_position(BRISK_MENU_WINDOW(self->menu), position);
+        brisk_menu_applet_change_menu_orient(self);
 
         /* Now adjust our own display to deal with the orientation */
         brisk_menu_applet_adapt_layout(BRISK_MENU_APPLET(applet));
