@@ -76,14 +76,14 @@ void brisk_menu_window_update_search(BriskMenuWindow *self)
         }
 
         switch (search_position) {
-        case SEARCH_POS_AUTOMATIC: {
+        case SEARCH_POS_AUTOMATIC:
                 /* Bottom panel = stick search at bottom */
                 if (self->position == GTK_POS_TOP) {
                         n_pos = 1;
                 } else {
                         n_pos = 0;
                 }
-        } break;
+                break;
         case SEARCH_POS_TOP:
                 n_pos = 0;
                 break;
