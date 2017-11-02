@@ -45,6 +45,8 @@ Features
  - Efficient, useful searching with prioritised listings
  - Modular backend design split from the frontend, allowing new backends in future
    (hint: the frontend is not tied to `.desktop` files)
+ - Context menus for `.desktop` actions (incognito mode, etc.)
+ - Pin shortcuts to the `Favourites` backend and directly to the desktop using the context menu (unpin too!)
  - Configurable label (hide/text)
  - Automatically adapt to vertical panels
  - Automatically reload
@@ -61,8 +63,6 @@ Features
 Some items that are currently known to be definite options in the roadmap:
 
  - Settings UI to control further visual aspects (labels/icons/options)
- - "Pin to" support (Favourites, desktop, docks..)
- - Enhanced vertical panel support (i.e. dash-style menu mode)
  - Improved styling for the window edge + search entry.
 
 More will be added in time as we go along.
