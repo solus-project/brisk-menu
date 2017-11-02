@@ -10,52 +10,52 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Afrizal Yusren <yusrenz@gmail.com>, 2017\n"
-"Language-Team: Indonesian (Indonesia) (https://www.transifex.com/solus-project/teams/68407/id_ID/)\n"
+"Last-Translator: Juan Banga <insertardireccion@gmail.com>, 2017\n"
+"Language-Team: Galician (Spain) (https://www.transifex.com/solus-project/teams/68407/gl_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: id_ID\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: gl_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../src/mate-applet/applet.c:78
 msgid "_Edit Menus"
-msgstr "_Sunting Menu"
+msgstr "_Editar menús"
 
 #: ../src/mate-applet/applet.c:368
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menú"
 
 #: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
-msgstr "Peluncur Brisk Menu"
+msgstr "Lanzador do Menú Brisk"
 
 #: ../src/frontend/category-button.c:115
 msgid "All"
-msgstr "Semua"
+msgstr "Todos"
 
 #: ../src/frontend/menu-session.c:144
 msgid "End the current session"
-msgstr "Akhiri sesi saat ini"
+msgstr "Fin da sesión actual"
 
 #: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
-msgstr "Kunci layar"
+msgstr "Bloquear a pantalla"
 
 #: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
-msgstr "Matikan perangkat"
+msgstr "Apagar o equipo"
 
 #. Translators: This is the text shown in the "search box" with no content
 #: ../src/frontend/menu-window.c:140
 msgid "Type to search"
-msgstr "Ketik untuk mencari"
+msgstr "Escribe para buscar"
 
 #. Translators: This message is shown when the search results are empty
 #: ../src/frontend/menu-window.c:202
 msgid "Sorry, no items found"
-msgstr "Maaf, tidak ada item yang ditemukan"
+msgstr "Sentímolo, non se atoparon resultados"
 
 #: ../src/backend/apps/apps-backend.c:111
 msgid "Applications"
-msgstr "Aplikasi"
+msgstr "Aplicacións"

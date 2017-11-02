@@ -28,7 +28,7 @@ msgstr "Menu"
 
 #: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
-msgstr "Lançandor de menu Brisk"
+msgstr "Lançandor de Menu Brisk"
 
 #: ../src/frontend/category-button.c:115
 msgid "All"

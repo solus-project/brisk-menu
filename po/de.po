@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:56+0000\n"
+"POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Casio E <casiopopasio@t-online.de>, 2017\n"
+"Last-Translator: Peter Hansen <alawistablet@gmail.com>, 2017\n"
 "Language-Team: German (https://www.transifex.com/solus-project/teams/68407/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,27 +18,44 @@ msgstr ""
 "Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. Now add the label
-#: ../src/applet.c:177
+#: ../src/mate-applet/applet.c:78
+msgid "_Edit Menus"
+msgstr "_Bearbeiten des Menüs"
+
+#: ../src/mate-applet/applet.c:368
 msgid "Menu"
 msgstr "Menü"
 
-#: ../src/applet.c:265
+#: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
 msgstr "Brisk Menü Starter"
 
-#: ../src/category-button.c:130
+#: ../src/frontend/category-button.c:115
 msgid "All"
 msgstr "Alles"
 
-#: ../src/menu-session.c:144
+#: ../src/frontend/menu-session.c:144
 msgid "End the current session"
 msgstr "Abmelden"
 
-#: ../src/menu-session.c:155
+#: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
 msgstr "Bildschirm sperren"
 
-#: ../src/menu-session.c:166
+#: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
 msgstr "Herunterfahren"
+
+#. Translators: This is the text shown in the "search box" with no content
+#: ../src/frontend/menu-window.c:140
+msgid "Type to search"
+msgstr "Tippen um zu suchen"
+
+#. Translators: This message is shown when the search results are empty
+#: ../src/frontend/menu-window.c:202
+msgid "Sorry, no items found"
+msgstr "Es wurden leider keine Ergebnisse gefunden"
+
+#: ../src/backend/apps/apps-backend.c:111
+msgid "Applications"
+msgstr "Anwendungen"

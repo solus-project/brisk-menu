@@ -20,7 +20,7 @@ msgstr ""
 
 #: ../src/mate-applet/applet.c:78
 msgid "_Edit Menus"
-msgstr "_Edita els menús"
+msgstr "_Edita els menús."
 
 #: ../src/mate-applet/applet.c:368
 msgid "Menu"
@@ -36,20 +36,20 @@ msgstr "Tot"
 
 #: ../src/frontend/menu-session.c:144
 msgid "End the current session"
-msgstr "Acaba la sessió actual"
+msgstr "Acaba la sessió actual."
 
 #: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
-msgstr "Bloqueja la pantalla"
+msgstr "Bloqueja la pantalla."
 
 #: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
-msgstr "Atura el dispositiu"
+msgstr "Atura el dispositiu."
 
 #. Translators: This is the text shown in the "search box" with no content
 #: ../src/frontend/menu-window.c:140
 msgid "Type to search"
-msgstr "Teclegeu per cercar"
+msgstr "Teclegeu per cercar..."
 
 #. Translators: This message is shown when the search results are empty
 #: ../src/frontend/menu-window.c:202

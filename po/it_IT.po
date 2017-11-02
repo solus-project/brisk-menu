@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:56+0000\n"
+"POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Michele Vizzani <michelevizzani@tiscali.it>, 2017\n"
+"Last-Translator: Andrea Cassioli <cassioliandre@gmail.com>, 2017\n"
 "Language-Team: Italian (Italy) (https://www.transifex.com/solus-project/teams/68407/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,27 +18,44 @@ msgstr ""
 "Language: it_IT\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. Now add the label
-#: ../src/applet.c:177
+#: ../src/mate-applet/applet.c:78
+msgid "_Edit Menus"
+msgstr "_Modifica Menu"
+
+#: ../src/mate-applet/applet.c:368
 msgid "Menu"
 msgstr "Menu"
 
-#: ../src/applet.c:265
+#: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
-msgstr "Brisk Menu"
+msgstr "Brisk Menu Launcher"
 
-#: ../src/category-button.c:130
+#: ../src/frontend/category-button.c:115
 msgid "All"
 msgstr "Tutto"
 
-#: ../src/menu-session.c:144
+#: ../src/frontend/menu-session.c:144
 msgid "End the current session"
-msgstr "Fine della sessione corrente"
+msgstr "Termina la sessione corrente"
 
-#: ../src/menu-session.c:155
+#: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
 msgstr "Blocca lo schermo"
 
-#: ../src/menu-session.c:166
+#: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
-msgstr "Spegni il computer"
+msgstr "Spegni il dispositivo"
+
+#. Translators: This is the text shown in the "search box" with no content
+#: ../src/frontend/menu-window.c:140
+msgid "Type to search"
+msgstr "Digita per cercare"
+
+#. Translators: This message is shown when the search results are empty
+#: ../src/frontend/menu-window.c:202
+msgid "Sorry, no items found"
+msgstr "Spiacente, nessun elemento trovato"
+
+#: ../src/backend/apps/apps-backend.c:111
+msgid "Applications"
+msgstr "Applicazioni"

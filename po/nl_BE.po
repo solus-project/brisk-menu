@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:56+0000\n"
+"POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Geert Verheyde <geert.verheyde@gmail.com>, 2017\n"
 "Language-Team: Dutch (Belgium) (https://www.transifex.com/solus-project/teams/68407/nl_BE/)\n"
@@ -18,27 +18,44 @@ msgstr ""
 "Language: nl_BE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#. Now add the label
-#: ../src/applet.c:177
+#: ../src/mate-applet/applet.c:78
+msgid "_Edit Menus"
+msgstr "_Menus aanpassen"
+
+#: ../src/mate-applet/applet.c:368
 msgid "Menu"
 msgstr "Menu"
 
-#: ../src/applet.c:265
+#: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
 msgstr "Brisk Menu Starter"
 
-#: ../src/category-button.c:130
+#: ../src/frontend/category-button.c:115
 msgid "All"
 msgstr "Alles"
 
-#: ../src/menu-session.c:144
+#: ../src/frontend/menu-session.c:144
 msgid "End the current session"
 msgstr "Afmelden"
 
-#: ../src/menu-session.c:155
+#: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
 msgstr "Vergrendelen"
 
-#: ../src/menu-session.c:166
+#: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
 msgstr "Afsluiten"
+
+#. Translators: This is the text shown in the "search box" with no content
+#: ../src/frontend/menu-window.c:140
+msgid "Type to search"
+msgstr "Wat zoek je?"
+
+#. Translators: This message is shown when the search results are empty
+#: ../src/frontend/menu-window.c:202
+msgid "Sorry, no items found"
+msgstr "Helaas, niets gevonden"
+
+#: ../src/backend/apps/apps-backend.c:111
+msgid "Applications"
+msgstr "Toepassingen"

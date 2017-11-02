@@ -8,37 +8,54 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 04:56+0000\n"
+"POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Dzej Kob <accountxyz@protonmail.com>, 2017\n"
+"Last-Translator: m4sk1n <m4sk1n@vivaldi.net>, 2017\n"
 "Language-Team: Polish (https://www.transifex.com/solus-project/teams/68407/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pl\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
-#. Now add the label
-#: ../src/applet.c:177
+#: ../src/mate-applet/applet.c:78
+msgid "_Edit Menus"
+msgstr "_Edytuj menu"
+
+#: ../src/mate-applet/applet.c:368
 msgid "Menu"
 msgstr "Menu"
 
-#: ../src/applet.c:265
+#: ../src/mate-applet/applet.c:504
 msgid "Brisk Menu Launcher"
 msgstr "Brisk Menu Launcher"
 
-#: ../src/category-button.c:130
+#: ../src/frontend/category-button.c:115
 msgid "All"
 msgstr "Wszystkie"
 
-#: ../src/menu-session.c:144
+#: ../src/frontend/menu-session.c:144
 msgid "End the current session"
 msgstr "Zakończ obecną sesję"
 
-#: ../src/menu-session.c:155
+#: ../src/frontend/menu-session.c:155
 msgid "Lock the screen"
 msgstr "Zablokuj ekran"
 
-#: ../src/menu-session.c:166
+#: ../src/frontend/menu-session.c:166
 msgid "Turn off the device"
 msgstr "Wyłącz urządzenie"
+
+#. Translators: This is the text shown in the "search box" with no content
+#: ../src/frontend/menu-window.c:140
+msgid "Type to search"
+msgstr "Wprowadź tekst, aby wyszukać"
+
+#. Translators: This message is shown when the search results are empty
+#: ../src/frontend/menu-window.c:202
+msgid "Sorry, no items found"
+msgstr "Nie znaleziono pasujących wyników"
+
+#: ../src/backend/apps/apps-backend.c:111
+msgid "Applications"
+msgstr "Aplikacje"
