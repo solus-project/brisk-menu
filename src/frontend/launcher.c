@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ static void brisk_menu_launcher_init_context(BriskMenuLauncher *self, GtkWidget 
 
         /* Hide the menu before kicking off the launch */
         toplevel = gtk_widget_get_toplevel(parent);
-        if (!GTK_IS_WINDOW(parent)) {
+        if (BRISK_IS_MENU_WINDOW(toplevel)) {
                 gtk_widget_hide(toplevel);
         }
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "applet.h"
-#include "frontend/menu-private.h"
-#include "frontend/menu-window.h"
+#include "frontend/classic/classic-window.h"
+#include "frontend/dash/dash-window.h"
 #include "lib/authors.h"
 #include "lib/styles.h"
 #include <gio/gdesktopappinfo.h>
@@ -40,6 +40,9 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size);
 static void brisk_menu_applet_change_menu_orient(BriskMenuApplet *self);
 
+static gboolean brisk_menu_applet_startup(BriskMenuApplet *self);
+static void brisk_menu_applet_create_window(BriskMenuApplet *self);
+
 /* Handle applet settings */
 void brisk_menu_applet_init_settings(BriskMenuApplet *self);
 static void brisk_menu_applet_settings_changed(GSettings *settings, const gchar *key, gpointer v);
@@ -48,6 +51,7 @@ static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body)
 /* Helpers */
 static GtkPositionType convert_mate_position(MatePanelAppletOrient orient);
 static void brisk_menu_applet_adapt_layout(BriskMenuApplet *self);
+static GtkWidget *brisk_menu_applet_automatic_window_type(BriskMenuApplet *self);
 
 /**
  * brisk_menu_applet_dispose:
@@ -107,7 +111,7 @@ void brisk_menu_applet_init_settings(BriskMenuApplet *self)
  */
 static void brisk_menu_applet_init(BriskMenuApplet *self)
 {
-        GtkWidget *toggle, *layout, *image, *label, *menu = NULL;
+        GtkWidget *toggle, *layout, *image, *label = NULL;
         GtkStyleContext *style = NULL;
 
         brisk_menu_applet_init_settings(self);
@@ -160,22 +164,48 @@ static void brisk_menu_applet_init(BriskMenuApplet *self)
         mate_panel_applet_set_flags(MATE_PANEL_APPLET(self), MATE_PANEL_APPLET_EXPAND_MINOR);
         mate_panel_applet_set_background_widget(MATE_PANEL_APPLET(self), GTK_WIDGET(self));
 
-        /* Now show all content */
-        gtk_widget_show_all(toggle);
+        /* Wait for mate-panel to do its thing and tell us the orientation */
+        g_idle_add((GSourceFunc)brisk_menu_applet_startup, self);
+}
 
-        /* Construct our menu */
-        menu = brisk_menu_window_new(GTK_WIDGET(self));
-        self->menu = menu;
-
-        /* Render "active" toggle only when the window is open, automatically. */
-        g_object_bind_property(menu, "visible", toggle, "active", G_BINDING_DEFAULT);
-
-        /* Load initially in the idle loop, prevent lagging panel on startup */
-        g_idle_add((GSourceFunc)brisk_menu_window_load_menus, self->menu);
-
+static gboolean brisk_menu_applet_startup(BriskMenuApplet *self)
+{
         /* Ensure we fire off the initial layout adaptation code */
         brisk_menu_applet_change_orient(MATE_PANEL_APPLET(self),
                                         mate_panel_applet_get_orient(MATE_PANEL_APPLET(self)));
+
+        return G_SOURCE_REMOVE;
+}
+
+static void brisk_menu_applet_create_window(BriskMenuApplet *self)
+{
+        GtkWidget *menu = NULL;
+
+        /* Now show all content */
+        gtk_widget_show_all(self->toggle);
+
+        /* Construct our menu */
+        WindowType window_type = g_settings_get_enum(self->settings, "window-type");
+        switch (window_type) {
+        case WINDOW_TYPE_DASH:
+                menu = GTK_WIDGET(brisk_dash_window_new(GTK_WIDGET(self)));
+                break;
+        case WINDOW_TYPE_AUTOMATIC:
+                menu = brisk_menu_applet_automatic_window_type(self);
+                break;
+        case WINDOW_TYPE_CLASSIC:
+        default:
+                menu = GTK_WIDGET(brisk_classic_window_new(GTK_WIDGET(self)));
+                break;
+        }
+
+        self->menu = menu;
+
+        /* Render "active" toggle only when the window is open, automatically. */
+        g_object_bind_property(menu, "visible", self->toggle, "active", G_BINDING_DEFAULT);
+
+        /* Load our menus */
+        brisk_menu_window_load_menus(BRISK_MENU_WINDOW(self->menu));
 
         /* Pump the settings */
         brisk_menu_window_pump_settings(BRISK_MENU_WINDOW(self->menu));
@@ -240,11 +270,15 @@ static void brisk_menu_applet_change_orient(MatePanelApplet *applet, MatePanelAp
 {
         BriskMenuApplet *self = BRISK_MENU_APPLET(applet);
         self->orient = orient;
-
-        brisk_menu_applet_change_menu_orient(self);
-
         /* Now adjust our own display to deal with the orientation */
         brisk_menu_applet_adapt_layout(BRISK_MENU_APPLET(applet));
+
+        if (!self->menu) {
+                brisk_menu_applet_create_window(self);
+                return;
+        }
+
+        brisk_menu_applet_change_menu_orient(self);
 }
 
 static void brisk_menu_applet_change_size(MatePanelApplet *applet, guint size)
@@ -325,7 +359,7 @@ static void brisk_menu_applet_notify_fail(const gchar *title, const gchar *body)
 void brisk_menu_applet_show_about(__brisk_unused__ GtkAction *action,
                                   __brisk_unused__ BriskMenuApplet *applet)
 {
-        static const gchar *copyright_string = "Copyright © 2016-2017 Brisk Menu Developers";
+        static const gchar *copyright_string = "Copyright © 2016-2018 Brisk Menu Developers";
         gtk_show_about_dialog(NULL,
                               "authors",
                               brisk_developers,
@@ -396,6 +430,17 @@ static void brisk_menu_applet_adapt_layout(BriskMenuApplet *self)
                 gtk_style_context_remove_class(style, BRISK_STYLE_BUTTON_VERTICAL);
                 gtk_widget_set_margin_end(self->image, 4);
                 break;
+        }
+}
+
+static GtkWidget *brisk_menu_applet_automatic_window_type(BriskMenuApplet *self)
+{
+        switch (self->orient) {
+        case MATE_PANEL_APPLET_ORIENT_LEFT:
+        case MATE_PANEL_APPLET_ORIENT_RIGHT:
+                return GTK_WIDGET(brisk_dash_window_new(GTK_WIDGET(self)));
+        default:
+                return GTK_WIDGET(brisk_classic_window_new(GTK_WIDGET(self)));
         }
 }
 /*

@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ static gboolean brisk_menu_window_logout_real(BriskMenuWindow *self)
 /**
  * Handle log out
  */
-static void brisk_menu_window_logout(BriskMenuWindow *self, __brisk_unused__ gpointer v)
+void brisk_menu_window_logout(BriskMenuWindow *self, __brisk_unused__ gpointer v)
 {
         gtk_widget_hide(GTK_WIDGET(self));
 
@@ -83,7 +83,7 @@ static inline gboolean brisk_menu_window_shutdown_real(BriskMenuWindow *self)
 /**
  * Handle shut down
  */
-static void brisk_menu_window_shutdown(BriskMenuWindow *self, __brisk_unused__ gpointer v)
+void brisk_menu_window_shutdown(BriskMenuWindow *self, __brisk_unused__ gpointer v)
 {
         gtk_widget_hide(GTK_WIDGET(self));
         g_idle_add((GSourceFunc)brisk_menu_window_shutdown_real, self);
@@ -112,62 +112,10 @@ static inline gboolean brisk_menu_window_lock_real(BriskMenuWindow *self)
 /**
  * Handle lock
  */
-static void brisk_menu_window_lock(BriskMenuWindow *self, __brisk_unused__ gpointer v)
+void brisk_menu_window_lock(BriskMenuWindow *self, __brisk_unused__ gpointer v)
 {
         gtk_widget_hide(GTK_WIDGET(self));
         g_idle_add((GSourceFunc)brisk_menu_window_lock_real, self);
-}
-
-/**
- * Create the graphical buttons for session control
- */
-void brisk_menu_window_setup_session_controls(BriskMenuWindow *self)
-{
-        GtkWidget *widget = NULL;
-        GtkWidget *box = NULL;
-        GtkStyleContext *style = NULL;
-
-        box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-        gtk_widget_set_margin_bottom(box, 4);
-
-        gtk_box_pack_end(GTK_BOX(self->sidebar_wrap), box, FALSE, FALSE, 0);
-        gtk_widget_set_halign(box, GTK_ALIGN_CENTER);
-
-        /* Add a separator for visual consistency */
-        widget = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
-        gtk_box_pack_end(GTK_BOX(self->sidebar_wrap), widget, FALSE, FALSE, 3);
-
-        /* Logout */
-        widget = gtk_button_new_from_icon_name("brisk_system-log-out-symbolic", GTK_ICON_SIZE_MENU);
-        self->button_logout = widget;
-        g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_logout), self);
-        gtk_widget_set_tooltip_text(widget, _("End the current session"));
-        gtk_widget_set_can_focus(widget, FALSE);
-        gtk_container_add(GTK_CONTAINER(box), widget);
-        style = gtk_widget_get_style_context(widget);
-        gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
-
-        /* Lock */
-        widget = gtk_button_new_from_icon_name("system-lock-screen-symbolic",
-                                               GTK_ICON_SIZE_SMALL_TOOLBAR);
-        self->button_lock = widget;
-        g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_lock), self);
-        gtk_widget_set_tooltip_text(widget, _("Lock the screen"));
-        gtk_widget_set_can_focus(widget, FALSE);
-        gtk_container_add(GTK_CONTAINER(box), widget);
-        style = gtk_widget_get_style_context(widget);
-        gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
-
-        /* Shutdown */
-        widget =
-            gtk_button_new_from_icon_name("system-shutdown-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
-        self->button_shutdown = widget;
-        g_signal_connect_swapped(widget, "clicked", G_CALLBACK(brisk_menu_window_shutdown), self);
-        gtk_widget_set_tooltip_text(widget, _("Turn off the device"));
-        gtk_widget_set_can_focus(widget, FALSE);
-        gtk_container_add(GTK_CONTAINER(box), widget);
-        style = gtk_widget_get_style_context(widget);
-        gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
 }
 
 gboolean brisk_menu_window_setup_session(BriskMenuWindow *self)
@@ -188,14 +136,11 @@ gboolean brisk_menu_window_setup_session(BriskMenuWindow *self)
                 g_warning("Failed to contact org.gnome.SessionManager: %s\n", error->message);
                 g_error_free(error);
 
-                gtk_widget_set_sensitive(self->button_shutdown, FALSE);
-                gtk_widget_set_sensitive(self->button_logout, FALSE);
                 goto saver_init;
         }
 
         /* Set sensitive according to policy */
         gnome_session_manager_call_can_shutdown_sync(self->session, &can_shutdown, NULL, NULL);
-        gtk_widget_set_sensitive(self->button_shutdown, can_shutdown);
 
 saver_init:
         self->saver =
@@ -207,14 +152,12 @@ saver_init:
                                                      &error);
         if (error) {
                 g_warning("Failed to contact org.mate.ScreenSaver: %s\n", error->message);
-                gtk_widget_set_sensitive(self->button_lock, FALSE);
                 return FALSE;
         }
 
         /* Check the screensaver is *really* running */
         mate_screen_saver_call_get_active_sync(self->saver, &is_active, NULL, &error);
         if (error) {
-                gtk_widget_set_sensitive(self->button_lock, FALSE);
                 g_warning("org.mate.ScreenSaver not running: %s\n", error->message);
         }
         return FALSE;

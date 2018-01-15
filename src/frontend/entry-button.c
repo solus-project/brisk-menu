@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,17 +28,6 @@ static void brisk_menu_entry_drag_data(GtkWidget *widget, GdkDragContext *contex
 static gboolean brisk_menu_entry_button_release_event(GtkWidget *wid, GdkEventButton *event);
 
 /**
- * BriskMenuEntryButton is the toplevel window type used within the applet.
- */
-struct _BriskMenuEntryButton {
-        GtkButton parent;
-        GtkWidget *label;
-        GtkWidget *image;
-        BriskItem *item;
-        BriskMenuLauncher *launcher;
-};
-
-/**
  * IDs for our signals
  */
 enum { ENTRY_BUTTON_SIGNAL_CONTEXT_MENU = 0, N_SIGNALS };
@@ -52,6 +41,21 @@ enum { PROP_ITEM = 1, PROP_LAUNCHER, N_PROPS };
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
+
+/**
+ * brisk_menu_entry_button_dispose:
+ *
+ * Clean up a BriskMenuEntryButton instance
+ */
+static void brisk_menu_entry_button_dispose(GObject *obj)
+{
+        BriskMenuEntryButton *self = NULL;
+
+        self = BRISK_MENU_ENTRY_BUTTON(obj);
+        g_clear_object(&self->item);
+
+        G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->dispose(obj);
+}
 
 static void brisk_menu_entry_button_set_property(GObject *object, guint id, const GValue *value,
                                                  GParamSpec *spec)
@@ -90,61 +94,6 @@ static void brisk_menu_entry_button_get_property(GObject *object, guint id, GVal
 }
 
 /**
- * brisk_menu_entry_button_new:
- *
- * Construct a new BriskMenuEntryButton object
- */
-GtkWidget *brisk_menu_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item)
-{
-        return g_object_new(BRISK_TYPE_MENU_ENTRY_BUTTON, "launcher", launcher, "item", item, NULL);
-}
-
-/**
- * brisk_menu_entry_button_dispose:
- *
- * Clean up a BriskMenuEntryButton instance
- */
-static void brisk_menu_entry_button_dispose(GObject *obj)
-{
-        BriskMenuEntryButton *self = NULL;
-
-        self = BRISK_MENU_ENTRY_BUTTON(obj);
-        g_clear_object(&self->item);
-
-        G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->dispose(obj);
-}
-
-/**
- * Handle constructor specifics for our button
- */
-static void brisk_menu_entry_button_constructed(GObject *obj)
-{
-        BriskMenuEntryButton *self = NULL;
-        const GIcon *icon = NULL;
-
-        self = BRISK_MENU_ENTRY_BUTTON(obj);
-
-        icon = brisk_item_get_icon(self->item);
-        if (icon) {
-                gtk_image_set_from_gicon(GTK_IMAGE(self->image),
-                                         (GIcon *)icon,
-                                         GTK_ICON_SIZE_LARGE_TOOLBAR);
-        } else {
-                gtk_image_set_from_icon_name(GTK_IMAGE(self->image),
-                                             "image-missing",
-                                             GTK_ICON_SIZE_LARGE_TOOLBAR);
-        }
-
-        gtk_image_set_pixel_size(GTK_IMAGE(self->image), 24);
-
-        /* Determine our label based on the app */
-        gtk_label_set_label(GTK_LABEL(self->label), brisk_item_get_name(self->item));
-        gtk_widget_set_tooltip_text(GTK_WIDGET(self), brisk_item_get_summary(self->item));
-
-        G_OBJECT_CLASS(brisk_menu_entry_button_parent_class)->constructed(obj);
-}
-
-/**
  * brisk_menu_entry_button_class_init:
  *
  * Handle class initialisation
@@ -158,7 +107,6 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
         obj_class->dispose = brisk_menu_entry_button_dispose;
         obj_class->set_property = brisk_menu_entry_button_set_property;
         obj_class->get_property = brisk_menu_entry_button_get_property;
-        obj_class->constructed = brisk_menu_entry_button_constructed;
 
         /* widget vtable hookup */
         wid_class->drag_data_get = brisk_menu_entry_drag_data;
@@ -203,45 +151,10 @@ static void brisk_menu_entry_button_class_init(BriskMenuEntryButtonClass *klazz)
  */
 static void brisk_menu_entry_button_init(BriskMenuEntryButton *self)
 {
-        GtkStyleContext *style = NULL;
-        GtkWidget *label = NULL;
-        GtkWidget *image = NULL;
-        GtkWidget *layout = NULL;
-
         static const GtkTargetEntry drag_targets[] = {
                 { "text/uri-list", 0, 0 },
                 { "application/x-desktop", 0, 0 },
         };
-
-        /* Main layout */
-        layout = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-        gtk_container_add(GTK_CONTAINER(self), layout);
-
-        /* Image on the left */
-        image = gtk_image_new();
-        self->image = image;
-        gtk_widget_set_margin_end(image, 7);
-        gtk_box_pack_start(GTK_BOX(layout), image, FALSE, FALSE, 0);
-
-        /* Display label */
-        label = gtk_label_new("");
-        gtk_label_set_ellipsize(GTK_LABEL(label), PANGO_ELLIPSIZE_END);
-        gtk_label_set_max_width_chars(GTK_LABEL(label), 25);
-        gtk_label_set_width_chars(GTK_LABEL(label), 25);
-        self->label = label;
-        g_object_set(self->label, "halign", GTK_ALIGN_START, "valign", GTK_ALIGN_CENTER, NULL);
-        gtk_box_pack_start(GTK_BOX(layout), label, TRUE, TRUE, 0);
-        G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-        gtk_misc_set_alignment(GTK_MISC(self->label), 0.0, 0.5);
-        G_GNUC_END_IGNORE_DEPRECATIONS
-
-        /* Button specific fixes */
-        gtk_button_set_relief(GTK_BUTTON(self), GTK_RELIEF_NONE);
-        gtk_widget_set_can_focus(GTK_WIDGET(self), FALSE);
-
-        /* Flatten the button */
-        style = gtk_widget_get_style_context(GTK_WIDGET(self));
-        gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
 
         /* Hook up drag so users can drag .desktop from here elsewhere */
         gtk_drag_source_set(GTK_WIDGET(self), GDK_BUTTON1_MASK, drag_targets, 2, GDK_ACTION_COPY);

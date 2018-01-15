@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,14 @@ G_BEGIN_DECLS
 
 typedef struct _BriskMenuApplet BriskMenuApplet;
 typedef struct _BriskMenuAppletClass BriskMenuAppletClass;
+
+typedef enum {
+        WINDOW_TYPE_MIN = 0,
+        WINDOW_TYPE_CLASSIC = 1 << 0,
+        WINDOW_TYPE_DASH = 1 << 1,
+        WINDOW_TYPE_AUTOMATIC = 1 << 2,
+        WINDOW_TYPE_MAX,
+} WindowType;
 
 struct _BriskMenuAppletClass {
         MatePanelAppletClass parent_class;

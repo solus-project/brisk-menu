@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,22 +45,12 @@ __brisk_pure__ static gint brisk_get_entry_score(BriskItem *item, const gchar *t
         return score;
 }
 
-__brisk_pure__ gint brisk_menu_window_sort(GtkListBoxRow *row1, GtkListBoxRow *row2, gpointer v)
+__brisk_pure__ gint brisk_menu_window_sort(BriskMenuWindow *self, BriskItem *itemA,
+                                           BriskItem *itemB)
 {
-        GtkWidget *child1, *child2 = NULL;
-        BriskItem *itemA, *itemB = NULL;
         autofree(gchar) *nameA = NULL;
         autofree(gchar) *nameB = NULL;
-        BriskMenuWindow *self = NULL;
         gint sc1 = -1, sc2 = -1;
-
-        self = BRISK_MENU_WINDOW(v);
-
-        child1 = gtk_bin_get_child(GTK_BIN(row1));
-        child2 = gtk_bin_get_child(GTK_BIN(row2));
-
-        g_object_get(child1, "item", &itemA, NULL);
-        g_object_get(child2, "item", &itemB, NULL);
 
         /* Handle normal searching */
         if (self->search_term) {

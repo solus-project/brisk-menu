@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2017 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,19 +29,17 @@ typedef struct _BriskMenuWindowClass BriskMenuWindowClass;
 #define BRISK_MENU_WINDOW_GET_CLASS(o)                                                             \
         (G_TYPE_INSTANCE_GET_CLASS((o), BRISK_TYPE_MENU_WINDOW, BriskMenuWindowClass))
 
-GtkWidget *brisk_menu_window_new(GtkWidget *relative_to);
-
 GType brisk_menu_window_get_type(void);
 
-/**
- * Update internal notion of where the parent panel is on screen
- */
-void brisk_menu_window_set_parent_position(BriskMenuWindow *window, GtkPositionType position);
-
-/**
- * Ask that the menu window updates it's position on screen
- */
+const gchar *brisk_menu_window_get_id(BriskMenuWindow *window);
+const gchar *brisk_menu_window_get_display_name(BriskMenuWindow *window);
 void brisk_menu_window_update_screen_position(BriskMenuWindow *window);
+void brisk_menu_window_update_search(BriskMenuWindow *window);
+void brisk_menu_window_invalidate_filter(BriskMenuWindow *self, BriskBackend *backend);
+void brisk_menu_window_add_item(BriskMenuWindow *window, BriskItem *item, BriskBackend *backend);
+void brisk_menu_window_add_section(BriskMenuWindow *window, BriskSection *section,
+                                   BriskBackend *backend);
+void brisk_menu_window_reset(BriskMenuWindow *window, BriskBackend *backend);
 
 G_END_DECLS
 
