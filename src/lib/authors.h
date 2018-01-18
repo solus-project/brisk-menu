@@ -6,6 +6,7 @@ static const char *brisk_developers[] = {
         "Federico Damián Schonborn <federicodamiansch@gmail.com>",
         "Ikey Doherty <ikey@solus-project.com>",
         "Martin Wimpress <code@flexion.org>",
+        "Stefan Ric <stefan@solus-project.com>",
         "Stefan Ric <stfric369@gmail.com>",
         "Victor Kareh <vkareh@vkareh.net>",
         NULL,

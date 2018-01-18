@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,15 @@ typedef struct _BriskMenuEntryButtonClass BriskMenuEntryButtonClass;
 struct _BriskMenuEntryButtonClass {
         GtkButtonClass parent_class;
         void (*show_context_menu)(BriskMenuEntryButton *button, BriskItem *item);
+};
+
+/**
+ * BriskMenuEntryButton is the toplevel window type used within the applet.
+ */
+struct _BriskMenuEntryButton {
+        GtkButton parent;
+        BriskMenuLauncher *launcher;
+        BriskItem *item;
 };
 
 #define BRISK_TYPE_MENU_ENTRY_BUTTON brisk_menu_entry_button_get_type()

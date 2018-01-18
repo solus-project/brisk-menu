@@ -71,7 +71,7 @@ Building Brisk Menu
 License
 --------
 
-Copyright © 2016-2017 Brisk Menu Developers
+Copyright © 2016-2018 Brisk Menu Developers
 
 `brisk-menu` is available under the terms of the `GPL-2.0` license.
 

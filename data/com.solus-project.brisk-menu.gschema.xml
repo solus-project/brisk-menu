@@ -5,6 +5,11 @@
       <value nick="top" value="2" />
       <value nick="automatic" value="4" />
   </enum>
+  <enum id="com.solus-project.brisk-menu.WindowType">
+      <value nick="classic" value="1" />
+      <value nick="dash" value="2" />
+      <value nick="automatic" value="4" />
+  </enum>
   <schema path="/com/solus-project/brisk-menu/" id="com.solus-project.brisk-menu">
     <key type="as" name="pinned-shortcuts">
       <default>['matecc.desktop']</default>
@@ -30,6 +35,11 @@
       <default>'top'</default>
       <summary>Search bar position</summary>
       <description>Where the search bar will appear in the menu</description>
+    </key>
+    <key enum="com.solus-project.brisk-menu.WindowType" name="window-type">
+      <default>'classic'</default>
+      <summary>Window type</summary>
+      <description>The window we're going to display</description>
     </key>
     <key type="s" name="hot-key">
       <default>'Super_L'</default>

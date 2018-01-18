@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,38 +63,6 @@ static void brisk_menu_window_settings_changed(GSettings *settings, const gchar 
                 value = g_settings_get_string(settings, key);
                 brisk_menu_window_update_hotkey(self, value);
         }
-}
-
-/**
- * Update the position of the search bar in accordance with settings
- */
-void brisk_menu_window_update_search(BriskMenuWindow *self)
-{
-        SearchPosition search_position = self->search_position;
-        GtkWidget *layout = NULL;
-        gint n_pos = 0;
-
-        layout = gtk_bin_get_child(GTK_BIN(self));
-
-        if (search_position < SEARCH_POS_MIN || search_position >= SEARCH_POS_MAX) {
-                search_position = SEARCH_POS_AUTOMATIC;
-        }
-
-        switch (search_position) {
-        case SEARCH_POS_AUTOMATIC:
-                /* Top panel, bottom search. Bottom panel, top search */
-                n_pos = self->position == GTK_POS_TOP ? 1 : 0;
-                break;
-        case SEARCH_POS_TOP:
-                n_pos = 0;
-                break;
-        case SEARCH_POS_BOTTOM:
-        default:
-                n_pos = 1;
-                break;
-        }
-
-        gtk_container_child_set(GTK_CONTAINER(layout), self->search, "position", n_pos, NULL);
 }
 
 /*

@@ -1,18 +1,24 @@
 libfrontend_sources = [
-    'category-button.c',
-    'desktop-button.c',
     'entry-button.c',
     'launcher.c',
     'menu-context.c',
     'menu-grabs.c',
     'menu-keyboard.c',
     'menu-loader.c',
+    'menu-loader.c',
     'menu-search.c',
     'menu-session.c',
     'menu-settings.c',
     'menu-sort.c',
     'menu-window.c',
-    'sidebar-scroller.c',
+    'classic/category-button.c',
+    'classic/classic-entry-button.c',
+    'classic/classic-window.c',
+    'classic/desktop-button.c',
+    'classic/sidebar-scroller.c',
+    'dash/category-button.c',
+    'dash/dash-entry-button.c',
+    'dash/dash-window.c',
 ]
 
 libfrontend_dependencies = [

@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ static void brisk_menu_set_checks_sensitive(GtkWidget *parent, gboolean sensitiv
  */
 static void brisk_menu_set_categories_sensitive(BriskMenuWindow *self, gboolean sensitive)
 {
-        brisk_menu_set_checks_sensitive(self->sidebar, sensitive);
+        brisk_menu_set_checks_sensitive(self->section_box_holder, sensitive);
         GHashTableIter iter;
         __attribute__((unused)) gchar *key = NULL;
         GtkWidget *box = NULL;
@@ -53,6 +53,25 @@ static void brisk_menu_set_categories_sensitive(BriskMenuWindow *self, gboolean 
         while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&box)) {
                 brisk_menu_set_checks_sensitive(box, sensitive);
         }
+}
+
+/**
+ * brisk_menu_window_filter_section:
+ *
+ * This function will handle filtering the selection based on the active
+ * section, when no search term is applied.
+ *
+ * Returning TRUE means the item should be displayed
+ */
+__brisk_pure__ static gboolean brisk_menu_window_filter_section(BriskMenuWindow *self,
+                                                                BriskItem *item)
+{
+        /* All visible */
+        if (!self->active_section) {
+                return TRUE;
+        }
+
+        return brisk_section_can_show_item(self->active_section, item);
 }
 
 /**
@@ -99,51 +118,14 @@ void brisk_menu_window_search(BriskMenuWindow *self, GtkEntry *entry)
         }
 
         /* Now filter again */
-        gtk_list_box_invalidate_filter(GTK_LIST_BOX(self->apps));
-        gtk_list_box_invalidate_sort(GTK_LIST_BOX(self->apps));
+        brisk_menu_window_invalidate_filter(self, NULL);
 }
 
-/**
- * brisk_menu_window_filter_section:
- *
- * This function will handle filtering the selection based on the active
- * section, when no search term is applied.
- *
- * Returning TRUE means the item should be displayed
- */
-__brisk_pure__ static gboolean brisk_menu_window_filter_section(BriskMenuWindow *self,
-                                                                BriskItem *item)
+__brisk_pure__ gboolean brisk_menu_window_filter_apps(BriskMenuWindow *self, GtkWidget *child)
 {
-        /* All visible */
-        if (!self->active_section) {
-                return TRUE;
-        }
-
-        return brisk_section_can_show_item(self->active_section, item);
-}
-
-/**
- * brisk_menu_window_filter_apps:
- *
- * Responsible for filtering the selection based on active group or search
- * term.
- */
-__brisk_pure__ gboolean brisk_menu_window_filter_apps(GtkListBoxRow *row, gpointer v)
-{
-        BriskMenuWindow *self = NULL;
-        BriskItem *item = NULL;
-        GtkWidget *child = NULL;
         const gchar *item_id = NULL;
+        BriskItem *item = NULL;
         GtkWidget *compare_child = NULL;
-
-        self = BRISK_MENU_WINDOW(v);
-
-        if (!self->filtering) {
-                return FALSE;
-        }
-
-        /* Grab our Entry widget */
-        child = gtk_bin_get_child(GTK_BIN(row));
 
         g_object_get(child, "item", &item, NULL);
         if (!item) {

@@ -1,7 +1,7 @@
 /*
  * This file is part of brisk-menu.
  *
- * Copyright © 2016-2017 Brisk Menu Developers
+ * Copyright © 2016-2018 Brisk Menu Developers
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,21 @@ BRISK_BEGIN_PEDANTIC
 #include <gtk/gtk.h>
 BRISK_END_PEDANTIC
 
-struct _BriskMenuCategoryButtonClass {
+struct _BriskClassicCategoryButtonClass {
         GtkRadioButtonClass parent_class;
 };
 
 /**
- * BriskMenuCategoryButton is the toplevel window type used within the applet.
+ * BriskClassicCategoryButton is the toplevel window type used within the applet.
  */
-struct _BriskMenuCategoryButton {
+struct _BriskClassicCategoryButton {
         GtkRadioButton parent;
         BriskSection *section;
         GtkWidget *label;
         GtkWidget *image;
 };
 
-G_DEFINE_TYPE(BriskMenuCategoryButton, brisk_menu_category_button, GTK_TYPE_RADIO_BUTTON)
+G_DEFINE_TYPE(BriskClassicCategoryButton, brisk_classic_category_button, GTK_TYPE_RADIO_BUTTON)
 
 enum { PROP_SECTION = 1, N_PROPS };
 
@@ -42,10 +42,10 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
-static void brisk_menu_category_button_set_property(GObject *object, guint id, const GValue *value,
-                                                    GParamSpec *spec)
+static void brisk_classic_category_button_set_property(GObject *object, guint id,
+                                                       const GValue *value, GParamSpec *spec)
 {
-        BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(object);
+        BriskClassicCategoryButton *self = BRISK_CLASSIC_CATEGORY_BUTTON(object);
 
         switch (id) {
         case PROP_SECTION:
@@ -57,10 +57,10 @@ static void brisk_menu_category_button_set_property(GObject *object, guint id, c
         }
 }
 
-static void brisk_menu_category_button_get_property(GObject *object, guint id, GValue *value,
-                                                    GParamSpec *spec)
+static void brisk_classic_category_button_get_property(GObject *object, guint id, GValue *value,
+                                                       GParamSpec *spec)
 {
-        BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(object);
+        BriskClassicCategoryButton *self = BRISK_CLASSIC_CATEGORY_BUTTON(object);
 
         switch (id) {
         case PROP_SECTION:
@@ -73,37 +73,37 @@ static void brisk_menu_category_button_get_property(GObject *object, guint id, G
 }
 
 /**
- * brisk_menu_category_button_new:
+ * brisk_classic_category_button_new:
  *
- * Construct a new BriskMenuCategoryButton object
+ * Construct a new BriskClassicCategoryButton object
  */
-GtkWidget *brisk_menu_category_button_new(BriskSection *section)
+GtkWidget *brisk_classic_category_button_new(BriskSection *section)
 {
-        return g_object_new(BRISK_TYPE_MENU_CATEGORY_BUTTON, "section", section, NULL);
+        return g_object_new(BRISK_TYPE_CLASSIC_CATEGORY_BUTTON, "section", section, NULL);
 }
 
 /**
- * brisk_menu_category_button_dispose:
+ * brisk_classic_category_button_dispose:
  *
- * Clean up a BriskMenuCategoryButton instance
+ * Clean up a BriskClassicCategoryButton instance
  */
-static void brisk_menu_category_button_dispose(GObject *obj)
+static void brisk_classic_category_button_dispose(GObject *obj)
 {
-        BriskMenuCategoryButton *self = BRISK_MENU_CATEGORY_BUTTON(obj);
+        BriskClassicCategoryButton *self = BRISK_CLASSIC_CATEGORY_BUTTON(obj);
 
         g_clear_object(&self->section);
 
-        G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->dispose(obj);
+        G_OBJECT_CLASS(brisk_classic_category_button_parent_class)->dispose(obj);
 }
 
 /**
  * Handle constructor specifics for our button
  */
-static void brisk_menu_category_button_constructed(GObject *obj)
+static void brisk_classic_category_button_constructed(GObject *obj)
 {
-        BriskMenuCategoryButton *self = NULL;
+        BriskClassicCategoryButton *self = NULL;
 
-        self = BRISK_MENU_CATEGORY_BUTTON(obj);
+        self = BRISK_CLASSIC_CATEGORY_BUTTON(obj);
 
         /* If we have a section, use it, otherwise we're a special "All" button */
         if (self->section) {
@@ -120,23 +120,23 @@ static void brisk_menu_category_button_constructed(GObject *obj)
 
         gtk_image_set_pixel_size(GTK_IMAGE(self->image), 16);
 
-        G_OBJECT_CLASS(brisk_menu_category_button_parent_class)->constructed(obj);
+        G_OBJECT_CLASS(brisk_classic_category_button_parent_class)->constructed(obj);
 }
 
 /**
- * brisk_menu_category_button_class_init:
+ * brisk_classic_category_button_class_init:
  *
  * Handle class initialisation
  */
-static void brisk_menu_category_button_class_init(BriskMenuCategoryButtonClass *klazz)
+static void brisk_classic_category_button_class_init(BriskClassicCategoryButtonClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
-        obj_class->dispose = brisk_menu_category_button_dispose;
-        obj_class->set_property = brisk_menu_category_button_set_property;
-        obj_class->get_property = brisk_menu_category_button_get_property;
-        obj_class->constructed = brisk_menu_category_button_constructed;
+        obj_class->dispose = brisk_classic_category_button_dispose;
+        obj_class->set_property = brisk_classic_category_button_set_property;
+        obj_class->get_property = brisk_classic_category_button_get_property;
+        obj_class->constructed = brisk_classic_category_button_constructed;
 
         obj_properties[PROP_SECTION] = g_param_spec_pointer("section",
                                                             "The BriskSection",
@@ -146,11 +146,11 @@ static void brisk_menu_category_button_class_init(BriskMenuCategoryButtonClass *
 }
 
 /**
- * brisk_menu_category_button_init:
+ * brisk_classic_category_button_init:
  *
- * Handle construction of the BriskMenuCategoryButton
+ * Handle construction of the BriskClassicCategoryButton
  */
-static void brisk_menu_category_button_init(BriskMenuCategoryButton *self)
+static void brisk_classic_category_button_init(BriskClassicCategoryButton *self)
 {
         GtkStyleContext *style = NULL;
         GtkWidget *label = NULL;
