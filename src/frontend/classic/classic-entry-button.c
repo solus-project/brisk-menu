@@ -123,7 +123,7 @@ static void brisk_classic_entry_button_init(BriskClassicEntryButton *self)
  *
  * Return a newly created BriskClassicEntryButton
  */
-BriskMenuEntryButton *brisk_classic_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item)
+GtkWidget *brisk_classic_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item)
 {
         return g_object_new(BRISK_TYPE_CLASSIC_ENTRY_BUTTON,
                             "launcher",

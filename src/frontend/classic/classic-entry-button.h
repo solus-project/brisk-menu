@@ -53,7 +53,7 @@ struct _BriskClassicEntryButton {
 
 GType brisk_classic_entry_button_get_type(void);
 
-BriskMenuEntryButton *brisk_classic_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item);
+GtkWidget *brisk_classic_entry_button_new(BriskMenuLauncher *launcher, BriskItem *item);
 
 G_END_DECLS
 
