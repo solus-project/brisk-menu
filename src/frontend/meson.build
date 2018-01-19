@@ -30,6 +30,7 @@ libfrontend_dependencies = [
 
 libfrontend_includes = [
     include_directories('.'),
+    include_directories('../../data'),
 ]
 
 # Contains the main Brisk UI (Windowed)
