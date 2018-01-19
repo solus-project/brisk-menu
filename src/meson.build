@@ -18,14 +18,39 @@ link_libresources = declare_dependency(
     ],
 )
 
+# Build the Cs into a simple static library and control compiler noise
+libsession_stub = static_library(
+    'brisk-glue',
+    sources: [
+        libsaver_glue,
+        libsession_glue,
+    ],
+    c_args: [
+        '-Wno-unused-parameter',
+    ],
+    dependencies: dep_gio_unix,
+    install: false,
+    include_directories: [
+        include_directories('..'),
+    ],
+)
+
+# Allow linking to the stub
+link_libsession_stub = declare_dependency(
+    link_with: libsession_stub,
+    dependencies: [
+        dep_gio_unix,
+    ],
+    include_directories: [
+        include_directories('.'),
+    ],
+)
+
 # Build common library (currently just keybinder really.)
 subdir('lib')
 
 # Build the backend component
 subdir('backend')
-
-# Build session glue to help the frontend out
-subdir('session')
 
 # Now build our main UI
 subdir('frontend')

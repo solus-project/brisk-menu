@@ -12,6 +12,22 @@ brisk_resources = gnome.compile_resources(
     ],
 )
 
+# libsaver_glue provides dbus code for the MATE screensaver
+libsaver_glue = gnome.gdbus_codegen(
+    'libsaver-glue',
+    'org.mate.ScreenSaver.xml',
+    interface_prefix : 'org.mate.',
+    namespace : 'Mate',
+)
+
+# libsession_glue provides dbus code for the MATE/GNOME session
+libsession_glue = gnome.gdbus_codegen(
+    'libsession-glue',
+    'org.gnome.SessionManager.xml',
+    interface_prefix : 'org.gnome.',
+    namespace : 'Gnome',
+)
+
 icons = [
     'brisk_system-log-out-symbolic.svg',
 ]
