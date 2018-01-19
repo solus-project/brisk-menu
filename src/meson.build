@@ -30,6 +30,9 @@ libsession_stub = static_library(
     ],
     dependencies: dep_gio_unix,
     install: false,
+    include_directories: [
+        include_directories('..'),
+    ],
 )
 
 # Allow linking to the stub
