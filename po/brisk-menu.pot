@@ -1,65 +1,108 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the brisk-menu package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: brisk-menu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-20 04:38+0100\n"
+"POT-Creation-Date: 2018-02-08 11:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/mate-applet/applet.c:263
-msgid "Menu"
+#: src/backend/all-items/all-backend.c:52
+msgid "All Items"
 msgstr ""
 
-#: ../src/mate-applet/main.c:49
-msgid "_Edit Menus"
-msgstr ""
-
-#: ../src/mate-applet/main.c:84
-msgid "Brisk Menu Launcher"
-msgstr ""
-
-#: ../src/frontend/category-button.c:115
-#: ../src/backend/all-items/all-section.c:102
+#: src/backend/all-items/all-section.c:102
+#: src/frontend/classic/category-button.c:115
+#: src/frontend/dash/category-button.c:111
 msgid "All"
 msgstr ""
 
-#: ../src/frontend/menu-session.c:144
-msgid "End the current session"
+#: src/backend/apps/apps-backend.c:116
+msgid "Applications"
 msgstr ""
 
-#: ../src/frontend/menu-session.c:155
-msgid "Lock the screen"
+#: src/backend/favourites/favourites-backend.c:56
+#: src/backend/favourites/favourites-section.c:148
+msgid "Favourites"
 msgstr ""
 
-#: ../src/frontend/menu-session.c:166
-msgid "Turn off the device"
+#: src/backend/favourites/favourites-backend.c:74
+msgid "Unpin from favourites menu"
+msgstr ""
+
+#: src/backend/favourites/favourites-backend.c:78
+msgid "Pin to favourites menu"
+msgstr ""
+
+#: src/backend/favourites/favourites-desktop.c:222
+msgid "Unpin from desktop"
+msgstr ""
+
+#: src/backend/favourites/favourites-desktop.c:227
+msgid "Pin to desktop"
+msgstr ""
+
+#: src/frontend/classic/classic-window.c:71
+msgid "Classic"
 msgstr ""
 
 #. Translators: This is the text shown in the "search box" with no content
-#: ../src/frontend/menu-window.c:141
+#: src/frontend/classic/classic-window.c:395
+#: src/frontend/dash/dash-window.c:358
 msgid "Type to search"
 msgstr ""
 
 #. Translators: This message is shown when the search results are empty
-#: ../src/frontend/menu-window.c:203
+#: src/frontend/classic/classic-window.c:453
 msgid "Sorry, no items found"
 msgstr ""
 
-#: ../src/backend/all-items/all-backend.c:52
-msgid "All Items"
+#: src/frontend/classic/classic-window.c:659
+msgid "End the current session"
 msgstr ""
 
-#: ../src/backend/apps/apps-backend.c:111
-msgid "Applications"
+#: src/frontend/classic/classic-window.c:670
+msgid "Lock the screen"
+msgstr ""
+
+#: src/frontend/classic/classic-window.c:681
+msgid "Turn off the device"
+msgstr ""
+
+#: src/frontend/dash/dash-window.c:63
+msgid "Dash"
+msgstr ""
+
+#: src/mate-applet/applet.c:248
+msgid "Menu"
+msgstr ""
+
+#: src/mate-applet/applet.c:337
+msgid "Failed to launch menu editor"
+msgstr ""
+
+#: src/mate-applet/applet.c:338
+msgid "Please install 'menulibre' or 'mozo' to edit menus"
+msgstr ""
+
+#: src/mate-applet/main.c:52
+msgid "_Edit Menus"
+msgstr ""
+
+#: src/mate-applet/main.c:60
+msgid "_About"
+msgstr ""
+
+#: src/mate-applet/main.c:92 src/mate-applet/main.c:104
+msgid "Brisk Menu Launcher"
 msgstr ""

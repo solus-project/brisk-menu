@@ -1,10 +1,12 @@
-src/mate-applet/applet.c
-src/mate-applet/main.c
-src/frontend/category-button.c
-src/frontend/menu-session.c
-src/frontend/menu-window.c
 src/backend/all-items/all-backend.c
 src/backend/all-items/all-section.c
 src/backend/apps/apps-backend.c
 src/backend/favourites/favourites-backend.c
+src/backend/favourites/favourites-desktop.c
 src/backend/favourites/favourites-section.c
+src/frontend/classic/category-button.c
+src/frontend/classic/classic-window.c
+src/frontend/dash/category-button.c
+src/frontend/dash/dash-window.c
+src/mate-applet/applet.c
+src/mate-applet/main.c
