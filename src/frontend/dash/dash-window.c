@@ -27,7 +27,7 @@ static void brisk_dash_window_associate_category(BriskMenuWindow *self, GtkWidge
 static void brisk_dash_window_on_toggled(BriskMenuWindow *self, GtkWidget *button);
 static gboolean brisk_dash_window_on_enter(BriskMenuWindow *self, GdkEventCrossing *event,
                                            GtkWidget *button);
-static void brisk_dash_window_load_css(BriskDashWindow *self);
+static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key, BriskDashWindow *self);
 static void brisk_dash_window_key_activate(BriskDashWindow *self, gpointer v);
 static void brisk_dash_window_activated(BriskMenuWindow *self, GtkFlowBoxChild *row, gpointer v);
 static void brisk_dash_window_set_filters_enabled(BriskDashWindow *self, gboolean enabled);
@@ -322,11 +322,17 @@ static void brisk_dash_window_init(BriskDashWindow *self)
         GdkScreen *screen = NULL;
         GtkStyleContext *style = NULL;
         BriskMenuWindow *base = NULL;
+        GtkSettings *gtk_settings = NULL;
         autofree(gchar) *txt_holder = NULL;
 
         base = BRISK_MENU_WINDOW(self);
 
-        brisk_dash_window_load_css(self);
+        brisk_dash_window_load_css(gtk_settings, "gtk-theme-name", self);
+        gtk_settings = gtk_settings_get_default();
+        g_signal_connect(gtk_settings,
+                         "notify::gtk-theme-name",
+                         G_CALLBACK(brisk_dash_window_load_css),
+                         self);
 
         style = gtk_widget_get_style_context(GTK_WIDGET(self));
         gtk_style_context_add_class(style, BRISK_STYLE_MAIN);
@@ -525,21 +531,36 @@ static gboolean brisk_dash_window_on_enter(BriskMenuWindow *self,
 /**
  * Load up the CSS assets
  */
-static void brisk_dash_window_load_css(BriskDashWindow *self)
+static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key, BriskDashWindow *self)
 {
         GtkCssProvider *css = NULL;
+        GtkStyleContext *context = NULL;
         autofree(GFile) *file = NULL;
         autofree(GError) *err = NULL;
         GdkScreen *screen = NULL;
+        GdkRGBA color;
 
         file = g_file_new_for_uri("resource://com/solus-project/brisk/menu/dash/styling.css");
+
+        context = gtk_widget_get_style_context(GTK_WIDGET(self));
+        if (gtk_style_context_lookup_color(context, "dark_bg_color", &color)) {
+                file = g_file_new_for_uri("resource://com/solus-project/brisk/menu/dash/styling-light.css");
+        }
+        
         if (!file) {
                 return;
         }
 
+        screen = gtk_widget_get_screen(GTK_WIDGET(self));
+
+        if (self->css) {
+                gtk_style_context_remove_provider_for_screen(screen, GTK_STYLE_PROVIDER(self->css));
+                g_clear_object(&self->css);
+        }
+
         css = gtk_css_provider_new();
         self->css = css;
-        screen = gtk_widget_get_screen(GTK_WIDGET(self));
+
         gtk_style_context_add_provider_for_screen(screen,
                                                   GTK_STYLE_PROVIDER(css),
                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
