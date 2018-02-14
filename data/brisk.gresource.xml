@@ -3,5 +3,6 @@
         <gresource prefix="/com/solus-project/brisk/menu">
                 <file>classic/styling.css</file>
                 <file>dash/styling.css</file>
+                <file>dash/styling-light.css</file>
         </gresource>
 </gresources>
