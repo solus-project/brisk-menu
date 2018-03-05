@@ -183,6 +183,8 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                         }
                         XAllowEvents(display, AsyncKeyboard, xev->xkey.time);
                 } else {
+                        XAllowEvents(display, ReplayKeyboard, xev->xkey.time);
+                        XUngrabKeyboard(display, xev->xkey.time);
                         /* when breaking the shortcut sequence, send the event up the window
                          * hierarchy in case it's part of a different shortcut sequence
                          * (e.g. <Mod4>a) */
@@ -191,7 +193,6 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                                    TRUE,
                                    KeyPressMask | KeyReleaseMask,
                                    xev);
-                        XAllowEvents(display, ReplayKeyboard, xev->xkey.time);
                         self->wait_for_release = FALSE;
                 }
         }
