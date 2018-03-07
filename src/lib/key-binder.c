@@ -168,28 +168,24 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
 
         /* Find a matching binding */
         while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&binding)) {
-                /* capture initial key press */
-                if (xev->xkey.keycode == binding->keycode && xev->type == KeyPress &&
+                if (xev->type == KeyPress && xev->xkey.keycode == binding->keycode &&
                     !self->wait_for_release) {
+                        /* capture initial key press */
                         if (mods == binding->mods) {
                                 self->wait_for_release = TRUE;
-                                XAllowEvents(display, AsyncKeyboard, xev->xkey.time);
                         }
-                } else if (xev->xkey.keycode == binding->keycode && self->wait_for_release) {
+                } else if (xev->type == KeyRelease && xev->xkey.keycode == binding->keycode &&
+                           self->wait_for_release) {
                         /* capture release within same shortcut sequence */
-                        if (xev->type == KeyRelease) {
-                                self->wait_for_release = FALSE;
-                                binding->func(event, binding->udata);
-                        }
-                        XAllowEvents(display, AsyncKeyboard, xev->xkey.time);
+                        binding->func(event, binding->udata);
+                        self->wait_for_release = FALSE;
                 } else {
-                        XAllowEvents(display, ReplayKeyboard, xev->xkey.time);
                         XUngrabKeyboard(display, xev->xkey.time);
                         /* when breaking the shortcut sequence, send the event up the window
                          * hierarchy in case it's part of a different shortcut sequence
                          * (e.g. <Mod4>a) */
                         XSendEvent(display,
-                                   GDK_WINDOW_XID(self->root_window),
+                                   xev->xkey.window,
                                    TRUE,
                                    KeyPressMask | KeyReleaseMask,
                                    xev);
