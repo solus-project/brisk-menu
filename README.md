@@ -3,10 +3,11 @@ brisk-menu
 
 [![Coverity Scan](https://img.shields.io/coverity/scan/11139.svg)](https://scan.coverity.com/projects/solus-project-brisk-menu) [![License](https://img.shields.io/badge/License-GPL%202.0-blue.svg)](https://opensource.org/licenses/GPL-2.0)
 
-Modern, efficient menu for the MATE Desktop Environment.
+brisk-menu is a modern and efficient menu designed to improve the MATE Desktop Environment with modern, first-class options.
 
-This project aims to reinvigorate the MATE Desktop with modern, first-class options. As such, Brisk Menu is a **distro-agnostic** desktop. Please ensure to report any issues of non portability!
-The primary motivation is to provide a very usable menu, as seen in other desktops, but without the bloat and/or performance problems that plague current offerings.
+The purpose of this project is to provide a usable menu as seen in other desktops without the bloat and performance issues.
+
+brisk-menu is **distro-agnostic** and the reporting of portability issues is encouraged.
 
 ![screenshot](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/main.png)
 
@@ -38,21 +39,24 @@ Features
 
 **Planned**
 
-Some items that are currently known to be definite options in the roadmap:
+These planned features will be implemented in the future:
 
  - Settings UI to control further visual aspects (labels/icons/options)
  - Improved styling for the window edge + search entry.
 
-More will be added in time as we go along.
+More will be added.
 
 ![screenshot_context](https://raw.githubusercontent.com/solus-project/brisk-menu/master/.github/context.png)
 
 Building Brisk Menu
 -------------------
+**Requirements:**
 
- * Please ensure you have GTK 3.18 *minimum*
- * Please ensure you are using a GTK 3.18 build of MATE 1.16 or newer
- * Ensure you have a **modern** `meson` (`0.40.x`+) and `ninja` (Ubuntu users, use xenial-backports!)
+ * GTK 3.18 or greater
+ * GTK 3.18 build of Mate 1.16 or greater
+ * **Modern** `meson` (`0.40.x`+) and `ninja` (Ubuntu users should use xenial-backports)
+
+**Build Process:**
 
 ```bash
     meson --buildtype plain build --prefix=/usr
