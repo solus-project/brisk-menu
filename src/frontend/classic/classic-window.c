@@ -661,7 +661,7 @@ static void brisk_classic_window_setup_session_controls(BriskClassicWindow *self
         gtk_container_add(GTK_CONTAINER(box), widget);
         style = gtk_widget_get_style_context(widget);
         gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
-        gtk_style_context_add_class (style, "session-button");
+        gtk_style_context_add_class(style, "session-button");
 
         /* Lock */
         widget = gtk_button_new_from_icon_name("system-lock-screen-symbolic",
@@ -673,7 +673,7 @@ static void brisk_classic_window_setup_session_controls(BriskClassicWindow *self
         gtk_container_add(GTK_CONTAINER(box), widget);
         style = gtk_widget_get_style_context(widget);
         gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
-        gtk_style_context_add_class (style, "session-button");
+        gtk_style_context_add_class(style, "session-button");
 
         /* Shutdown */
         widget =
@@ -685,7 +685,7 @@ static void brisk_classic_window_setup_session_controls(BriskClassicWindow *self
         gtk_container_add(GTK_CONTAINER(box), widget);
         style = gtk_widget_get_style_context(widget);
         gtk_style_context_add_class(style, GTK_STYLE_CLASS_FLAT);
-        gtk_style_context_add_class (style, "session-button");
+        gtk_style_context_add_class(style, "session-button");
 }
 
 /**

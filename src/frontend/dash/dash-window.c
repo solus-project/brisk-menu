@@ -27,7 +27,8 @@ static void brisk_dash_window_associate_category(BriskMenuWindow *self, GtkWidge
 static void brisk_dash_window_on_toggled(BriskMenuWindow *self, GtkWidget *button);
 static gboolean brisk_dash_window_on_enter(BriskMenuWindow *self, GdkEventCrossing *event,
                                            GtkWidget *button);
-static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key, BriskDashWindow *self);
+static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key,
+                                       BriskDashWindow *self);
 static void brisk_dash_window_key_activate(BriskDashWindow *self, gpointer v);
 static void brisk_dash_window_activated(BriskMenuWindow *self, GtkFlowBoxChild *row, gpointer v);
 static void brisk_dash_window_set_filters_enabled(BriskDashWindow *self, gboolean enabled);
@@ -531,7 +532,8 @@ static gboolean brisk_dash_window_on_enter(BriskMenuWindow *self,
 /**
  * Load up the CSS assets
  */
-static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key, BriskDashWindow *self)
+static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key,
+                                       BriskDashWindow *self)
 {
         GtkCssProvider *css = NULL;
         GtkStyleContext *context = NULL;
@@ -544,9 +546,10 @@ static void brisk_dash_window_load_css(GtkSettings *settings, const gchar *key, 
 
         context = gtk_widget_get_style_context(GTK_WIDGET(self));
         if (gtk_style_context_lookup_color(context, "dark_bg_color", &color)) {
-                file = g_file_new_for_uri("resource://com/solus-project/brisk/menu/dash/styling-light.css");
+                file = g_file_new_for_uri(
+                    "resource://com/solus-project/brisk/menu/dash/styling-light.css");
         }
-        
+
         if (!file) {
                 return;
         }
