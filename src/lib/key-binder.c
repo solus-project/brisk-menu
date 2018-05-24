@@ -17,6 +17,7 @@
 
 BRISK_BEGIN_PEDANTIC
 #include "key-binder.h"
+#include <X11/Xatom.h>
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <gdk/gdk.h>
@@ -134,6 +135,73 @@ static void brisk_key_binder_init(BriskKeyBinder *self)
         gdk_window_add_filter(root, brisk_key_binder_filter, self);
 }
 
+static char* get_window_manager(void)
+{
+        Window *xwindow;
+        Window wm_window;
+        Atom type;
+        gint format;
+        gulong nitems;
+        gulong bytes_after;
+
+        Atom wm_check = gdk_x11_get_xatom_by_name ("_NET_SUPPORTING_WM_CHECK");
+
+        XGetWindowProperty (GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), GDK_ROOT_WINDOW (),
+                            wm_check, 0, G_MAXLONG, False, XA_WINDOW, &type, &format,
+                            &nitems, &bytes_after, (guchar **) &xwindow);
+
+        if (type != XA_WINDOW)
+        {
+                return g_strdup ("Unknown");
+        }
+
+        gdk_error_trap_push ();
+        XSelectInput (GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), *xwindow,
+                      StructureNotifyMask | PropertyChangeMask);
+        XSync (GDK_DISPLAY_XDISPLAY(gdk_display_get_default()), False);
+
+        if (gdk_error_trap_pop ())
+        {
+                XFree (xwindow);
+                return g_strdup ("Unknown");
+        }
+
+        wm_window = *xwindow;
+        XFree (xwindow);
+
+        Atom utf8_string = gdk_x11_get_xatom_by_name ("UTF8_STRING");
+        Atom wm_name = gdk_x11_get_xatom_by_name ("_NET_WM_NAME");
+        gchar *val;
+        gchar *wm;
+        int result;
+
+        val = NULL;
+
+        gdk_error_trap_push ();
+        result = XGetWindowProperty (GDK_DISPLAY_XDISPLAY(gdk_display_get_default()),
+                                     wm_window,
+                                     wm_name,
+                                     0, G_MAXLONG,
+                                     False, utf8_string,
+                                     &type, &format, &nitems,
+                                     &bytes_after, (guchar **) &val);
+
+        if (gdk_error_trap_pop () || result != Success || type != utf8_string || format != 8 ||
+            nitems == 0 || !g_utf8_validate (val, (gssize)nitems, NULL))
+        {
+                wm = NULL;
+        }
+        else
+        {
+                wm = g_strndup (val, nitems);
+        }
+
+        if (val)
+                XFree (val);
+
+        return wm;
+}
+
 /**
  * Handle global events (eventually)
  */
@@ -151,7 +219,7 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
         self = BRISK_KEY_BINDER(v);
         display = GDK_WINDOW_XDISPLAY(self->root_window);
 
-        if (xev->type != KeyRelease && xev->type != KeyPress) {
+        if (xev->type != KeyRelease && xev->type != KeyPress && xev->type != ButtonPress) {
                 return GDK_FILTER_CONTINUE;
         }
 
@@ -178,6 +246,39 @@ static GdkFilterReturn brisk_key_binder_filter(GdkXEvent *xevent, GdkEvent *even
                            self->wait_for_release) {
                         /* capture release within same shortcut sequence */
                         binding->func(event, binding->udata);
+                        self->wait_for_release = FALSE;
+                } else if (xev->type == ButtonPress) {
+                        /* Modifiers are often used with mouse events.
+                         * Don't let the key-binder swallow those */
+                        XAllowEvents(display, ReplayPointer, CurrentTime);
+
+                        /* Compiz would rather not have the event sent to it and just read it from
+                         * the replayed queue. All other window managers seem to expect an event. */
+                        gchar *wm = get_window_manager ();
+                        if (g_strcmp0 (wm, "Compiz") != 0) {
+                                Window root_return, child_return;
+                                int root_x_return, root_y_return;
+                                int win_x_return, win_y_return;
+                                unsigned int mask_return;
+                                XUngrabKeyboard(display, CurrentTime);
+                                XUngrabPointer(display, CurrentTime);
+                                XQueryPointer(display,
+                                              GDK_WINDOW_XID(self->root_window),
+                                              &root_return,
+                                              &child_return,
+                                              &root_x_return,
+                                              &root_y_return,
+                                              &win_x_return,
+                                              &win_y_return,
+                                              &mask_return);
+                                XSendEvent(display,
+                                           child_return,
+                                           TRUE,
+                                           ButtonPressMask,
+                                           xev);
+                        }
+                        g_free (wm);
+
                         self->wait_for_release = FALSE;
                 } else {
                         XUngrabKeyboard(display, xev->xkey.time);
@@ -237,6 +338,15 @@ gboolean brisk_key_binder_bind(BriskKeyBinder *self, const gchar *shortcut, Bind
                 XGrabKey(display, key, mod | m, id, TRUE, GrabModeAsync, GrabModeAsync);
         }
         gdk_flush();
+
+        if (!mod) {
+                gdk_error_trap_push();
+                /* We grab Super+click so that we can forward it to the window manager and allow
+                 * Super+click bindings (window move, resize, etc.) */
+                XGrabButton(display, AnyButton, Mod4Mask, id, TRUE, ButtonPressMask, GrabModeSync,
+                            GrabModeAsync, None, None);
+                gdk_flush();
+        }
 
         return TRUE;
 }
