@@ -4,7 +4,13 @@
 # <3 TingPing ^^
 if [ -z $DESTDIR ]; then
 
-	PREFIX=${MESON_INSTALL_PREFIX:-/usr}
+	SYSTEM=$(uname)
+
+	if [ "${SYSTEM}" = "FreeBSD" ]; then
+		PREFIX=${MESON_INSTALL_PREFIX:-/usr/local}
+	else
+		PREFIX=${MESON_INSTALL_PREFIX:-/usr}
+	fi
 
 	echo 'Compiling GSchema'
 	glib-compile-schemas "$PREFIX/share/glib-2.0/schemas"
