@@ -52,7 +52,7 @@ gnome = import('gnome')
 
 # Required minimum versions
 gtk_min_version = '>= 3.18.0'
-mate_min_version = '>= 1.16.0'
+mate_min_version = '>= 1.21.0'
 glib_min_version = '>= 2.44.0'
 
 # GTK/UI deps

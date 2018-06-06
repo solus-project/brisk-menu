@@ -54,48 +54,22 @@ static const GIcon *brisk_apps_section_get_icon(BriskSection *item);
 static const gchar *brisk_apps_section_get_backend_id(BriskSection *item);
 static gboolean brisk_apps_section_can_show_item(BriskSection *section, BriskItem *item);
 
-/**
- * Create a GIcon for the given path
- */
-static GIcon *brisk_apps_section_create_path_icon(const gchar *path)
-{
-        autofree(GFile) *file = NULL;
-
-        file = g_file_new_for_path(path);
-        if (!file) {
-                return NULL;
-        }
-        return g_file_icon_new(file);
-}
-
 static void brisk_apps_section_update_directory(BriskAppsSection *self,
                                                 MateMenuTreeDirectory *directory)
 {
         g_clear_object(&self->icon);
         g_clear_pointer(&self->id, g_free);
         g_clear_pointer(&self->name, g_free);
-        const gchar *icon = NULL;
 
         if (!directory) {
                 return;
         }
 
-        /* Set our ID and name */
+        /* Set our ID, name, and icon */
         self->id =
             g_strdup_printf("%s.mate-directory", matemenu_tree_directory_get_menu_id(directory));
         self->name = g_strdup(matemenu_tree_directory_get_name(directory));
-
-        icon = matemenu_tree_directory_get_icon(directory);
-        if (!icon) {
-                return;
-        }
-
-        /* Set an appropriate icon based on the string */
-        if (icon[0] == '/') {
-                self->icon = brisk_apps_section_create_path_icon(icon);
-        } else {
-                self->icon = g_themed_icon_new_with_default_fallbacks(icon);
-        }
+        self->icon = matemenu_tree_directory_get_icon(directory);
 }
 
 static void brisk_apps_section_set_property(GObject *object, guint id, const GValue *value,

@@ -19,6 +19,8 @@ BRISK_BEGIN_PEDANTIC
 #include "apps-section.h"
 #include <gio/gio.h>
 #include <glib/gi18n.h>
+
+#define MATEMENU_I_KNOW_THIS_IS_UNSTABLE
 #include <matemenu-tree.h>
 BRISK_END_PEDANTIC
 
@@ -72,9 +74,11 @@ static void brisk_apps_backend_launch_action(GSimpleAction *action, GVariant *pa
 DEF_AUTOFREE(gchar, g_free)
 DEF_AUTOFREE(GSList, g_slist_free)
 DEF_AUTOFREE(MateMenuTreeDirectory, matemenu_tree_item_unref)
-DEF_AUTOFREE(MateMenuTreeItem, matemenu_tree_item_unref)
-DEF_AUTOFREE(MateMenuTree, matemenu_tree_unref)
+DEF_AUTOFREE(MateMenuTreeEntry, matemenu_tree_item_unref)
+DEF_AUTOFREE(MateMenuTreeIter, matemenu_tree_iter_unref)
+DEF_AUTOFREE(MateMenuTree, g_object_unref)
 DEF_AUTOFREE(GDesktopAppInfo, g_object_unref)
+DEF_AUTOFREE(GError, g_error_free)
 
 /**
  * Due to a glib weirdness we must fully invalidate the monitor's cache
@@ -352,9 +356,15 @@ static gboolean brisk_apps_backend_build_from_tree(BriskAppsBackend *self, const
 {
         autofree(MateMenuTree) *tree = NULL;
         autofree(MateMenuTreeDirectory) *dir = NULL;
+        autofree(GError) *error = NULL;
 
-        tree = matemenu_tree_lookup(menu_id, MATEMENU_TREE_FLAGS_NONE);
+        tree = matemenu_tree_new(menu_id, MATEMENU_TREE_FLAGS_NONE);
         if (!tree) {
+                return FALSE;
+        }
+
+        if (!matemenu_tree_load_sync(tree, &error)) {
+                g_message("Failed to load tree: %s", error->message);
                 return FALSE;
         }
 
@@ -392,37 +402,31 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                                             MateMenuTreeDirectory *directory,
                                             MateMenuTreeDirectory *root)
 {
-        autofree(GSList) *kids = NULL;
-        GSList *elem = NULL;
+        autofree(MateMenuTreeIter) *iter = NULL;
+        MateMenuTreeItemType type;
 
-        kids = matemenu_tree_directory_get_contents(directory);
+        iter = matemenu_tree_directory_iter(directory);
 
         /* Iterate the root tree */
-        for (elem = kids; elem; elem = elem->next) {
-                autofree(MateMenuTreeItem) *item = elem->data;
-
-                switch (matemenu_tree_item_get_type(item)) {
+        while ((type = matemenu_tree_iter_next(iter)) != MATEMENU_TREE_ITEM_INVALID) {
+                switch (type) {
                 case MATEMENU_TREE_ITEM_DIRECTORY: {
-                        MateMenuTreeDirectory *dir = MATEMENU_TREE_DIRECTORY(item);
+                        autofree(MateMenuTreeDirectory) *dir =
+                            matemenu_tree_iter_get_directory(iter);
                         autofree(MateMenuTreeDirectory) *parent = NULL;
+                        autofree(MateMenuTreeIter) *children = NULL;
                         BriskSection *section = NULL;
-                        GSList *children = NULL;
-                        guint n_children = 0;
 
-                        parent = matemenu_tree_item_get_parent(item);
+                        parent = matemenu_tree_directory_get_parent(dir);
                         /* Nested menus basically only happen in mate-settings.menu */
                         if (parent != root) {
                                 goto recurse_root;
                         }
 
-                        children = matemenu_tree_directory_get_contents(dir);
-                        if (children) {
-                                n_children = g_slist_length(children);
-                                g_slist_free_full(children, matemenu_tree_item_unref);
-                        }
+                        children = matemenu_tree_directory_iter(dir);
 
                         /* Skip empty sections entirely */
-                        if (n_children < 1) {
+                        if (matemenu_tree_iter_next(children) == MATEMENU_TREE_ITEM_INVALID) {
                                 continue;
                         }
 
@@ -437,7 +441,7 @@ static void brisk_apps_backend_recurse_root(BriskAppsBackend *self,
                         brisk_apps_backend_recurse_root(self, dir, root);
                 } break;
                 case MATEMENU_TREE_ITEM_ENTRY: {
-                        MateMenuTreeEntry *entry = MATEMENU_TREE_ENTRY(item);
+                        autofree(MateMenuTreeEntry) *entry = matemenu_tree_iter_get_entry(iter);
                         autofree(GDesktopAppInfo) *info = NULL;
                         const gchar *desktop_file = NULL;
                         BriskItem *app_item = NULL;
