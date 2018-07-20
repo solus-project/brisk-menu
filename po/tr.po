@@ -6,11 +6,11 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 5.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-05-19 00:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Egemen Metin Turan <emturan@gmail.com>, 2017\n"
+"Last-Translator: Cihan Alkan <cihanalk@gmail.com>, 2018\n"
 "Language-Team: Turkish (https://www.transifex.com/solus-project/teams/68407/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,44 +18,92 @@ msgstr ""
 "Language: tr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: ../src/mate-applet/applet.c:78
-msgid "_Edit Menus"
-msgstr "_Menüyü Düzenle"
+#: src/backend/all-items/all-backend.c:52
+msgid "All Items"
+msgstr "Tüm Öğeler"
 
-#: ../src/mate-applet/applet.c:368
-msgid "Menu"
-msgstr "Menü"
-
-#: ../src/mate-applet/applet.c:504
-msgid "Brisk Menu Launcher"
-msgstr "Brisk Menü Başlatıcısı"
-
-#: ../src/frontend/category-button.c:115
+#: src/backend/all-items/all-section.c:102
+#: src/frontend/classic/category-button.c:115
+#: src/frontend/dash/category-button.c:111
 msgid "All"
 msgstr "Tümü"
 
-#: ../src/frontend/menu-session.c:144
-msgid "End the current session"
-msgstr "Geçerli oturumu sonlandır"
+#: src/backend/apps/apps-backend.c:116
+msgid "Applications"
+msgstr "Uygulamalar"
 
-#: ../src/frontend/menu-session.c:155
-msgid "Lock the screen"
-msgstr "Ekranı kilitle"
+#: src/backend/favourites/favourites-backend.c:56
+#: src/backend/favourites/favourites-section.c:148
+msgid "Favourites"
+msgstr "Favoriler"
 
-#: ../src/frontend/menu-session.c:166
-msgid "Turn off the device"
-msgstr "Cihazı kapat"
+#: src/backend/favourites/favourites-backend.c:74
+msgid "Unpin from favourites menu"
+msgstr "Sık kullanılanlar menüsünden kaldır"
+
+#: src/backend/favourites/favourites-backend.c:78
+msgid "Pin to favourites menu"
+msgstr "Sık kullanılanlar menüsüne ekle"
+
+#: src/backend/favourites/favourites-desktop.c:222
+msgid "Unpin from desktop"
+msgstr "Masaüstünden kaldır"
+
+#: src/backend/favourites/favourites-desktop.c:227
+msgid "Pin to desktop"
+msgstr "Masaüstüne ekle"
+
+#: src/frontend/classic/classic-window.c:71
+msgid "Classic"
+msgstr "Klasik"
 
 #. Translators: This is the text shown in the "search box" with no content
-#: ../src/frontend/menu-window.c:140
+#: src/frontend/classic/classic-window.c:395
+#: src/frontend/dash/dash-window.c:358
 msgid "Type to search"
-msgstr "Arama yapmak için yaz"
+msgstr "Aramak için yaz"
 
 #. Translators: This message is shown when the search results are empty
-#: ../src/frontend/menu-window.c:202
+#: src/frontend/classic/classic-window.c:453
 msgid "Sorry, no items found"
 msgstr "Üzgünüm, hiçbir öğe bulunamadı"
 
-#: ../src/backend/apps/apps-backend.c:111
-msgid "Applications"
-msgstr "Uygulamalar"
+#: src/frontend/classic/classic-window.c:659
+msgid "End the current session"
+msgstr "Mevcut oturumu sonlandır"
+
+#: src/frontend/classic/classic-window.c:670
+msgid "Lock the screen"
+msgstr "Ekranı kilitle"
+
+#: src/frontend/classic/classic-window.c:681
+msgid "Turn off the device"
+msgstr "Bilgisayarı kapat"
+
+#: src/frontend/dash/dash-window.c:63
+msgid "Dash"
+msgstr ""
+
+#: src/mate-applet/applet.c:248
+msgid "Menu"
+msgstr "Menü"
+
+#: src/mate-applet/applet.c:337
+msgid "Failed to launch menu editor"
+msgstr "Menü düzenleyicisi başlatılamadı"
+
+#: src/mate-applet/applet.c:338
+msgid "Please install 'menulibre' or 'mozo' to edit menus"
+msgstr "Lütfen menüleri düzenlemek için 'menulibre' veya 'mozo' yükleyin"
+
+#: src/mate-applet/main.c:52
+msgid "_Edit Menus"
+msgstr "Menüleri Düzenle"
+
+#: src/mate-applet/main.c:60
+msgid "_About"
+msgstr "_Hakkında"
+
+#: src/mate-applet/main.c:92 src/mate-applet/main.c:104
+msgid "Brisk Menu Launcher"
+msgstr "Brisk Menü Başlatıcısı"
