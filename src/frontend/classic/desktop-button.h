@@ -13,7 +13,6 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <matemenu-tree.h>
 
 #include "launcher.h"
 

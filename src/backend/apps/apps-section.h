@@ -13,6 +13,8 @@
 
 #include <gio/gio.h>
 #include <glib-object.h>
+
+#define MATEMENU_I_KNOW_THIS_IS_UNSTABLE
 #include <matemenu-tree.h>
 
 #include "../section.h"
