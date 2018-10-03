@@ -23,12 +23,17 @@ gboolean brisk_menu_window_key_press(BriskMenuWindow *self, GdkEvent *event,
                                      __brisk_unused__ gpointer v)
 {
         autofree(gchar) *accel_name = NULL;
+        GdkModifierType lock_masks = GDK_MOD2_MASK | GDK_LOCK_MASK | GDK_MOD5_MASK;
+        guint mods;
 
         if (!self->shortcut) {
                 return GDK_EVENT_PROPAGATE;
         }
 
-        accel_name = gtk_accelerator_name(event->key.keyval, event->key.state);
+        /* Unset mask of the lock keys */
+        mods = event->key.state & ~(lock_masks);
+
+        accel_name = gtk_accelerator_name(event->key.keyval, mods);
         if (!accel_name || g_ascii_strcasecmp(self->shortcut, accel_name) != 0) {
                 return GDK_EVENT_PROPAGATE;
         }
