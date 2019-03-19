@@ -143,8 +143,8 @@ void brisk_menu_window_remove_category(GtkWidget *widget, BriskMenuWindow *self)
  */
 void brisk_menu_window_init_backends(BriskMenuWindow *self)
 {
-        brisk_menu_window_insert_backend(self, brisk_all_items_backend_new());
         brisk_menu_window_insert_backend(self, brisk_favourites_backend_new());
+        brisk_menu_window_insert_backend(self, brisk_all_items_backend_new());
         brisk_menu_window_insert_backend(self, brisk_apps_backend_new());
 }
 
